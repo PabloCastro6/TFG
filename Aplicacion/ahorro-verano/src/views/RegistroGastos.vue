@@ -4,8 +4,8 @@
     <div>
       <label for="tipoGasto">Tipo de Gasto:</label>
       <select v-model="tipoGasto" id="tipoGasto">
-        <option v-for="tipo in tiposGastos" :key="tipo.id" :value="tipo.id">
-          {{ tipo.nombre }}
+        <option v-for="tipo in tiposGastos" :key="tipo" :value="tipo">
+          {{ tipo }}
         </option>
       </select>
     </div>
@@ -27,33 +27,25 @@ export default {
   name: "RegistroGastos",
   data() {
     return {
-      tipoGasto: null,
-      monto: 0,
+      tipoGasto: "",
+      monto: null,
+      tiposGastos: [],
     };
   },
-  computed: {
-    tiposGastos() {
-      // Aquí puedes obtener los tipos de gastos desde tu base de datos o de donde estés almacenándolos
-      return [
-        { id: 1, nombre: "Ocio" },
-        { id: 2, nombre: "Servicios bancarios" },
-        { id: 3, nombre: "Viajes" },
-        { id: 4, nombre: "Salud y belleza" },
-        // Agrega más tipos de gastos según sea necesario
-      ];
+  methods: {
+    async registrarGasto() {
+      if (this.tipoGasto && this.monto > 0) {
+        const gasto = { tipo: this.tipoGasto, monto: this.monto };
+        console.log("Enviar al backend:", gasto);
+        this.tipoGasto = "";
+        this.monto = null;
+      } else {
+        alert("Por favor, selecciona un tipo de gasto y un monto válido.");
+      }
     },
   },
-  methods: {
-    registrarGasto() {
-      // Aquí puedes realizar la lógica para registrar el gasto, como guardar los datos en la base de datos
-      console.log("Gasto registrado:", {
-        tipoGasto: this.tipoGasto,
-        monto: this.monto,
-      });
-      // Después de registrar el gasto, puedes restablecer los campos
-      this.tipoGasto = null;
-      this.monto = 0;
-    },
+  async mounted() {
+    this.tiposGastos = ["Ocio", "Salud", "Comida"]; // Simulación de datos del backend
   },
 };
 </script>

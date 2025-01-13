@@ -1,218 +1,51 @@
 <template>
-  <div class="calendario">
-    <div class="navegacion">
-      <button @click="mesAnterior">Mes Anterior</button>
-      <h2>{{ nombreMes }} {{ fechaActual.getFullYear() }}</h2>
-      <button @click="mesSiguiente">Mes Siguiente</button>
+  <div class="registro-gastos">
+    <h2>Registro de Gastos</h2>
+    <div>
+      <label for="tipoGasto">Tipo de Gasto:</label>
+      <select v-model="tipoGasto" id="tipoGasto">
+        <option v-for="tipo in tiposGastos" :key="tipo" :value="tipo">
+          {{ tipo }}
+        </option>
+      </select>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Lunes</th>
-          <th>Martes</th>
-          <th>Miércoles</th>
-          <th>Jueves</th>
-          <th>Viernes</th>
-          <th>Sábado</th>
-          <th>Domingo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(semana, index) in semanas" :key="index">
-          <td
-            v-for="(dia, diaIndex) in semana"
-            :key="diaIndex"
-            @click="abrirVentana(dia)"
-            class="dia"
-          >
-            {{ dia ? dia.getDate() : "" }}
-            <div v-if="dia" class="puntos">
-              <span
-                v-for="(transaccion, tIndex) in obtenerTransacciones(dia)"
-                :key="tIndex"
-                class="punto"
-                :class="{
-                  ingreso: transaccion.tipo === 'ingreso',
-                  gasto: transaccion.tipo === 'gasto',
-                }"
-              ></span>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div v-if="mostrarModal" class="modal">
-      <div class="modal-contenido">
-        <h3>Añadir Gasto o Ingreso</h3>
-        <p>
-          Día: {{ diaSeleccionado ? diaSeleccionado.getDate() : "" }}
-          {{ nombreMes }} {{ fechaActual.getFullYear() }}
-        </p>
-        <input v-model="cantidad" type="number" placeholder="Cantidad" />
-        <select v-model="categoria">
-          <option disabled value="">Selecciona una categoría</option>
-          <optgroup label="Gastos">
-            <option
-              v-for="categoria in categoriasGastos"
-              :key="categoria"
-              :value="categoria"
-            >
-              {{ categoria }}
-            </option>
-          </optgroup>
-          <optgroup label="Ingresos">
-            <option
-              v-for="categoria in categoriasIngresos"
-              :key="categoria"
-              :value="categoria"
-            >
-              {{ categoria }}
-            </option>
-          </optgroup>
-        </select>
-        <div class="botones">
-          <button @click="agregarTransaccion('gasto')">Añadir Gasto</button>
-          <button @click="agregarTransaccion('ingreso')">Añadir Ingreso</button>
-        </div>
-        <button @click="cerrarVentana">Cancelar</button>
-      </div>
+    <div>
+      <label for="monto">Monto (€):</label>
+      <input
+        type="number"
+        id="monto"
+        v-model="monto"
+        placeholder="Ingrese el monto del gasto"
+      />
     </div>
+    <button @click="registrarGasto">Registrar Gasto</button>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Calendario",
+  name: "RegistroGastos",
   data() {
     return {
-      fechaActual: new Date(),
-      mostrarModal: false,
-      diaSeleccionado: null,
-      cantidad: null,
-      categoria: "",
-      transacciones: [],
-      categoriasGastos: [
-        "Coche",
-        "Ropa",
-        "Entretenimiento",
-        "Comida",
-        "Gasolina",
-        "Regalos",
-        "Salud",
-        "Vacaciones",
-        "Deportes",
-      ],
-      categoriasIngresos: ["Trabajo", "Árbitros", "Camisetas"],
+      tipoGasto: "",
+      monto: null,
+      tiposGastos: [],
     };
   },
-  computed: {
-    nombreMes() {
-      const meses = [
-        "Enero",
-        "Febrero",
-        "Marzo",
-        "Abril",
-        "Mayo",
-        "Junio",
-        "Julio",
-        "Agosto",
-        "Septiembre",
-        "Octubre",
-        "Noviembre",
-        "Diciembre",
-      ];
-      return meses[this.fechaActual.getMonth()];
-    },
-    semanas() {
-      const primerDiaMes = new Date(
-        this.fechaActual.getFullYear(),
-        this.fechaActual.getMonth(),
-        1
-      );
-      const primerDiaSemana = primerDiaMes.getDay() || 7;
-      const diasEnMes = new Date(
-        this.fechaActual.getFullYear(),
-        this.fechaActual.getMonth() + 1,
-        0 /*Ultimo dia del mes*/
-      ).getDate();
-      const semanas = [[]]; /*matriz (array) de matrices (arrays)*/
-      let diaActual = 1;
-
-      for (let i = 1; i < primerDiaSemana; i++) {
-        semanas[0].push(null);
+  methods: {
+    async registrarGasto() {
+      if (this.tipoGasto && this.monto > 0) {
+        const gasto = { tipo: this.tipoGasto, monto: this.monto };
+        console.log("Enviar al backend:", gasto);
+        this.tipoGasto = "";
+        this.monto = null;
+      } else {
+        alert("Por favor, selecciona un tipo de gasto y un monto válido.");
       }
-      while (diaActual <= diasEnMes) {
-        const semanaActual = semanas[semanas.length - 1];
-        if (semanaActual.length < 7) {
-          semanaActual.push(
-            new Date(
-              this.fechaActual.getFullYear(),
-              this.fechaActual.getMonth(),
-              diaActual
-            )
-          );
-          diaActual++;5847
-          79
-        } else {
-          semanas.push([]);
-        }
-      }
-
-      while (semanas[semanas.length - 1].length < 7) {
-        semanas[semanas.length - 1].push(null);
-      }
-
-      return semanas;
     },
   },
-  methods: {
-    mesAnterior() {
-      this.fechaActual.setMonth(this.fechaActual.getMonth() - 1);
-      this.fechaActual = new Date(this.fechaActual);
-    },
-    mesSiguiente() {
-      this.fechaActual.setMonth(this.fechaActual.getMonth() + 1);
-      this.fechaActual = new Date(this.fechaActual); //actualización de la fecha
-    },
-    abrirVentana(dia) {
-      if (dia) {
-        this.diaSeleccionado = dia;
-        this.mostrarModal = true;
-      }
-    },
-    cerrarVentana() {
-      this.mostrarModal = false;
-      this.diaSeleccionado = null;
-      this.cantidad = null;
-      this.categoria = "";
-    },
-    agregarTransaccion(tipo) {
-      if (this.diaSeleccionado && this.cantidad && this.categoria) {
-        this.transacciones.push({
-          fecha: new Date(this.diaSeleccionado),
-          tipo,
-          cantidad: this.cantidad,
-          categoria: this.categoria,
-        });
-        this.cerrarVentana();
-        this.guardarTransaccion({
-          fecha: new Date(this.diaSeleccionado),
-          tipo,
-          cantidad: this.cantidad,
-          categoria: this.categoria,
-        });
-      }
-    },
-    obtenerTransacciones(dia) {
-      return this.transacciones.filter(
-        (transaccion) => transaccion.fecha.toDateString() === dia.toDateString()
-      );
-    },
-    guardarTransaccion(transaccion) {
-      //  lógica para guardar la transacción en la base de datos
-      console.log("Transacción guardada:", transaccion);
-    },
+  async mounted() {
+    this.tiposGastos = ["Ocio", "Salud", "Comida"]; // Simulación de datos del backend
   },
 };
 </script>

@@ -8,3 +8,4 @@ import com.proyecto.model.Transaccion;
 @Repository
 public interface TransaccionRepository extends JpaRepository<Transaccion, Long> {
 }
+

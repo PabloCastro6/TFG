@@ -16,16 +16,16 @@ import com.proyecto.service.CategoriaService;
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaController {
-	@Autowired
-	private CategoriaService service;
+    @Autowired
+    private CategoriaService service;
 
-	@GetMapping
-	public List<Categoria> obtenerTodas() {
-		return service.obtenerTodas();
-	}
+    @GetMapping
+    public List<Categoria> obtenerTodas() {
+        return service.obtenerTodas();
+    }
 
-	@PostMapping
-	public ResponseEntity<Categoria> guardar(@RequestBody Categoria categoria) {
-		return ResponseEntity.ok(service.guardar(categoria));
-	}
+    @PostMapping
+    public ResponseEntity<Categoria> guardar(@RequestBody Categoria categoria) {
+        return ResponseEntity.ok(service.guardar(categoria));
+    }
 }

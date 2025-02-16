@@ -24,32 +24,58 @@ export default {
 </script>
 
 <style>
+/* Menú de navegación centrado */
 .menu-principal {
-  background-color: #2c3e50; /* Color de fondo */
-  padding: 15px 0; /* Espaciado interno */
+  background-color: #2c3e50;
+  padding: 15px 0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center; /* Centra el contenido horizontalmente */
+}
+
+.menu-principal ul {
+  display: flex;
+  justify-content: center; /* Centra los elementos */
+  align-items: center;
   list-style-type: none;
-  margin: 0;
   padding: 0;
-  text-align: center;
+  margin: 0;
+  width: 100%;
+  max-width: 1200px; /* Ajusta el ancho máximo */
 }
 
 .menu-principal li {
-  display: inline-block;
-  margin-right: 20px;
-}
-
-.menu-principal li:last-child {
-  margin-right: 0;
+  margin: 0 15px;
 }
 
 .menu-principal a {
   text-decoration: none;
-  color: #fff; /* Color del texto */
+  color: #ffffff;
   font-weight: bold;
-  transition: color 0.3s; /* Transición de color al pasar el ratón */
+  font-size: 16px;
+  transition: color 0.3s, transform 0.3s;
+  padding: 10px 15px;
+  border-radius: 5px;
 }
 
 .menu-principal a:hover {
-  color: #ff9800; /* Color del texto al pasar el ratón */
+  color: #ff9800;
+  transform: scale(1.1);
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+  .menu-principal ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .menu-principal li {
+    margin: 8px 0;
+  }
 }
 </style>

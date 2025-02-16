@@ -11,11 +11,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "transacciones")
 public class Transaccion {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String descripcion;
-	private String categoria;
-	private LocalDate fecha;
-	private String tipo; // "ingreso" o "gasto"
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String descripcion;
+    private String categoria;
+    private LocalDate fecha;
+    private String tipo; // "ingreso" o "gasto"
 }

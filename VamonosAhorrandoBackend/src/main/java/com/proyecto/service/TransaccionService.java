@@ -10,14 +10,14 @@ import com.proyecto.repository.TransaccionRepository;
 
 @Service
 public class TransaccionService {
-	@Autowired
-	private TransaccionRepository repository;
+    @Autowired
+    private TransaccionRepository repository;
 
-	public List<Transaccion> obtenerTodas() {
-		return repository.findAll();
-	}
+    public List<Transaccion> obtenerTodas() {
+        return repository.findAll();
+    }
 
-	public Transaccion guardar(Transaccion transaccion) {
-		return repository.save(transaccion);
-	}
+    public Transaccion guardar(Transaccion transaccion) {
+        return repository.save(transaccion);
+    }
 }

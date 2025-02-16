@@ -16,16 +16,16 @@ import com.proyecto.service.TransaccionService;
 @RestController
 @RequestMapping("/api/transacciones")
 public class TransaccionController {
-	@Autowired
-	private TransaccionService service;
+    @Autowired
+    private TransaccionService service;
 
-	@GetMapping
-	public List<Transaccion> obtenerTodas() {
-		return service.obtenerTodas();
-	}
+    @GetMapping
+    public List<Transaccion> obtenerTodas() {
+        return service.obtenerTodas();
+    }
 
-	@PostMapping
-	public ResponseEntity<Transaccion> guardar(@RequestBody Transaccion transaccion) {
-		return ResponseEntity.ok(service.guardar(transaccion));
-	}
+    @PostMapping
+    public ResponseEntity<Transaccion> guardar(@RequestBody Transaccion transaccion) {
+        return ResponseEntity.ok(service.guardar(transaccion));
+    }
 }

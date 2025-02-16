@@ -10,14 +10,14 @@ import com.proyecto.repository.CategoriaRepository;
 
 @Service
 public class CategoriaService {
-	@Autowired
-	private CategoriaRepository repository;
+    @Autowired
+    private CategoriaRepository repository;
 
-	public List<Categoria> obtenerTodas() {
-		return repository.findAll();
-	}
+    public List<Categoria> obtenerTodas() {
+        return repository.findAll();
+    }
 
-	public Categoria guardar(Categoria categoria) {
-		return repository.save(categoria);
-	}
+    public Categoria guardar(Categoria categoria) {
+        return repository.save(categoria);
+    }
 }

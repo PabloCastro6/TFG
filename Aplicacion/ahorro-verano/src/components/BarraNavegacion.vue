@@ -7,7 +7,9 @@
         >Configuración de Ahorro</router-link
       >
     </li>
-    <li><router-link to="/TiposGastos">Tipos de Gastos</router-link></li>
+    <li>
+      <router-link to="/TiposGastos">Tipos de Gastos/Ingresos</router-link>
+    </li>
     <li><router-link to="/Estadisticas">Estadísticas</router-link></li>
     <li><router-link to="/registro-datos">Registro de Datos</router-link></li>
     <li>

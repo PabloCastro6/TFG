@@ -11,11 +11,9 @@
       <router-link to="/TiposGastos">Tipos de Gastos/Ingresos</router-link>
     </li>
     <li><router-link to="/Estadisticas">Estadísticas</router-link></li>
-    <li><router-link to="/registro-datos">Registro de Datos</router-link></li>
-    <li>
-      <router-link to="/RegistroIngresos">Registro de Ingresos</router-link>
-    </li>
-    <li><router-link to="/usuarios">Usuarios</router-link></li>
+    <li><router-link to="/Recordatorios">Recordatorios</router-link></li>
+
+    <li><router-link to="/RegistroUsuarios">Usuarios</router-link></li>
   </ul>
 </template>
 

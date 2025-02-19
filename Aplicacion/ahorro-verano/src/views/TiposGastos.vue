@@ -1,5 +1,6 @@
 <template>
   <div class="tipos-transacciones">
+    <!-- SECCIÓN DE GASTOS -->
     <div class="categorias">
       <h2>💸 Tipos de Gastos</h2>
       <div class="grid">
@@ -7,6 +8,7 @@
           class="card gasto"
           v-for="(tipo, index) in categoriasGastos"
           :key="index"
+          @click="abrirModal(tipo, 'gasto')"
         >
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
@@ -14,6 +16,7 @@
       </div>
     </div>
 
+    <!-- SECCIÓN DE INGRESOS -->
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
       <div class="grid">
@@ -21,11 +24,48 @@
           class="card ingreso"
           v-for="(tipo, index) in categoriasIngresos"
           :key="index"
+          @click="abrirModal(tipo, 'ingreso')"
         >
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
       </div>
+    </div>
+
+    <!-- MODAL PARA INGRESAR DETALLES -->
+    <div v-if="mostrarModal" class="modal">
+      <div class="modal-contenido">
+        <h3>
+          Registrar {{ tipoSeleccionado.nombre }} como
+          <span :class="tipoSeleccionado.tipo">{{
+            tipoSeleccionado.tipo
+          }}</span>
+        </h3>
+        <input type="date" v-model="fechaSeleccionada" />
+        <input
+          type="number"
+          v-model="cantidadSeleccionada"
+          placeholder="Cantidad (€)"
+          min="0"
+        />
+        <div class="botones">
+          <button @click="guardarRegistro">Confirmar</button>
+          <button @click="cerrarModal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTA DE TRANSACCIONES REGISTRADAS -->
+    <div class="transacciones">
+      <h2>📅 Registros</h2>
+      <ul>
+        <li v-for="(transaccion, index) in transacciones" :key="index">
+          <span class="fecha">{{ transaccion.fecha }}</span> -
+          <span :class="transaccion.tipo"
+            >{{ transaccion.nombre }}: {{ transaccion.cantidad }}€</span
+          >
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -48,24 +88,66 @@ export default {
       ],
       categoriasIngresos: [
         { nombre: "Trabajo", icono: "fas fa-briefcase" },
-        { nombre: "Árbitros", icono: "fas fa-whistle" },
-        { nombre: "Camisetas", icono: "fas fa-tshirt" },
+        { nombre: "Alquileres Casas", icono: "fas fa-home" },
+        { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
       ],
+      mostrarModal: false,
+      tipoSeleccionado: {},
+      fechaSeleccionada: "",
+      cantidadSeleccionada: "",
+      transacciones: [], // Guardará los registros
     };
+  },
+  methods: {
+    abrirModal(tipo, categoria) {
+      this.tipoSeleccionado = { ...tipo, tipo: categoria };
+      this.mostrarModal = true;
+      this.fechaSeleccionada = "";
+      this.cantidadSeleccionada = "";
+    },
+    cerrarModal() {
+      this.mostrarModal = false;
+      this.fechaSeleccionada = "";
+      this.cantidadSeleccionada = "";
+    },
+    guardarRegistro() {
+      if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
+        alert("⚠️ Por favor, selecciona una fecha y una cantidad.");
+        return;
+      }
+
+      // Guardamos el registro en el array de transacciones
+      this.transacciones.push({
+        nombre: this.tipoSeleccionado.nombre,
+        tipo: this.tipoSeleccionado.tipo,
+        fecha: this.fechaSeleccionada,
+        cantidad: parseFloat(this.cantidadSeleccionada).toFixed(2),
+      });
+
+      // Enviar la transacción a la configuración de ahorro
+      this.$emit("nueva-transaccion", this.transacciones);
+
+      alert(
+        `✅ ${this.tipoSeleccionado.nombre} registrado como ${this.tipoSeleccionado.tipo} el ${this.fechaSeleccionada} con ${this.cantidadSeleccionada}€`
+      );
+      this.cerrarModal();
+    },
   },
 };
 </script>
 
 <style scoped>
+/* Estilos generales */
 .tipos-transacciones {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
   padding: 20px;
 }
 
 .categorias {
-  flex: 1;
+  width: 100%;
   text-align: center;
 }
 
@@ -74,12 +156,14 @@ h2 {
   margin-bottom: 15px;
 }
 
+/* GRID DE CATEGORÍAS */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 15px;
 }
 
+/* TARJETAS */
 .card {
   display: flex;
   flex-direction: column;
@@ -112,5 +196,57 @@ h2 {
 .ingreso {
   background: #e8f5e9;
   color: #388e3c;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.transacciones {
+  width: 100%;
+  text-align: center;
+}
+
+.fecha {
+  font-weight: bold;
+}
+
+.gasto {
+  color: red;
+}
+
+.ingreso {
+  color: green;
 }
 </style>

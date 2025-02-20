@@ -25,7 +25,7 @@
     <input
       type="number"
       v-model="cantidadSeleccionada"
-      placeholder="Introduce el monto"
+      placeholder="Introduce la cantidad"
     />
 
     <button class="guardar-btn" @click="guardarRegistro">Guardar</button>

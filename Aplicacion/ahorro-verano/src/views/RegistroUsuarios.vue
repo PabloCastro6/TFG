@@ -34,6 +34,7 @@ export default {
   methods: {
     registrarUsuario() {
       console.log("Usuario registrado:", this.usuario);
+      
       alert("Usuario registrado ");
     },
   },

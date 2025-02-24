@@ -35,6 +35,7 @@ export default {
   z-index: 1000;
   display: flex;
   justify-content: center; /* Centra el contenido horizontalmente */
+  list-style: none;
 }
 
 .menu-principal ul {

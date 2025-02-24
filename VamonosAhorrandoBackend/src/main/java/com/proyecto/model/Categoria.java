@@ -2,30 +2,31 @@ package com.proyecto.model;
 
 import jakarta.persistence.*;
 
-
-
 @Entity
 @Table(name = "categorias")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCategoria;
+    
     private String nombre;
     private String tipo; // "ingreso" o "gasto"
     
     @ManyToOne
-    @JoinColumn(name="usuarioID")
-    private Usuario usario;
+    @JoinColumn(name="usuarioId")
+    private Usuario usuario;
+    
+    
 
 	public Categoria() {
 		super();
 	}
 
-	public Categoria(String nombre, String tipo, Usuario usario) {
+	public Categoria(String nombre, String tipo, Usuario usuario) {
 		super();
 		this.nombre = nombre;
 		this.tipo = tipo;
-		this.usario = usario;
+		this.usuario = usuario;
 	}
 
 	public Long getIdCategoria() {
@@ -52,12 +53,12 @@ public class Categoria {
 		this.tipo = tipo;
 	}
 
-	public Usuario getUsario() {
-		return usario;
+	public Usuario getUsuario() {
+		return usuario;
 	}
 
-	public void setUsario(Usuario usario) {
-		this.usario = usario;
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
     
     

@@ -8,6 +8,8 @@ CREATE TABLE `categorias` (
   PRIMARY KEY (`idCategoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+SELECT * FROM usuarios;
+
 CREATE TABLE `transacciones` (
   `idTransaccion` int NOT NULL,
   `fecha` date DEFAULT NULL,

@@ -1,0 +1,4 @@
+controller    (Controladores REST)
+model         (Entidades JPA)
+repository    (Repositorios JPA)
+service       (Lógica de negocio)

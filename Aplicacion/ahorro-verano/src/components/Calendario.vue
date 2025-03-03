@@ -21,18 +21,10 @@
           <td v-for="(dia, i) in semana" :key="i" class="dia">
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
             <div class="puntos">
-              <span
-                v-if="hayTransaccion(dia, 'ingreso')"
-                class="punto ingreso"
-                @mouseover="mostrarInformacion(dia, 'ingreso', $event)"
-                @mouseleave="ocultarInformacion"
-              ></span>
-              <span
-                v-if="hayTransaccion(dia, 'gasto')"
-                class="punto gasto"
-                @mouseover="mostrarInformacion(dia, 'gasto', $event)"
-                @mouseleave="ocultarInformacion"
-              ></span>
+              <span v-if="hayTransaccion(dia, 'ingreso')" class="punto ingreso"
+                @mouseover="mostrarInformacion(dia, 'ingreso', $event)" @mouseleave="ocultarInformacion"></span>
+              <span v-if="hayTransaccion(dia, 'gasto')" class="punto gasto"
+                @mouseover="mostrarInformacion(dia, 'gasto', $event)" @mouseleave="ocultarInformacion"></span>
             </div>
           </td>
         </tr>
@@ -40,11 +32,7 @@
     </table>
 
     <!-- ℹ️ Tooltip dinámico -->
-    <div
-      v-if="mostrarTooltipFlag"
-      class="tooltip"
-      :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }"
-    >
+    <div v-if="mostrarTooltipFlag" class="tooltip" :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }">
       <strong>{{ tooltipTipo === "ingreso" ? "Ingresos" : "Gastos" }}:</strong>
       <ul>
         <li v-for="(valor, idx) in tooltipTexto" :key="idx">{{ valor }}€</li>
@@ -108,10 +96,17 @@ export default {
     },
     hayTransaccion(dia, tipo) {
       return this.transacciones.some(
-        (transaccion) =>
-          new Date(transaccion.fecha).getDate() === dia &&
-          transaccion.tipo === tipo
+        (transaccion) => {
+          const fecha = new Date(transaccion.fecha);
+          return (
+            fecha.getDate() === dia &&
+            fecha.getMonth() === this.mes && // Asegura que el mes coincida
+            fecha.getFullYear() === this.anio && // Asegura que el año coincida
+            transaccion.tipo === tipo
+          );
+        }
       );
+
     },
     mostrarInformacion(dia, tipo, event) {
       const transaccionesDelDia = this.transacciones.filter(

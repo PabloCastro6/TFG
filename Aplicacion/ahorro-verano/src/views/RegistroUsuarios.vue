@@ -1,18 +1,18 @@
 <template>
   <div class="registro-container">
-    <h2 class="titulo">Registrar Usuario</h2>
+    <h2 class="titulo">👤 Registrar Usuario</h2>
     <form class="formulario" @submit.prevent="registrarUsuario">
       <div class="campo">
         <label>Nombre Completo:</label>
-        <input v-model="usuario.nombreCompleto" type="text" required />
+        <input v-model="usuario.nombreCompleto" placeholder="Pepe Perez Rodriguez" type="text" required />
       </div>
       <div class="campo">
         <label>Correo:</label>
-        <input v-model="usuario.correo" type="email" required />
+        <input v-model="usuario.correo" placeholder="example@gmai.com" type="email" required />
       </div>
       <div class="campo">
         <label>Contraseña:</label>
-        <input v-model="usuario.password" type="password" required />
+        <input v-model="usuario.password" placeholder="*********" type="password" required />
       </div>
       <button class="guardar-btn" type="submit">Registrar</button>
     </form>

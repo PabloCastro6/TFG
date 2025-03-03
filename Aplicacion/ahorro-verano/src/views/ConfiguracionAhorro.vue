@@ -2,10 +2,10 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- 📅 Calendario a la izquierda -->
-      <Calendario :transacciones="transacciones" />
+      <Calendario :transacciones="transacciones" @fecha-seleccionada="actualizarFecha"/>
 
       <!-- 📌 Formulario a la derecha -->
-      <TiposTransacciones @nueva-transaccion="agregarTransaccion" />
+      <TiposTransacciones :fechaPreseleccionada="fechaSeleccionada" @nueva-transaccion="agregarTransaccion" />
     </div>
   </div>
 </template>
@@ -23,11 +23,15 @@ export default {
   data() {
     return {
       transacciones: [], // Lista de transacciones
+      fechaSeleccionada: "",
     };
   },
   methods: {
-    agregarTransaccion(nuevaTransaccion) {
-      this.transacciones.push(nuevaTransaccion); // Agregamos la nueva transacción
+    agregarTransaccion(transaccion) {
+      this.transacciones.push(transaccion);
+    },
+    actualizarFecha(fecha) {
+      this.fechaSeleccionada = fecha;
     },
   },
 };

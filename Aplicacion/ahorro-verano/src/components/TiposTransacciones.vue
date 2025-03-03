@@ -7,26 +7,16 @@
 
     <label for="tipo">🔄 Tipo:</label>
     <div class="tipo-opciones">
-      <button
-        :class="{ activo: tipoSeleccionado === 'ingreso' }"
-        @click="tipoSeleccionado = 'ingreso'"
-      >
+      <button :class="{ activo: tipoSeleccionado === 'ingreso' }" @click="tipoSeleccionado = 'ingreso'">
         💰 Ingreso
       </button>
-      <button
-        :class="{ activo: tipoSeleccionado === 'gasto' }"
-        @click="tipoSeleccionado = 'gasto'"
-      >
+      <button :class="{ activo: tipoSeleccionado === 'gasto' }" @click="tipoSeleccionado = 'gasto'">
         💸 Gasto
       </button>
     </div>
 
     <label for="cantidad">💵 Cantidad (€):</label>
-    <input
-      type="number"
-      v-model="cantidadSeleccionada"
-      placeholder="Introduce la cantidad"
-    />
+    <input type="number" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
 
     <button class="guardar-btn" @click="guardarRegistro">Guardar</button>
   </div>
@@ -35,6 +25,14 @@
 <script>
 export default {
   name: "TiposTransacciones",
+  props: {
+    fechaPreseleccionada: String,
+  },
+  watch: {
+    fechaPreseleccionada(nuevaFecha) {
+      this.fechaSeleccionada = nuevaFecha;
+    },
+  },
   data() {
     return {
       fechaSeleccionada: "",

@@ -18,7 +18,7 @@
       </thead>
       <tbody>
         <tr v-for="(semana, index) in semanas" :key="index">
-          <td v-for="(dia, i) in semana" :key="i" class="dia">
+          <td v-for="(dia, i) in semana" :key="i" class="dia" @click="seleccionarFecha(dia)">
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
             <div class="puntos">
               <span v-if="hayTransaccion(dia, 'ingreso')" class="punto ingreso"
@@ -27,6 +27,7 @@
                 @mouseover="mostrarInformacion(dia, 'gasto', $event)" @mouseleave="ocultarInformacion"></span>
             </div>
           </td>
+
         </tr>
       </tbody>
     </table>
@@ -128,6 +129,19 @@ export default {
     ocultarInformacion() {
       this.mostrarTooltipFlag = false;
     },
+    seleccionarFecha(dia) {
+    if (!dia) return;
+    
+    // Crea la fecha sin cambiar la zona horaria
+    const fechaSeleccionada = new Date(this.anio, this.mes, dia);
+    
+    // Convertir a formato sin problemas de zona horaria
+    const formatoFecha = fechaSeleccionada.getFullYear() + '-' +
+      String(fechaSeleccionada.getMonth() + 1).padStart(2, '0') + '-' +
+      String(fechaSeleccionada.getDate()).padStart(2, '0');
+
+    this.$emit("fecha-seleccionada", formatoFecha);
+  },
   },
 };
 </script>

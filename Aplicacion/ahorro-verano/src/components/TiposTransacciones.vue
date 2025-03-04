@@ -3,7 +3,7 @@
     <h2>Registrar Transacción</h2>
 
     <label for="fecha">📅 Fecha:</label>
-    <input type="date" v-model="fechaSeleccionada" />
+    <input type="date" class="label" v-model="fechaSeleccionada" />
 
     <label for="tipo">🔄 Tipo:</label>
     <div class="tipo-opciones">
@@ -16,7 +16,7 @@
     </div>
 
     <label for="cantidad">💵 Cantidad (€):</label>
-    <input type="number" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
+    <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
 
     <button class="guardar-btn" @click="guardarRegistro">Guardar</button>
   </div>
@@ -63,18 +63,30 @@ export default {
 <style scoped>
 /* 📌 Estilos generales */
 .registro-transacciones {
+  flex: 3; /* 30% del espacio disponible */
+  max-width: 30%;
   text-align: center;
   background: white;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
   margin: auto;
   transition: transform 0.3s ease-in-out;
+  margin-left: 5%;
 }
 
 .registro-transacciones:hover {
   transform: translateY(-3px);
+}
+
+.label {
+  width: 90%;
+  padding: 12px;
+  margin-top: 5px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.3sease-in-out, box-shadow 0.3sease-in-out;
 }
 
 /* 📌 Título */

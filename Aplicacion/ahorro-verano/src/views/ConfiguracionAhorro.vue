@@ -41,11 +41,12 @@ export default {
 .contenedor {
   display: flex;
   justify-content: space-between;
-  gap: 30px;
+  gap: 20px;
   max-width: 1200px;
   margin: auto;
   padding: 20px;
 }
+
 
 .configuracion-ahorro {
   text-align: center;

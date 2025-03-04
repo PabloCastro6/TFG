@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.model.Transaccion;
-import com.proyecto.repository.TransaccionRepository;
 import com.proyecto.service.TransaccionService;
 
 @RestController
@@ -23,6 +22,7 @@ public class TransaccionController {
     @Autowired
     private TransaccionService transaccionService;
 
+   
     @PostMapping
     public ResponseEntity<Transaccion> crearTransaccion(@RequestBody Transaccion transaccion) {
         Transaccion nuevaTransaccion = transaccionService.guardar(transaccion);

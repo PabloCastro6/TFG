@@ -23,8 +23,8 @@ public class TransaccionService {
     }
 
     public Transaccion obtenerPorId(Integer id) {
-		return repository.findById(id).orElse(null);
-	}
+        return repository.findById(id).orElse(null);
+    }
 
 	public Transaccion actualizar(Integer id, Transaccion transaccionActualizada) {
 		 Optional<Transaccion> transaccionExistente = repository.findById(id);

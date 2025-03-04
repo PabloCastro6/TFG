@@ -8,6 +8,7 @@ CREATE TABLE `categorias` (
   PRIMARY KEY (`idCategoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
 SELECT * FROM usuarios;
 
 CREATE TABLE `transacciones` (
@@ -29,3 +30,12 @@ CREATE TABLE `usuarios` (
   `rol` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idUsuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+ALTER TABLE usuarios MODIFY idUsuario INT AUTO_INCREMENT;
+
+INSERT INTO usuarios (nombreCompleto, password, correo, rol) 
+VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');
+
+
+INSERT INTO usuarios (nombreCompleto, password, correo, rol) 
+VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');

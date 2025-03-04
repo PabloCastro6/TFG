@@ -1,5 +1,7 @@
 package com.proyecto.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -7,14 +9,21 @@ import jakarta.persistence.*;
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCategoria;
+    @Column (name = "idCategoria")
+    private Integer idCategoria;
     
+    @Column (name = "nombre")
     private String nombre;
+    
+    @Column (name = "tipo")
     private String tipo; // "ingreso" o "gasto"
     
     @ManyToOne
-    @JoinColumn(name="usuarioId")
+    @JoinColumn(name="usuarioId", referencedColumnName= "idUsuario")
     private Usuario usuario;
+    
+    @OneToMany(mappedBy = "categoria")
+    private List<Transaccion> transacciones;
     
     
 
@@ -29,11 +38,11 @@ public class Categoria {
 		this.usuario = usuario;
 	}
 
-	public Long getIdCategoria() {
+	public Integer getIdCategoria() {
 		return idCategoria;
 	}
 
-	public void setIdCategoria(Long idCategoria) {
+	public void setIdCategoria(Integer idCategoria) {
 		this.idCategoria = idCategoria;
 	}
 

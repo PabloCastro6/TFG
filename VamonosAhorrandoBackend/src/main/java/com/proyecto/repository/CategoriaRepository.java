@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.proyecto.model.Categoria;
 
 @Repository
-public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
-	
-	List<Categoria> findByCategoriaIdCategoria(Long categoriaId);
+public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
+	List<Categoria> findByCategoriaIdCategoria(Integer usuarioId);
 
 }

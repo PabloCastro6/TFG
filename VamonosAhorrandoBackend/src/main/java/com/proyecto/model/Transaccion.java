@@ -2,6 +2,7 @@ package com.proyecto.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,11 +16,15 @@ import jakarta.persistence.Table;
 public class Transaccion {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idTransaccion;
+	@Column(name="idTransaccion")
+	private Integer idTransaccion;
 
 	// id, fecha, categoriaId, usuarioid, cantidad
 
+	@Column(name="fecha")
 	private LocalDate fecha;
+	
+	@Column(name="cantidad")
 	private double cantidad;
 
 	@ManyToOne
@@ -42,11 +47,11 @@ public class Transaccion {
 		this.usuario = usuario;
 	}
 
-	public Long getIdTransaccion() {
+	public Integer getIdTransaccion() {
 		return idTransaccion;
 	}
 
-	public void setIdTransaccion(Long idTransaccion) {
+	public void setIdTransaccion(Integer idTransaccion) {
 		this.idTransaccion = idTransaccion;
 	}
 

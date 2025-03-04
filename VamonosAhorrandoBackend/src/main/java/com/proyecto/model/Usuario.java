@@ -1,9 +1,13 @@
 package com.proyecto.model;
 
+import java.util.List;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -12,12 +16,26 @@ public class Usuario {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idUsuario; 
+    @Column(name="idUsuario")
+	private Integer idUsuario; 
 	
+    @Column(name="nombreCompleto")
 	private String nombreCompleto;
+    
+    @Column(name="password")
 	private String password;
+    
+    @Column(name="correo")
 	private String correo;
+    
+    @Column(name="rol")
 	private String rol;
+    
+    @OneToMany(mappedBy = "usuario")
+    private List <Transaccion> transacciones;
+    
+    @OneToMany(mappedBy = "usuario")
+    private List <Categoria> categorias;
 	
 	
 	public Usuario() {
@@ -34,12 +52,12 @@ public class Usuario {
 	}
 
 
-	public Long getIdUsuario() {
+	public Integer getIdUsuario() {
 		return idUsuario;
 	}
 
 
-	public void setIdUsuario(Long idUsuario) {
+	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 

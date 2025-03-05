@@ -7,7 +7,7 @@
     <!-- Botón para abrir la calculadora -->
     <button
       class="boton-calculadora"
-      @click="mostrarCalculadora = !mostrarCalculadora"
+      @click="mostrarCalculadora = true"
     >
       📊 ¿Cuánto podrías ahorrar?
     </button>
@@ -15,16 +15,16 @@
     <!-- Calculadora de ahorro -->
     <transition name="fade">
       <div v-if="mostrarCalculadora" class="calculadora">
-        <h3>Calculadora de Ahorro</h3>
+        <h3 class="gasto">Calculadora de Ahorro</h3>
 
-        <label for="gasto">Gasto Diario (€):</label>
+        <label for="gasto" class="gasto">Gasto Diario (€):</label>
         <input
           type="number"
           v-model.number="gastoDiario"
           placeholder="Introduce tu gasto diario"
         />
 
-        <label for="reduccion">Reducción de Gasto (%)</label>
+        <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
         <input
           type="range"
           v-model.number="porcentajeReduccion"
@@ -124,7 +124,7 @@ body {
 
 /* ======= CALCULADORA ======= */
 .calculadora {
-  background: white;
+  background: #22a9b77a;
   padding: 20px;
   margin-top: 20px;
   border-radius: 12px;
@@ -133,7 +133,7 @@ body {
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.6s ease-in-out;
 }
 
 /* Títulos dentro de la calculadora */
@@ -161,16 +161,16 @@ body {
 }
 
 .valor-reduccion {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
-  color: #2980b9;
+  color: #3d0350;
 }
 
 /* Resultado */
-.resultado {
+.resultado, .reduccion, .gasto {
   font-size: 18px;
   font-weight: bold;
-  color: #27ae60;
+  color: #000e3def;
   margin-top: 10px;
 }
 
@@ -178,14 +178,16 @@ body {
 .boton-cerrar {
   background-color: #e74c3c;
   color: white;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: bold;
-  padding: 10px;
+  padding: 11px;
+  padding-left: 35px;
+  padding-right: 35px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 15px;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.6s ease-in-out;
 }
 
 .boton-cerrar:hover {

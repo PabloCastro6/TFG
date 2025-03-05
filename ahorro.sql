@@ -38,4 +38,4 @@ VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');
 
 
 INSERT INTO usuarios (nombreCompleto, password, correo, rol) 
-VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');
+VALUES ('Manolo', '1234', 'manolo72@example.com', 'usuario');

@@ -36,6 +36,3 @@ ALTER TABLE usuarios MODIFY idUsuario INT AUTO_INCREMENT;
 INSERT INTO usuarios (nombreCompleto, password, correo, rol) 
 VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');
 
-
-INSERT INTO usuarios (nombreCompleto, password, correo, rol) 
-VALUES ('Manolo', '1234', 'manolo72@example.com', 'usuario');

@@ -21,15 +21,15 @@ public class TransaccionController {
         this.transaccionService = transaccionService;
     }
 
-    @GetMapping
+    @GetMapping("/todasTransacciones")
     public List<Transaccion> listarTransacciones() {
         logger.info("📌 Se llamó al endpoint GET /transacciones");
-        List<Transaccion> transacciones = transaccionService.obtenerTodas();
-        logger.info("🔍 Transacciones encontradas: {}", transacciones.size());
-        return transacciones;
+        //List<Transaccion> transacciones = transaccionService.obtenerTodas();
+        //logger.info("🔍 Transacciones encontradas: {}", transacciones.size());
+        return transaccionService.obtenerTodas();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id")
     public ResponseEntity<Transaccion> obtenerTransaccionPorId(@PathVariable Integer id) {
         logger.info("📌 Se llamó al endpoint GET /transacciones/{}", id);
         Transaccion transaccion = transaccionService.obtenerPorId(id);
@@ -43,14 +43,15 @@ public class TransaccionController {
         return ResponseEntity.ok(nuevaTransaccion);
     }
 
-    @PutMapping("/{id}")
+
+    @PutMapping("/id")
     public ResponseEntity<Transaccion> actualizarTransaccion(@PathVariable Integer id, @RequestBody Transaccion transaccionActualizada) {
         logger.info("📌 Se llamó al endpoint PUT /transacciones/{} con datos: {}", id, transaccionActualizada);
         Transaccion transaccion = transaccionService.actualizar(id, transaccionActualizada);
         return (transaccion != null) ? ResponseEntity.ok(transaccion) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id")
     public ResponseEntity<Void> eliminarTransaccion(@PathVariable Integer id) {
         logger.info("📌 Se llamó al endpoint DELETE /transacciones/{}", id);
         transaccionService.eliminar(id);

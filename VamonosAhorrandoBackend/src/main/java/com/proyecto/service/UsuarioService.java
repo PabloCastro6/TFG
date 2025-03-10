@@ -3,7 +3,8 @@ package com.proyecto.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.proyecto.model.Usuario;
+
+import com.proyecto.entity.Usuario;
 import com.proyecto.repository.UsuarioRepository;
 
 public class UsuarioService {

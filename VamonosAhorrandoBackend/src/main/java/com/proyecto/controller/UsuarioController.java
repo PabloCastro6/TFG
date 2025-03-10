@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.proyecto.model.Usuario;
+import com.proyecto.entity.Usuario;
 import com.proyecto.repository.UsuarioRepository;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.proyecto.model;
+package com.proyecto.entity;
 
 import java.time.LocalDate;
 import jakarta.persistence.*;
@@ -34,14 +34,46 @@ public class Transaccion {
         this.usuario = usuario;
     }
 
-    public Integer getIdTransaccion() { return idTransaccion; }
-    public void setIdTransaccion(Integer idTransaccion) { this.idTransaccion = idTransaccion; }
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
-    public double getCantidad() { return cantidad; }
-    public void setCantidad(double cantidad) { this.cantidad = cantidad; }
-    public Categoria getCategoria() { return categoria; }
-    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+	public Integer getIdTransaccion() {
+		return idTransaccion;
+	}
+
+	public void setIdTransaccion(Integer idTransaccion) {
+		this.idTransaccion = idTransaccion;
+	}
+
+	public LocalDate getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(LocalDate fecha) {
+		this.fecha = fecha;
+	}
+
+	public double getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(double cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+    
+    
 }

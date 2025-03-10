@@ -15,7 +15,7 @@ import com.proyecto.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "http://localhost:5173") // Permitir peticiones desde Vue
+@CrossOrigin(origins = "http://localhost:8081") // Permitir peticiones desde Vue para pruebas
 public class UsuarioController {
 	
 	 @Autowired

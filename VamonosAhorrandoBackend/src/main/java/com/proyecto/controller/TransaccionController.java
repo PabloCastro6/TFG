@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.proyecto.entity.Transaccion;
 import com.proyecto.negocio.impl.TransaccionService;
 
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/transacciones")
 public class TransaccionController {
@@ -24,8 +25,12 @@ public class TransaccionController {
 //    public TransaccionController(TransaccionService transaccionService) {
 //        this.transaccionService = transaccionService;
 //    }
+    @GetMapping("/test")
+    public String test() {
+        return "Test OK";
+    }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Transaccion> listarTransacciones() {
 //        logger.info("📌 Se llamó al endpoint GET /transacciones");
         //List<Transaccion> transacciones = transaccionService.obtenerTodas();

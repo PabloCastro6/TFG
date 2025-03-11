@@ -41,21 +41,42 @@ export default {
     };
   },
   methods: {
-    guardarRegistro() {
+    async guardarRegistro() {
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
         alert("⚠️ Por favor, completa todos los campos.");
         return;
       }
+
       const nuevaTransaccion = {
         fecha: this.fechaSeleccionada,
         tipo: this.tipoSeleccionado,
         cantidad: parseFloat(this.cantidadSeleccionada).toFixed(2),
       };
+
       this.$emit("nueva-transaccion", nuevaTransaccion);
-      alert(
-        `✅ Transacción registrada: ${nuevaTransaccion.tipo} de ${nuevaTransaccion.cantidad}€ el ${nuevaTransaccion.fecha}`
-      );
-    },
+
+      try {
+        const respuesta = await fetch("http://localhost:8080/transacciones/transaccion", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(nuevaTransaccion),
+        });
+
+        if (!respuesta.ok) {
+          throw new Error("Error en la llamada a la API");
+        }
+
+        const data = await respuesta.json();
+        console.log("Transacción creada:", data);
+
+        alert(`✅ Transacción registrada: ${nuevaTransaccion.tipo} de ${nuevaTransaccion.cantidad}€ el ${nuevaTransaccion.fecha}`);
+      } catch (error) {
+        console.error("Error al enviar la transacción:", error);
+        alert("❌ Error al enviar la transacción a la API");
+      }
+    }
   },
 };
 </script>
@@ -63,7 +84,8 @@ export default {
 <style scoped>
 /* 📌 Estilos generales */
 .registro-transacciones {
-  flex: 3; /* 30% del espacio disponible */
+  flex: 3;
+  /* 30% del espacio disponible */
   max-width: 30%;
   text-align: center;
   background: white;

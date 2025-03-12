@@ -40,6 +40,13 @@ export default {
       cantidadSeleccionada: "",
     };
   },
+  computed: {
+    fechaFormateada() {
+      if (!this.fechaSeleccionada) return "";
+      const [year, month, day] = this.fechaSeleccionada.split("-");
+      return `${day}-${month}-${year}`; // Convierte de yyyy-MM-dd a dd-MM-yyyy
+    }
+  },
   methods: {
     async guardarRegistro() {
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
@@ -48,9 +55,9 @@ export default {
       }
 
       const nuevaTransaccion = {
-        fecha: this.fechaSeleccionada,
+        fecha: this.fechaSeleccionada, // Se envía en formato yyyy-MM-dd
         tipo: this.tipoSeleccionado,
-        cantidad: parseFloat(this.cantidadSeleccionada).toFixed(2),
+        cantidad: parseFloat(this.cantidadSeleccionada),
       };
 
       this.$emit("nueva-transaccion", nuevaTransaccion);
@@ -71,7 +78,7 @@ export default {
         const data = await respuesta.json();
         console.log("Transacción creada:", data);
 
-        alert(`✅ Transacción registrada: ${nuevaTransaccion.tipo} de ${nuevaTransaccion.cantidad}€ el ${nuevaTransaccion.fecha}`);
+        alert(`✅ Transacción registrada: ${nuevaTransaccion.tipo} de ${nuevaTransaccion.cantidad}€ el ${this.fechaFormateada}`);
       } catch (error) {
         console.error("Error al enviar la transacción:", error);
         alert("❌ Error al enviar la transacción a la API");

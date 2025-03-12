@@ -1,6 +1,9 @@
 package com.proyecto.entity;
 
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,6 +15,7 @@ public class Transaccion {
     private Integer idTransaccion;
 
     @Column(name="fecha")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate fecha;
 
     @Column(name="cantidad")

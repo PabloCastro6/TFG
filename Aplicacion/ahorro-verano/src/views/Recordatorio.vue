@@ -7,10 +7,10 @@
   
       <label for="tipo">🔄 Tipo:</label>
       <div class="tipo-opciones">
-        <button :class="{ activo: tipoSeleccionado === 'ingreso' }" @click="recordatorio.tipo = 'ingreso'">
+        <button :class="{ activo: recordatorio.tipo === 'ingreso' }" @click="recordatorio.tipo = 'ingreso'">
         💰 Ingreso
       </button>
-      <button :class="{ activo: tipoSeleccionado === 'gasto' }" @click="recordatorio.tipo = 'gasto'">
+      <button :class="{ activo: recordatorio.tipo === 'gasto' }" @click="recordatorio.tipo = 'gasto'">
         💸 Gasto
       </button>
       </div>

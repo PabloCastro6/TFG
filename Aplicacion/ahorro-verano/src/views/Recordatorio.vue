@@ -1,21 +1,24 @@
 <template>
-    <div class="registro-container">
-      <h2 class="titulo">📅 Crear Recordatorio</h2>
-      <form class="formulario" @submit.prevent="guardarRecordatorio">
-        <div class="campo">
-          <label>Fecha:</label>
-          <input v-model="recordatorio.fecha" type="date" :min="hoy" required />
-        </div>
-        <div class="campo">
-          <label>Tipo:</label>
-          <input v-model="recordatorio.tipo" placeholder="Ejemplo: Cita médica" type="text" required />
-        </div>
-        <div class="campo">
-          <label>Cantidad:</label>
-          <input v-model="recordatorio.cantidad" placeholder="Ejemplo: 2" type="number" min="1" required />
-        </div>
-        <button class="guardar-btn" type="submit">Guardar</button>
-      </form>
+    <div class="registro-transacciones center">
+      <h2>📅 Crear Recordatorio</h2>
+  
+      <label for="fecha">📅 Fecha:</label>
+      <input type="date" class="label" v-model="recordatorio.fecha" :min="hoy" required />
+  
+      <label for="tipo">🔄 Tipo:</label>
+      <div class="tipo-opciones">
+        <button :class="{ activo: tipoSeleccionado === 'ingreso' }" @click="recordatorio.tipo = 'ingreso'">
+        💰 Ingreso
+      </button>
+      <button :class="{ activo: tipoSeleccionado === 'gasto' }" @click="recordatorio.tipo = 'gasto'">
+        💸 Gasto
+      </button>
+      </div>
+  
+      <label for="cantidad">🔢 Cantidad:</label>
+      <input type="number" class="label" v-model="recordatorio.cantidad" placeholder="Introduce la cantidad" min="1" required />
+  
+      <button class="guardar-btn" @click="guardarRecordatorio">Guardar</button>
     </div>
   </template>
   
@@ -25,60 +28,119 @@
       return {
         recordatorio: {
           fecha: "",
-          tipo: "",
-          cantidad: 1,
+          tipo: "personal",
+          cantidad: "",
         },
         hoy: new Date().toISOString().split("T")[0],
       };
     },
     methods: {
       guardarRecordatorio() {
+        if (!this.recordatorio.fecha || !this.recordatorio.cantidad) {
+          alert("⚠️ Por favor, completa todos los campos.");
+          return;
+        }
+  
         console.log("Recordatorio guardado:", this.recordatorio);
-        alert("Recordatorio guardado con éxito");
+        alert(`✅ Recordatorio registrado: ${this.recordatorio.tipo} con cantidad ${this.recordatorio.cantidad} el ${this.recordatorio.fecha}`);
       },
     },
   };
   </script>
   
   <style scoped>
-  .registro-container {
-    width: 350px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  .registro-transacciones {
+    flex: 3;
+    max-width: 30%;
     text-align: center;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    transition: transform 0.3s ease-in-out;
   }
   
-  .titulo {
-    font-size: 22px;
-    margin-bottom: 20px;
-    font-weight: bold;
+  .registro-transacciones:hover {
+    transform: translateY(-3px);
   }
   
-  .formulario {
+  .center {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
   }
   
-  .campo {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
+  .label {
+    width: 90%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   }
   
-  .campo label {
+  h2 {
+    font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 5px;
+    color: #2c3e50;
+    margin-bottom: 15px;
   }
   
-  .campo input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+  label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #2c3e50;
+  }
+  
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  input:focus {
+    border-color: #2c3e50;
+    outline: none;
+    box-shadow: 0 0 8px rgba(44, 62, 80, 0.2);
+  }
+  
+  .tipo-opciones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .tipo-opciones button {
+    flex: 1;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin: 0 5px;
+  }
+  
+  .tipo-opciones button.activo {
+    background-color: #27ae60;
+    color: white;
+    border-color: #1e8449;
+  }
+  
+  .tipo-opciones button:nth-child(2).activo {
+    background-color: #c0392b;
+    border-color: #96281b;
   }
   
   .guardar-btn {
@@ -98,6 +160,20 @@
   .guardar-btn:hover {
     background: #1a252f;
     transform: scale(1.05);
+  }
+  
+  @media (max-width: 500px) {
+    .registro-transacciones {
+      width: 90%;
+    }
+  
+    .tipo-opciones {
+      flex-direction: column;
+    }
+  
+    .tipo-opciones button {
+      margin: 5px 0;
+    }
   }
   </style>
   

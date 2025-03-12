@@ -5,6 +5,7 @@ import ConfiguracionAhorro from "@/views/ConfiguracionAhorro.vue";
 import TiposGastos from "@/views/TiposGastos.vue";
 import Estadisticas from "@/views/Estadisticas.vue";
 import RegistroUsuarios from "@/views/RegistroUsuarios.vue";
+import Recordatorios from "@/views/Recordatorio.vue";
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: "/RegistroUsuarios",
     name: "RegistroUsuarios",
     component: RegistroUsuarios,
+  },
+  {
+    path: "/Recordatorios",
+    name: "Recordatorios",
+    component: Recordatorios,
   },
 ];
 

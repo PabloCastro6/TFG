@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import com.proyecto.entity.Transaccion;
 import com.proyecto.negocio.impl.TransaccionService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/transacciones")
 public class TransaccionController {
@@ -26,8 +29,8 @@ public class TransaccionController {
 //        this.transaccionService = transaccionService;
 //    }
     @GetMapping("/test")
-    public String test() {
-        return "Test OK";
+    public String testEndpoint() {
+        return "Endpoint funcionando correctamente";
     }
 
     @GetMapping("")

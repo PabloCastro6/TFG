@@ -9,6 +9,6 @@ import com.proyecto.entity.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
-	List<Categoria> findByCategoriaIdCategoria(Integer usuarioId);
+	List<Categoria> findByIdCategoria(Integer usuarioId);
 
 }

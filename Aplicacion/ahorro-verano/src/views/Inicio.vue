@@ -4,6 +4,22 @@
     <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
     <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
 
+    <!-- Formulario de inicio de sesión -->
+    <div class="login-form">
+      <h2>Iniciar sesión</h2>
+      <form @submit.prevent="submitForm">
+        <div class="form-group">
+          <label for="email">Correo Electrónico:</label>
+          <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico" />
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña:</label>
+          <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña" />
+        </div>
+        <button type="submit" class="btn-submit">Iniciar sesión</button>
+      </form>
+    </div>   
+
     <!-- Botón para abrir la calculadora -->
     <button
       class="boton-calculadora"
@@ -53,9 +69,17 @@ export default {
   data() {
     return {
       mostrarCalculadora: false,
+      email: "",
+      password: "",
+      mostrarCalculadora: false,
       gastoDiario: 10, // Valor por defecto
       porcentajeReduccion: 10, // Valor por defecto
     };
+  },
+  methods: {
+    submitForm() {
+      alert(`Correo: ${this.email}, Contraseña: ${this.password}`);
+    }
   },
   computed: {
     ahorroEstimado() {
@@ -77,6 +101,67 @@ body {
 }
 
 /* ======= SECCIÓN PRINCIPAL ======= */
+.inicio {
+  padding: 50px 20px;
+  max-width: 800px;
+  margin: auto;
+  position: relative;
+}
+
+/* Formulario de inicio de sesión */
+.login-form {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  width: 100%;
+}
+
+.login-form h2 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.btn-submit {
+  width: 100%;
+  background-color: #2ecc71;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #27ae60;
+}
+
 .inicio {
   padding: 50px 20px;
   max-width: 800px;

@@ -10,6 +10,8 @@ CREATE TABLE `categorias` (
 
 
 SELECT * FROM usuarios;
+SELECT * FROM transacciones;
+SELECT * FROM categorias;
 
 CREATE TABLE `transacciones` (
   `idTransaccion` int NOT NULL,
@@ -32,8 +34,30 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 ALTER TABLE usuarios MODIFY idUsuario INT AUTO_INCREMENT;
+ALTER TABLE transacciones MODIFY idTransaccion INT AUTO_INCREMENT;
+ALTER TABLE categorias MODIFY idCategoria INT AUTO_INCREMENT;
+
+ALTER TABLE transacciones 
+ADD CONSTRAINT FKtr2kyu22nmb2wax19i9girxsh 
+FOREIGN KEY (categoriaId) REFERENCES categorias(idCategoria) 
+ON DELETE CASCADE;
+
+ALTER TABLE transacciones DROP FOREIGN KEY FKtr2kyu22nmb2wax19i9girxsh;
+
 
 INSERT INTO usuarios (nombreCompleto, password, correo, rol) 
 VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');
+
+INSERT INTO categorias (nombre, tipo, usuarioId) 
+VALUES ('Ingreso', 'pagaAbuelo', '1');
+
+INSERT INTO transacciones (fecha, categoriaId, usuarioId, cantidad) 
+VALUES ('2025-03-14', '1', '2', '20');
+
+ALTER TABLE categorias AUTO_INCREMENT = 1;
+ALTER TABLE transacciones AUTO_INCREMENT = 1;
+
+DELETE FROM categorias WHERE idCategoria > 0;
+DELETE FROM transacciones WHERE idTransaccion > 0;
 
 SHOW DATABASES;

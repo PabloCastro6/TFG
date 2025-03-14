@@ -5,6 +5,7 @@ import ConfiguracionAhorro from "@/views/ConfiguracionAhorro.vue";
 import TiposGastos from "@/views/TiposGastos.vue";
 import Estadisticas from "@/views/Estadisticas.vue";
 import RegistroUsuarios from "@/views/RegistroUsuarios.vue";
+import AccesoDenegado from "@/views/AccesoDenegado.vue";
 
 const routes = [
   {
@@ -16,30 +17,38 @@ const routes = [
     path: "/Recordatorio",
     name: "Recordatorio",
     component: Recordatorio,
+    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
   },
   {
     path: "/ConfiguracionAhorro",
     name: "ConfiguracionAhorro",
     component: ConfiguracionAhorro,
+    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
   },
   {
     path: "/TiposGastos",
     name: "TiposGastos",
     component: TiposGastos,
-    meta: { requiresAuth: true },
+    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
   },
   {
     path: "/Estadisticas",
     name: "Estadisticas",
     component: Estadisticas,
-    meta: { requiresAuth: true },
+    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
   },
   {
     path: "/RegistroUsuarios",
     name: "RegistroUsuarios",
     component: RegistroUsuarios,
   },
+  {
+    path: "/AccesoDenegado",
+    name: "AccesoDenegado",
+    component: AccesoDenegado,
+  },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -49,7 +58,13 @@ const router = createRouter({
 
 // Navigation Guard global para proteger rutas que requieren autenticación
 router.beforeEach((to, from, next) => {
-  next();
+  const usuarioRegistrado = localStorage.getItem("registrado") === "true";
+
+  if (to.meta.requiereRegistro && !usuarioRegistrado) {
+    next('/AccesoDenegado'); // 🔒 Redirige si no está registrado
+  } else {
+    next(); // ✅ Permite el acceso
+  }
 });
 
 export default router;

@@ -5,7 +5,6 @@ import ConfiguracionAhorro from "@/views/ConfiguracionAhorro.vue";
 import TiposGastos from "@/views/TiposGastos.vue";
 import Estadisticas from "@/views/Estadisticas.vue";
 import RegistroUsuarios from "@/views/RegistroUsuarios.vue";
-import Recordatorios from "@/views/Recordatorio.vue";
 
 const routes = [
   {
@@ -27,21 +26,18 @@ const routes = [
     path: "/TiposGastos",
     name: "TiposGastos",
     component: TiposGastos,
+    meta: { requiresAuth: true },
   },
   {
     path: "/Estadisticas",
     name: "Estadisticas",
     component: Estadisticas,
+    meta: { requiresAuth: true },
   },
   {
     path: "/RegistroUsuarios",
     name: "RegistroUsuarios",
     component: RegistroUsuarios,
-  },
-  {
-    path: "/Recordatorios",
-    name: "Recordatorios",
-    component: Recordatorios,
   },
 ];
 
@@ -49,6 +45,11 @@ const router = createRouter({
   history: createWebHistory(),
   base: process.env.BASE_URL,
   routes,
+});
+
+// Navigation Guard global para proteger rutas que requieren autenticación
+router.beforeEach((to, from, next) => {
+  next();
 });
 
 export default router;

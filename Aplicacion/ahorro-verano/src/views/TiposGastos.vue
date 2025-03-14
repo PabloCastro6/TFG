@@ -37,9 +37,7 @@
       <div class="modal-contenido">
         <h3>
           Registrar {{ tipoSeleccionado.nombre }} como
-          <span :class="tipoSeleccionado.tipo">{{
-            tipoSeleccionado.tipo
-          }}</span>
+          <span :class="tipoSeleccionado.tipo">{{ tipoSeleccionado.tipo }}</span>
         </h3>
         <input type="date" v-model="fechaSeleccionada" />
         <input
@@ -49,9 +47,14 @@
           min="0"
         />
         <div class="botones">
-          <button @click="guardarRegistro">Confirmar</button>
+          <button :disabled="!registrado" @click="guardarRegistro">
+            Confirmar
+          </button>
           <button @click="cerrarModal">Cancelar</button>
         </div>
+        <p v-if="!registrado" class="alerta">
+          Debes iniciar sesión para realizar esta acción.
+        </p>
       </div>
     </div>
 
@@ -61,9 +64,9 @@
       <ul>
         <li v-for="(transaccion, index) in transacciones" :key="index">
           <span class="fecha">{{ transaccion.fecha }}</span> -
-          <span :class="transaccion.tipo"
-            >{{ transaccion.nombre }}: {{ transaccion.cantidad }}€</span
-          >
+          <span :class="transaccion.tipo">
+            {{ transaccion.nombre }}: {{ transaccion.cantidad }}€
+          </span>
         </li>
       </ul>
     </div>
@@ -98,6 +101,11 @@ export default {
       transacciones: [], // Guardará los registros
     };
   },
+  computed: {
+    registrado() {
+      return localStorage.getItem("registrado") === "true";
+    },
+  },
   methods: {
     abrirModal(tipo, categoria) {
       this.tipoSeleccionado = { ...tipo, tipo: categoria };
@@ -111,6 +119,11 @@ export default {
       this.cantidadSeleccionada = "";
     },
     guardarRegistro() {
+      // Verifica si el usuario está registrado
+      if (!this.registrado) {
+        alert("Debes iniciar sesión para realizar esta acción.");
+        return;
+      }
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
         alert("⚠️ Por favor, selecciona una fecha y una cantidad.");
         return;
@@ -124,7 +137,7 @@ export default {
         cantidad: parseFloat(this.cantidadSeleccionada).toFixed(2),
       });
 
-      // Enviar la transacción a la configuración de ahorro
+      // Enviar la transacción a la configuración de ahorro (si es necesario)
       this.$emit("nueva-transaccion", this.transacciones);
 
       alert(
@@ -227,12 +240,19 @@ input {
   margin-bottom: 15px;
 }
 
-button {
+.botones button {
   padding: 10px;
   margin: 5px;
   cursor: pointer;
 }
 
+.alerta {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* LISTA DE TRANSACCIONES */
 .transacciones {
   width: 100%;
   text-align: center;

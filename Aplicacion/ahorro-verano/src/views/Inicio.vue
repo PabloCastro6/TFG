@@ -1,11 +1,31 @@
 <template>
   <div class="inicio">
     <div class="top-container">
-      <!-- Bloque de texto (logo, h1 y p) -->
-      <div class="text-section">
-        <img src="../assets/ahorro.png" alt="Logo" class="logo" />
-        <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
-        <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
+      <!-- Contenedor para la calculadora y el bloque de texto -->
+      <div class="left-container">
+        <!-- Calculadora de ahorro -->
+        <transition name="fade">
+          <div v-if="mostrarCalculadora" class="calculadora">
+            <h3 class="gasto">Calculadora de Ahorro</h3>
+            <label for="gasto" class="gasto">Gasto Diario (€):</label>
+            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
+            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
+            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
+            <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
+            <p class="resultado">
+              Si reduces tus gastos un <strong>{{ porcentajeReduccion }}%</strong>, podrías ahorrar:
+              <strong>{{ ahorroEstimado.toFixed(2) }}€</strong> al mes.
+            </p>
+            <button class="boton-cerrar" @click="mostrarCalculadora = false">Cerrar</button>
+          </div>
+        </transition>
+
+        <!-- Bloque de texto (logo, h1 y p) -->
+        <div class="text-section">
+          <img src="../assets/ahorro.png" alt="Logo" class="logo" />
+          <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
+          <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
+        </div>
       </div>
 
       <!-- Formulario de inicio de sesión -->
@@ -22,48 +42,17 @@
           </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
+        <button type="button" class="btn-register" @click="goToRegistroUsuarios">Crear nuevo usuario</button>
       </div>
     </div>
 
     <!-- Botón para abrir la calculadora -->
-    <button
-      class="boton-calculadora"
-      @click="mostrarCalculadora = true"
-    >
+    <button class="boton-calculadora" @click="mostrarCalculadora = true">
       📊 ¿Cuánto podrías ahorrar?
     </button>
-
-    <!-- Calculadora de ahorro -->
-    <transition name="fade">
-      <div v-if="mostrarCalculadora" class="calculadora">
-        <!-- Contenido de la calculadora -->
-        <h3 class="gasto">Calculadora de Ahorro</h3>
-        <label for="gasto" class="gasto">Gasto Diario (€):</label>
-        <input
-          type="number"
-          v-model.number="gastoDiario"
-          placeholder="Introduce tu gasto diario"
-        />
-        <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
-        <input
-          type="range"
-          v-model.number="porcentajeReduccion"
-          min="0"
-          max="50"
-        />
-        <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
-        <p class="resultado">
-          Si reduces tus gastos un <strong>{{ porcentajeReduccion }}%</strong>,
-          podrías ahorrar: <strong>{{ ahorroEstimado.toFixed(2) }}€</strong> al
-          mes.
-        </p>
-        <button class="boton-cerrar" @click="mostrarCalculadora = false">
-          Cerrar
-        </button>
-      </div>
-    </transition>
   </div>
 </template>
+
 
 <script>
 export default {
@@ -73,15 +62,23 @@ export default {
       mostrarCalculadora: false,
       email: "",
       password: "",
-      mostrarCalculadora: false,
       gastoDiario: 10, // Valor por defecto
       porcentajeReduccion: 10, // Valor por defecto
     };
   },
   methods: {
     submitForm() {
-      alert(`Correo: ${this.email}, Contraseña: ${this.password}`);
-    }
+      // Aquí iría la lógica real de autenticación.
+      // Suponiendo que la autenticación es exitosa:
+      localStorage.setItem("registrado", "true");
+      alert(`Inicio de sesión exitoso para ${this.email}`);
+      // Opcional: Redirigir a una vista protegida
+      // this.$router.push("/ConfiguracionAhorro");
+    },
+    goToRegistroUsuarios() {
+      // Redirige a la vista de RegistroUsuarios
+      this.$router.push("/RegistroUsuarios");
+    },
   },
   computed: {
     ahorroEstimado() {
@@ -95,28 +92,39 @@ export default {
 /* Contenedor principal */
 .inicio {
   padding: 50px 20px;
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
+  position: relative; /* Permite posicionar la calculadora de forma absoluta dentro */
 }
 
-/* Contenedor que agrupa el texto y el formulario */
+/* Contenedor superior que organiza todo */
 .top-container {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* O "center" si prefieres centrado vertical */
-  gap: 20px; /* Espacio entre ambos bloques */
+  align-items: flex-start;
+  gap: 20px;
+  position: relative; /* Para que la calculadora no afecte otros elementos */
+}
+
+/* Contenedor que agrupa la calculadora y el texto */
+.left-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
 }
 
 /* Bloque de texto */
 .text-section {
-  flex: 1; /* Toma el espacio disponible */
+  flex: 1;
+  margin-left: 20%;
 }
 
 /* Ajustes en el texto */
 .logo {
-  width: 280px;
+  width: 420px;
   margin-bottom: 20px;
-  margin-left: 7%;
+  margin-left: 5%;
 }
 
 .titulo {
@@ -136,7 +144,7 @@ export default {
 
 /* Estilos del formulario */
 .login-form {
-  width: 300px; /* Fija el ancho deseado */
+  width: 300px;
   background-color: white;
   padding: 20px;
   border-radius: 8px;
@@ -144,7 +152,6 @@ export default {
   margin-top: 6%;
 }
 
-/* Resto de estilos del formulario */
 .login-form h2 {
   font-size: 22px;
   margin-bottom: 15px;
@@ -153,7 +160,7 @@ export default {
 
 .form-group {
   margin-bottom: 15px;
-  text-align: left;
+  text-align: center;
 }
 
 .form-group label {
@@ -163,7 +170,7 @@ export default {
 }
 
 .form-group input {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -186,6 +193,23 @@ export default {
   background-color: #27ae60;
 }
 
+.btn-register {
+  width: 100%;
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-register:hover {
+  background-color: #0056b3;
+}
+
 /* Botón de la calculadora */
 .boton-calculadora {
   background-color: #2ecc71;
@@ -197,26 +221,46 @@ export default {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
+  margin-left: 9%;
 }
 
 .boton-calculadora:hover {
   background-color: #27ae60;
 }
 
-/* Estilos de la calculadora y animaciones permanecen iguales */
+/* Estilos de la calculadora */
 .calculadora {
-  background: #22a9b77a;
+  background: #90c7cd; /* Color sólido, sin opacidad */
   padding: 20px;
-  margin-top: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 290px;
+  position: absolute; /* La deja fija sin afectar al resto */
+  left: -270px; /* Mueve la calculadora a la izquierda del h1 */
+  top: 50px; /* Ajusta la posición vertical */
   animation: fadeIn 0.6s ease-in-out;
 }
 
+/* Transición de la calculadora */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.6s ease;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Ajustes para evitar solapamiento en pantallas pequeñas */
+@media (max-width: 1024px) {
+  .calculadora {
+    position: static; /* Si la pantalla es pequeña, la muestra normalmente */
+    margin-bottom: 20px;
+  }
+}
+
+/* Animación de aparición */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -226,14 +270,5 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

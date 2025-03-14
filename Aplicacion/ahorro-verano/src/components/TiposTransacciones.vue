@@ -18,7 +18,10 @@
     <label for="cantidad">💵 Cantidad (€):</label>
     <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
 
-    <button class="guardar-btn" @click="guardarRegistro">Guardar</button>
+    <button :disabled="!registrado" class="guardar-btn" @click="guardarRegistro">Guardar</button>
+    <p v-if="!registrado" class="alerta">
+      Debes iniciar sesión para realizar esta acción.
+    </p>
   </div>
 </template>
 
@@ -45,10 +48,18 @@ export default {
       if (!this.fechaSeleccionada) return "";
       const [year, month, day] = this.fechaSeleccionada.split("-");
       return `${day}-${month}-${year}`; // Convierte de yyyy-MM-dd a dd-MM-yyyy
+    },
+    registrado() {
+      return localStorage.getItem("registrado") === "true";
     }
   },
   methods: {
     async guardarRegistro() {
+      
+      if (!this.registrado) {
+        alert("Debes iniciar sesión para realizar esta acción.");
+        return;
+      }
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
         alert("⚠️ Por favor, completa todos los campos.");
         return;

@@ -8,7 +8,7 @@
       </div>
       <div class="campo">
         <label>Correo:</label>
-        <input v-model="usuario.correo" placeholder="example@gmai.com" type="email" required />
+        <input v-model="usuario.correo" placeholder="example@gmail.com" type="email" required />
       </div>
       <div class="campo">
         <label>Contraseña:</label>
@@ -45,6 +45,7 @@ export default {
   margin: auto;
   background: white;
   padding: 20px;
+  margin-top: 8%;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   text-align: center;

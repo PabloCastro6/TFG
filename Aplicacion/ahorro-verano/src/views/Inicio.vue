@@ -38,7 +38,8 @@
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña" />
+            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
+              autocomplete="current-password" />
           </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
@@ -67,13 +68,35 @@ export default {
     };
   },
   methods: {
-    submitForm() {
-      // Aquí iría la lógica real de autenticación.
-      // Suponiendo que la autenticación es exitosa:
-      localStorage.setItem("registrado", "true");
-      alert(`Inicio de sesión exitoso para ${this.email}`);
-      // Opcional: Redirigir a una vista protegida
-      // this.$router.push("/ConfiguracionAhorro");
+    async submitForm() {
+      try {
+        const response = await fetch("http://localhost:8080/usuarios/iniciarSesion", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            correo: this.email,
+            password: this.password,
+          }),
+        });
+
+        // Verificar si la respuesta es exitosa (status 200)
+        if (response.ok) {
+          const text = await response.text(); // Obtener la respuesta como texto
+
+          alert(text);  // Mostrar el mensaje de éxito o error
+
+          // Aquí podrías redirigir a otra vista o manejar la sesión
+        } else {
+          // Si el código de estado no es 200, se trata de un error
+          const errorText = await response.text();  // Obtener el mensaje de error como texto
+          alert("Error: " + errorText);
+        }
+      } catch (error) {
+        console.error(error);  // Mostrar el error completo en consola
+        alert("Ha ocurrido un error al intentar iniciar sesión.");
+      }
     },
     goToRegistroUsuarios() {
       // Redirige a la vista de RegistroUsuarios
@@ -94,7 +117,8 @@ export default {
   padding: 50px 20px;
   max-width: 1000px;
   margin: auto;
-  position: relative; /* Permite posicionar la calculadora de forma absoluta dentro */
+  position: relative;
+  /* Permite posicionar la calculadora de forma absoluta dentro */
 }
 
 /* Contenedor superior que organiza todo */
@@ -103,7 +127,8 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  position: relative; /* Para que la calculadora no afecte otros elementos */
+  position: relative;
+  /* Para que la calculadora no afecte otros elementos */
 }
 
 /* Contenedor que agrupa la calculadora y el texto */
@@ -230,23 +255,80 @@ export default {
 
 /* Estilos de la calculadora */
 .calculadora {
-  background: #90c7cd; /* Color sólido, sin opacidad */
+  background: #90c7cd;
+  /* Color sólido, sin opacidad */
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
   max-width: 290px;
-  position: absolute; /* La deja fija sin afectar al resto */
-  left: -270px; /* Mueve la calculadora a la izquierda del h1 */
-  top: 50px; /* Ajusta la posición vertical */
+  position: absolute;
+  /* La deja fija sin afectar al resto */
+  left: -270px;
+  /* Mueve la calculadora a la izquierda del h1 */
+  top: 50px;
+  /* Ajusta la posición vertical */
   animation: fadeIn 0.6s ease-in-out;
 }
+
+.boton-cerrar {
+  background-color: #002b71;
+  /* Rojo llamativo */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 9px 10px;
+  margin-left: 70px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
+  margin-top: 15px;
+  display: block;
+  width: 50%;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+}
+
+.boton-cerrar:hover {
+  background-color: #060036;
+  /* Un tono más oscuro al pasar el mouse */
+  transform: scale(1.02);
+}
+
+.boton-cerrar:active {
+  transform: scale(1.05);
+}
+
+input[type="number"] {
+  width: 80%;
+  padding: 8px;
+  font-size: 16px;
+  border: 2px solid #060036;
+  /* Borde verde llamativo */
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+  /* Centra el texto */
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+input[type="number"]:focus {
+  border-color: #060036;
+  /* Verde más oscuro en foco */
+  box-shadow: 0 0 8px #1300a2;
+  background-color: #fff;
+}
+
 
 /* Transición de la calculadora */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.6s ease;
 }
+
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
@@ -255,7 +337,8 @@ export default {
 /* Ajustes para evitar solapamiento en pantallas pequeñas */
 @media (max-width: 1024px) {
   .calculadora {
-    position: static; /* Si la pantalla es pequeña, la muestra normalmente */
+    position: static;
+    /* Si la pantalla es pequeña, la muestra normalmente */
     margin-bottom: 20px;
   }
 }
@@ -266,6 +349,7 @@ export default {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

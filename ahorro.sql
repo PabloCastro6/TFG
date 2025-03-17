@@ -49,7 +49,7 @@ INSERT INTO usuarios (nombreCompleto, password, correo, rol)
 VALUES ('Juan Pérez', '123456', 'juan@example.com', 'usuario');
 
 INSERT INTO categorias (nombre, tipo, usuarioId) 
-VALUES ('Ingreso', 'pagaAbuelo', '1');
+VALUES ('Gasto', 'Hacienda', '2');
 
 INSERT INTO transacciones (fecha, categoriaId, usuarioId, cantidad) 
 VALUES ('2025-03-14', '1', '2', '20');

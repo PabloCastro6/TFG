@@ -1,5 +1,10 @@
 <template>
   <div class="inicio">
+    <!-- Botón de cerrar sesión en la esquina superior derecha, se muestra si usuarioLogueado es true -->
+    <button v-if="usuarioLogueado" class="logout-button" @click="cerrarSesion">
+      Cerrar sesión
+    </button>
+
     <div class="top-container">
       <!-- Contenedor para la calculadora y el bloque de texto -->
       <div class="left-container">
@@ -34,16 +39,31 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico" />
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              required
+              placeholder="Introduce tu correo electrónico"
+              autocomplete="username"
+            />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
-              autocomplete="current-password" />
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              required
+              placeholder="Introduce tu contraseña"
+              autocomplete="current-password"
+            />
           </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
-        <button type="button" class="btn-register" @click="goToRegistroUsuarios">Crear nuevo usuario</button>
+        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
+          Crear nuevo usuario
+        </button>
       </div>
     </div>
 
@@ -53,7 +73,6 @@
     </button>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -65,10 +84,31 @@ export default {
       password: "",
       gastoDiario: 10, // Valor por defecto
       porcentajeReduccion: 10, // Valor por defecto
+      usuarioLogueado: false, // Estado reactivo de sesión
     };
+  },
+  computed: {
+    ahorroEstimado() {
+      return ((this.gastoDiario * this.porcentajeReduccion) / 100) * 30;
+    },
   },
   methods: {
     async submitForm() {
+      // Depuración: imprimir valores actuales (opcional)
+      console.log("LocalStorage registrado:", localStorage.getItem("registrado"));
+      console.log("LocalStorage correo:", localStorage.getItem("correo"));
+      console.log("this.email:", this.email);
+
+      // Verifica si ya hay una sesión activa para este usuario
+      if (
+        this.usuarioLogueado &&
+        localStorage.getItem("correo") &&
+        localStorage.getItem("correo").toLowerCase() === this.email.toLowerCase()
+      ) {
+        alert("Sesión ya iniciada para: " + this.email);
+        return;
+      }
+
       try {
         const response = await fetch("http://localhost:8080/usuarios/iniciarSesion", {
           method: "POST",
@@ -76,49 +116,76 @@ export default {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            correo: this.email,
+            correo: this.email, // Se envía 'correo' para coincidir con el backend
             password: this.password,
           }),
         });
 
-        // Verificar si la respuesta es exitosa (status 200)
-        if (response.ok) {
-          const text = await response.text(); // Obtener la respuesta como texto
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+        }
 
-          alert(text);  // Mostrar el mensaje de éxito o error
+        const text = await response.text();
+        console.log("Respuesta del servidor:", text);
 
-          // Aquí podrías redirigir a otra vista o manejar la sesión
+        if (text.includes("Inicio de sesión exitoso")) {
+          localStorage.setItem("registrado", "true");
+          localStorage.setItem("correo", this.email);
+          this.usuarioLogueado = true; // Actualiza la propiedad reactiva
+          alert(text);
+          this.$router.push("/");
         } else {
-          // Si el código de estado no es 200, se trata de un error
-          const errorText = await response.text();  // Obtener el mensaje de error como texto
-          alert("Error: " + errorText);
+          alert("Credenciales incorrectas");
         }
       } catch (error) {
-        console.error(error);  // Mostrar el error completo en consola
-        alert("Ha ocurrido un error al intentar iniciar sesión.");
+        console.error("Error en inicio de sesión:", error);
+        alert("Hubo un problema al iniciar sesión: " + error.message);
       }
     },
     goToRegistroUsuarios() {
-      // Redirige a la vista de RegistroUsuarios
       this.$router.push("/RegistroUsuarios");
     },
-  },
-  computed: {
-    ahorroEstimado() {
-      return ((this.gastoDiario * this.porcentajeReduccion) / 100) * 30;
+    cerrarSesion() {
+      localStorage.removeItem("registrado");
+      localStorage.removeItem("correo");
+      this.usuarioLogueado = false; // Actualiza la propiedad reactiva
+      this.$router.push("/");
     },
+  },
+  mounted() {
+    // Si deseas que al iniciar la aplicación se verifique el estado (opcional)
+    this.usuarioLogueado = localStorage.getItem("registrado") === "true";
   },
 };
 </script>
 
 <style scoped>
+/* Botón de cerrar sesión en la esquina superior derecha */
+.logout-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 2000; /* Asegura que esté encima de otros elementos */
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
 /* Contenedor principal */
 .inicio {
   padding: 50px 20px;
   max-width: 1000px;
   margin: auto;
-  position: relative;
-  /* Permite posicionar la calculadora de forma absoluta dentro */
+  position: relative; /* Para que el botón posicionado sea relativo a este contenedor */
 }
 
 /* Contenedor superior que organiza todo */
@@ -128,7 +195,6 @@ export default {
   align-items: flex-start;
   gap: 20px;
   position: relative;
-  /* Para que la calculadora no afecte otros elementos */
 }
 
 /* Contenedor que agrupa la calculadora y el texto */
@@ -235,7 +301,7 @@ export default {
   background-color: #0056b3;
 }
 
-/* Botón de la calculadora */
+/* Botón para abrir la calculadora */
 .boton-calculadora {
   background-color: #2ecc71;
   color: white;
@@ -256,24 +322,19 @@ export default {
 /* Estilos de la calculadora */
 .calculadora {
   background: #90c7cd;
-  /* Color sólido, sin opacidad */
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
   max-width: 290px;
   position: absolute;
-  /* La deja fija sin afectar al resto */
   left: -270px;
-  /* Mueve la calculadora a la izquierda del h1 */
   top: 50px;
-  /* Ajusta la posición vertical */
   animation: fadeIn 0.6s ease-in-out;
 }
 
 .boton-cerrar {
   background-color: #002b71;
-  /* Rojo llamativo */
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -292,7 +353,6 @@ export default {
 
 .boton-cerrar:hover {
   background-color: #060036;
-  /* Un tono más oscuro al pasar el mouse */
   transform: scale(1.02);
 }
 
@@ -305,51 +365,32 @@ input[type="number"] {
   padding: 8px;
   font-size: 16px;
   border: 2px solid #060036;
-  /* Borde verde llamativo */
   border-radius: 8px;
   outline: none;
   transition: all 0.3s ease-in-out;
   text-align: center;
-  /* Centra el texto */
   background-color: #f9f9f9;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 input[type="number"]:focus {
   border-color: #060036;
-  /* Verde más oscuro en foco */
   box-shadow: 0 0 8px #1300a2;
   background-color: #fff;
 }
 
-
-/* Transición de la calculadora */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.6s ease;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* Ajustes para evitar solapamiento en pantallas pequeñas */
 @media (max-width: 1024px) {
   .calculadora {
     position: static;
-    /* Si la pantalla es pequeña, la muestra normalmente */
     margin-bottom: 20px;
   }
 }
 
-/* Animación de aparición */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(-10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);

@@ -10,3 +10,9 @@ app.use(router);
 
 app.mount('#app');
 
+window.addEventListener("beforeunload", () => {
+    localStorage.removeItem("registrado");
+    localStorage.removeItem("correo");
+  });
+  
+

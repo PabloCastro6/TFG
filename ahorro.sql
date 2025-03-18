@@ -57,7 +57,7 @@ VALUES ('2025-03-14', '1', '2', '20');
 ALTER TABLE categorias AUTO_INCREMENT = 1;
 ALTER TABLE transacciones AUTO_INCREMENT = 1;
 
-DELETE FROM categorias WHERE idCategoria > 0;
+DELETE FROM categorias WHERE idCategoria = 2;
 DELETE FROM transacciones WHERE idTransaccion > 0;
 
 SHOW DATABASES;

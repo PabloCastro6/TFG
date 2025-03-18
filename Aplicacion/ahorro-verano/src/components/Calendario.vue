@@ -38,7 +38,7 @@
       <div class="tooltip-content">
         <strong>{{ tooltipTipo === 'ingreso' ? 'Ingresos' : 'Gastos' }}:</strong>
         <ul>
-          <li v-for="(valor, idx) in tooltipTexto" :key="idx">{{ valor }}€</li>
+          <li v-for="(valor, idx) in tooltipTexto" :key="idx">{{ valor }}</li>
         </ul>
       </div>
     </div>
@@ -49,7 +49,8 @@
 export default {
   name: "CalendarioGastos",
   props: {
-    transacciones: Array, // Recibimos las transacciones de ConfiguracionAhorro.vue
+    transacciones: Array,
+    usuarioId: String // Recibimos las transacciones de ConfiguracionAhorro.vue
   },
   data() {
     return {
@@ -62,6 +63,9 @@ export default {
       tooltipX: 0,
       tooltipY: 0,
     };
+  },
+  mounted() {
+    console.log("Transacciones recibidas:", this.transacciones);
   },
   computed: {
     nombreMes() {
@@ -106,7 +110,8 @@ export default {
             fecha.getDate() === dia &&
             fecha.getMonth() === this.mes && // Asegura que el mes coincida
             fecha.getFullYear() === this.anio && // Asegura que el año coincida
-            transaccion.tipo === tipo
+            transaccion.tipo === tipo &&
+            transaccion.usuarioId === this.usuarioId // Filtra por usuario
           );
         }
       );
@@ -116,12 +121,14 @@ export default {
       const transaccionesDelDia = this.transacciones.filter(
         (transaccion) =>
           new Date(transaccion.fecha).getDate() === dia &&
+          new Date(transaccion.fecha).getMonth() === this.mes &&
+          new Date(transaccion.fecha).getFullYear() === this.anio &&
           transaccion.tipo === tipo
       );
 
       if (transaccionesDelDia.length > 0) {
         this.tooltipTexto = transaccionesDelDia.map(
-          (transaccion) => `${transaccion.cantidad}`
+          (transaccion) => `${transaccion.concepto}: ${transaccion.cantidad}€`
         );
         this.tooltipTipo = tipo;
         this.tooltipX = event.pageX + 10;
@@ -260,7 +267,7 @@ export default {
 
 /* Tooltip de gasto (rojo) */
 .gasto-tooltip {
-  background-color: #c0392b; 
+  background-color: #c0392b;
 }
 
 .tooltip-content {

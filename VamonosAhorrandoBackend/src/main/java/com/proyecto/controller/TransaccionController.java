@@ -26,11 +26,6 @@ public class TransaccionController {
     @Autowired
     UsuarioRepository usuarioRepository;
 
-    @GetMapping("/test")
-    public String testEndpoint() {
-        return "Endpoint funcionando correctamente";
-    }
-
     @GetMapping("")
     public Iterable<Transaccion> listarTransacciones() {
         return transaccionService.listarTransacciones();
@@ -44,10 +39,11 @@ public class TransaccionController {
     @PostMapping("/transaccion")
     @ResponseStatus(HttpStatus.CREATED)
     public Transaccion crearTransaccion(@RequestBody Transaccion transaccion) {
-        // Recupera el objeto Categoria completo a partir del id enviado en el JSON
-        int categoriaId = transaccion.getCategoria().getIdCategoria();
-        Categoria categoriaCompleta = categoriaRepository.findById(categoriaId)
-            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        // Recupera el nombre de la categoría enviado en el JSON
+        String categoriaNombre = transaccion.getCategoria().getNombre();
+        // Busca la categoría completa en la base de datos usando el nombre
+        Categoria categoriaCompleta = categoriaRepository.findByNombre(categoriaNombre)
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada con el nombre: " + categoriaNombre));
         transaccion.setCategoria(categoriaCompleta);
 
         // Recupera el objeto Usuario completo a partir del id enviado en el JSON
@@ -58,6 +54,7 @@ public class TransaccionController {
 
         return transaccionService.crearTransaccion(transaccion);
     }
+
     
     @PutMapping("/transaccion/{id}")
     public Transaccion modificarTransaccion(@PathVariable Integer id, @RequestBody Transaccion transaccion) {

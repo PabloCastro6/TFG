@@ -39,25 +39,13 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              required
-              placeholder="Introduce tu correo electrónico"
-              autocomplete="username"
-            />
+            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
+              autocomplete="username" />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input
-              type="password"
-              id="password"
-              v-model="password"
-              required
-              placeholder="Introduce tu contraseña"
-              autocomplete="current-password"
-            />
+            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
+              autocomplete="current-password" />
           </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
@@ -84,7 +72,7 @@ export default {
       password: "",
       gastoDiario: 10, // Valor por defecto
       porcentajeReduccion: 10, // Valor por defecto
-      usuarioLogueado: false, // Estado reactivo de sesión
+      usuarioLogueado: localStorage.getItem("registrado") === "true", // 🔥 Estado inicial desde localStorage
     };
   },
   computed: {
@@ -94,14 +82,8 @@ export default {
   },
   methods: {
     async submitForm() {
-      // Depuración: imprimir valores actuales (opcional)
-      console.log("LocalStorage registrado:", localStorage.getItem("registrado"));
-      console.log("LocalStorage correo:", localStorage.getItem("correo"));
-      console.log("this.email:", this.email);
-
-      // Verifica si ya hay una sesión activa para este usuario
       if (
-        this.usuarioLogueado &&
+        localStorage.getItem("registrado") === "true" &&
         localStorage.getItem("correo") &&
         localStorage.getItem("correo").toLowerCase() === this.email.toLowerCase()
       ) {
@@ -116,7 +98,7 @@ export default {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            correo: this.email, // Se envía 'correo' para coincidir con el backend
+            correo: this.email,
             password: this.password,
           }),
         });
@@ -126,14 +108,16 @@ export default {
           throw new Error(errorText);
         }
 
-        const text = await response.text();
-        console.log("Respuesta del servidor:", text);
+        const data = await response.json();
+        console.log("Respuesta del servidor:", data);
 
-        if (text.includes("Inicio de sesión exitoso")) {
+        if (data.success) {
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
-          this.usuarioLogueado = true; // Actualiza la propiedad reactiva
-          alert(text);
+          localStorage.setItem("userId", data.userId);
+
+          this.usuarioLogueado = true; // 🔥 ACTUALIZA EL ESTADO EN TIEMPO REAL
+          alert(data.message);
           this.$router.push("/");
         } else {
           alert("Credenciales incorrectas");
@@ -149,16 +133,17 @@ export default {
     cerrarSesion() {
       localStorage.removeItem("registrado");
       localStorage.removeItem("correo");
-      this.usuarioLogueado = false; // Actualiza la propiedad reactiva
+      this.usuarioLogueado = false; // 🔥 ACTUALIZA EL ESTADO EN TIEMPO REAL
       this.$router.push("/");
     },
   },
   mounted() {
-    // Si deseas que al iniciar la aplicación se verifique el estado (opcional)
+    // 🔥 Verifica el estado de sesión al cargar la página
     this.usuarioLogueado = localStorage.getItem("registrado") === "true";
   },
 };
 </script>
+
 
 <style scoped>
 /* Botón de cerrar sesión en la esquina superior derecha */
@@ -173,7 +158,8 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-  z-index: 2000; /* Asegura que esté encima de otros elementos */
+  z-index: 2000;
+  /* Asegura que esté encima de otros elementos */
 }
 
 .logout-button:hover {
@@ -185,7 +171,8 @@ export default {
   padding: 50px 20px;
   max-width: 1000px;
   margin: auto;
-  position: relative; /* Para que el botón posicionado sea relativo a este contenedor */
+  position: relative;
+  /* Para que el botón posicionado sea relativo a este contenedor */
 }
 
 /* Contenedor superior que organiza todo */
@@ -391,6 +378,7 @@ input[type="number"]:focus {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

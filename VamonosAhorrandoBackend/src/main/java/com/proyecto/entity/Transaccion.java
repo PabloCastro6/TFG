@@ -28,15 +28,22 @@ public class Transaccion {
     @ManyToOne
     @JoinColumn(name = "usuarioId", referencedColumnName = "idUsuario", nullable = false)
     private Usuario usuario;
+    
+    @Column(name="tipo")
+    private String tipo;
 
     public Transaccion() {}
 
-    public Transaccion(LocalDate fecha, double cantidad, Categoria categoria, Usuario usuario) {
-        this.fecha = fecha;
-        this.cantidad = cantidad;
-        this.categoria = categoria;
-        this.usuario = usuario;
-    }
+	public Transaccion(Integer idTransaccion, LocalDate fecha, double cantidad, Categoria categoria, Usuario usuario,
+			String tipo) {
+		super();
+		this.idTransaccion = idTransaccion;
+		this.fecha = fecha;
+		this.cantidad = cantidad;
+		this.categoria = categoria;
+		this.usuario = usuario;
+		this.tipo = tipo;
+	}
 
 	public Integer getIdTransaccion() {
 		return idTransaccion;
@@ -78,6 +85,13 @@ public class Transaccion {
 		this.usuario = usuario;
 	}
 
-    
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
     
 }

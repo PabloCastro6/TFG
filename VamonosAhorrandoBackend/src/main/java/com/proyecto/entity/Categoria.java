@@ -15,13 +15,6 @@ public class Categoria {
     @Column (name = "nombre")
     private String nombre;
     
-    @Column (name = "tipo")
-    private String tipo; // "ingreso" o "gasto"
-    
-    @ManyToOne
-    @JoinColumn(name="usuarioId", referencedColumnName= "idUsuario")
-    private Usuario usuario;
-    
     @OneToMany(mappedBy = "categoria")
     private List<Transaccion> transacciones;
     
@@ -31,11 +24,10 @@ public class Categoria {
 		super();
 	}
 
-	public Categoria(String nombre, String tipo, Usuario usuario) {
+	public Categoria(String nombre) {
 		super();
 		this.nombre = nombre;
-		this.tipo = tipo;
-		this.usuario = usuario;
+
 	}
 
 	public Integer getIdCategoria() {
@@ -52,22 +44,6 @@ public class Categoria {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public String getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
 	}
     
     

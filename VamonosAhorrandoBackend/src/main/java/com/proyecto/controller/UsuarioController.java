@@ -3,7 +3,9 @@ package com.proyecto.controller;
 import com.proyecto.entity.Usuario;
 import com.proyecto.repository.UsuarioRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +33,24 @@ public class UsuarioController {
 
     @PostMapping("/iniciarSesion")
     public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
-        // Buscar usuario por correo y contraseña
+        // Usamos el método findByCorreoAndPassword (asegúrate de tenerlo en tu repositorio)
         Usuario usuarioEncontrado = usuarioRepository.findByCorreoAndPassword(usuario.getCorreo(), usuario.getPassword());
         
         if (usuarioEncontrado != null) {
-            // Si el usuario existe, devolver una respuesta exitosa
-            return ResponseEntity.ok("Inicio de sesión exitoso para: " + usuarioEncontrado.getNombreCompleto());
+            // Construir una respuesta JSON con el id del usuario
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("userId", usuarioEncontrado.getIdUsuario());
+            response.put("message", "Inicio de sesión exitoso para: " + usuarioEncontrado.getNombreCompleto());
+            return ResponseEntity.ok(response);
         } else {
-            // Si el usuario no existe, devolver un error
-            return ResponseEntity.status(401).body("Credenciales incorrectas");
+            // Devuelve un error si las credenciales son incorrectas
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Credenciales incorrectas");
+            return ResponseEntity.status(401).body(errorResponse);
         }
     }
+
 
 }

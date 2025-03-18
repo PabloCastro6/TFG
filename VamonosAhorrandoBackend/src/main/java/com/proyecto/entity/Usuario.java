@@ -33,9 +33,6 @@ public class Usuario {
     
     @OneToMany(mappedBy = "usuario")
     private List <Transaccion> transacciones;
-    
-    @OneToMany(mappedBy = "usuario")
-    private List <Categoria> categorias;
 	
 	
 	public Usuario() {

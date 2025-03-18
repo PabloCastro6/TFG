@@ -2,36 +2,35 @@
   <div class="calendario-container">
     <h2>📅 Calendario de Gastos e Ingresos</h2>
 
-    <!-- 🔄 Navegación del mes con botones estilizados -->
+    <!-- Navegación del mes -->
     <div class="navegacion">
       <button class="btn-nav" @click="cambiarMes(-1)">&#10094; Anterior</button>
       <h3 class="mes-actual">{{ nombreMes }} {{ anio }}</h3>
       <button class="btn-nav" @click="cambiarMes(1)">Siguiente &#10095;</button>
     </div>
 
-    <!-- 📆 Tabla del calendario -->
-    <table class="calendario">
+    <!-- Tabla del calendario -->
+    <table>
       <thead>
         <tr>
-          <th v-for="(dia, index) in diasSemana" :key="index">{{ dia }}</th>
+          <th v-for="diaSemana in diasSemana" :key="diaSemana">{{ diaSemana }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(semana, index) in semanas" :key="index">
-          <td v-for="(dia, i) in semana" :key="i" :class="['dia', { 'dia-vacio': !dia }]" @click="seleccionarFecha(dia)"
-            :style="!dia ? { pointerEvents: 'none' } : {}">
+        <tr v-for="(row, rowIndex) in crearCalendario(diasDelMes, diasAntes)" :key="rowIndex">
+          <td v-for="(dia, colIndex) in row" :key="colIndex" :class="['dia', { 'dia-vacio': dia === null }]"
+            @click="seleccionarFecha(dia)" @mouseover="mostrarInformacion(dia, $event)" @mouseout="ocultarInformacion"
+            :style="dia === null ? { pointerEvents: 'none' } : {}">
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
             <div class="puntos">
-              <span v-if="hayTransaccion(dia, 'ingreso')" class="punto ingreso"
-                @mouseover="mostrarInformacion(dia, 'ingreso', $event)" @mouseleave="ocultarInformacion"></span>
-              <span v-if="hayTransaccion(dia, 'gasto')" class="punto gasto"
-                @mouseover="mostrarInformacion(dia, 'gasto', $event)" @mouseleave="ocultarInformacion"></span>
+              <span v-if="hayTransaccion(dia, 'ingreso')" class="punto ingreso"></span>
+              <span v-if="hayTransaccion(dia, 'gasto')" class="punto gasto"></span>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
-
+    <!-- Tooltip para mostrar información de las transacciones -->
     <div v-if="mostrarTooltipFlag" class="tooltip show"
       :class="{ 'ingreso-tooltip': tooltipTipo === 'ingreso', 'gasto-tooltip': tooltipTipo === 'gasto' }"
       :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }">
@@ -42,21 +41,48 @@
         </ul>
       </div>
     </div>
+    <div v-for="transaccion in transacciones" :key="transaccion.idTransaccion">
+      <p>{{ transaccion.fecha }}: {{ transaccion.cantidad }} </p>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "CalendarioGastos",
+  name: "Calendario",
   props: {
-    transacciones: Array,
-    usuarioId: String // Recibimos las transacciones de ConfiguracionAhorro.vue
+    transacciones: {
+      type: Array,
+      required: true
+    }
+  },
+  watch: {
+    transacciones(newTransacciones) {
+      console.log("📋 Transacciones recibidas en Calendario.vue:", JSON.stringify(newTransacciones, null, 2));
+    }
   },
   data() {
+    const hoy = new Date();
+    const mes = hoy.getMonth(); // Mes actual
+    const anio = hoy.getFullYear(); // Año actual
+
+    // Obtener el primer día del mes
+    const primerDiaDelMes = new Date(anio, mes, 1);
+
+    // Obtener el número de días en el mes
+    const ultimoDiaDelMes = new Date(anio, mes + 1, 0);
+    const diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
+
+    // Calcular el primer día de la semana para el mes
+    const primerDiaDeLaSemana = primerDiaDelMes.getDay(); // 0: Domingo, 1: Lunes, etc.
+    const diasAntes = primerDiaDeLaSemana === 0 ? 6 : primerDiaDeLaSemana - 1; // Ajustamos para que la semana comience en lunes
+
     return {
-      mes: new Date().getMonth(),
-      anio: new Date().getFullYear(),
+      mes: mes,
+      anio: anio,
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+      diasDelMes: diasDelMes,
+      diasAntes: diasAntes, // Número de días en blanco al inicio del mes
       mostrarTooltipFlag: false,
       tooltipTexto: [],
       tooltipTipo: "",
@@ -64,34 +90,63 @@ export default {
       tooltipY: 0,
     };
   },
+
   mounted() {
-    console.log("Transacciones recibidas:", this.transacciones);
+    console.log("📡 Transacciones antes de pasar a Calendario:", this.transacciones);
   },
   computed: {
     nombreMes() {
-      return new Date(this.anio, this.mes).toLocaleString("es-ES", {
-        month: "long",
-      });
+      return new Date(this.anio, this.mes).toLocaleString("es-ES", { month: "long" });
     },
     diasEnMes() {
       return new Date(this.anio, this.mes + 1, 0).getDate();
     },
     semanas() {
       let primerDiaMes = new Date(this.anio, this.mes, 1).getDay();
+      // Si getDay() retorna 0 (domingo), lo convertimos a 6 para que la semana inicie en lunes.
       primerDiaMes = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
       let diasMes = this.diasEnMes;
-      let dias = Array(primerDiaMes)
-        .fill(null)
-        .concat([...Array(diasMes).keys()].map((i) => i + 1));
-
+      let dias = Array(primerDiaMes).fill(null).concat([...Array(diasMes).keys()].map(i => i + 1));
       let semanas = [];
       while (dias.length) {
         semanas.push(dias.splice(0, 7));
       }
       return semanas;
     },
+    // Convierte usuarioId a número para comparaciones
+    usuarioIdNum() {
+      return parseInt(this.usuarioId) || 0; // Si no hay usuarioId, usar 0 para evitar errores
+    }
+
   },
   methods: {
+
+    crearCalendario(diasDelMes, diasAntes) {
+      const calendario = [];
+      let semana = [];
+
+      // Crear los primeros días vacíos para alinear el calendario
+      for (let i = 0; i < diasAntes; i++) {
+        semana.push(null); // Los primeros días antes del inicio del mes
+      }
+
+      // Agregar los días del mes
+      diasDelMes.forEach((dia) => {
+        semana.push(dia);
+        if (semana.length === 7) {
+          calendario.push(semana);
+          semana = [];
+        }
+      });
+
+      // Si quedan días en la semana incompleta, añadirla también
+      if (semana.length > 0) {
+        calendario.push(semana);
+      }
+
+      return calendario;
+    },
+
     cambiarMes(direccion) {
       this.mes += direccion;
       if (this.mes < 0) {
@@ -102,35 +157,68 @@ export default {
         this.anio++;
       }
     },
-    hayTransaccion(dia, tipo) {
-      return this.transacciones.some(
-        (transaccion) => {
-          const fecha = new Date(transaccion.fecha);
-          return (
-            fecha.getDate() === dia &&
-            fecha.getMonth() === this.mes && // Asegura que el mes coincida
-            fecha.getFullYear() === this.anio && // Asegura que el año coincida
-            transaccion.tipo === tipo &&
-            transaccion.usuarioId === this.usuarioId // Filtra por usuario
-          );
-        }
-      );
+    hayTransaccion(dia, categoriaFiltro) {
+      console.log(`🔍 Verificando transacciones para el día: ${dia}, Mes: ${this.mes + 1}, Año: ${this.anio}`);
 
-    },
-    mostrarInformacion(dia, tipo, event) {
-      const transaccionesDelDia = this.transacciones.filter(
-        (transaccion) =>
-          new Date(transaccion.fecha).getDate() === dia &&
-          new Date(transaccion.fecha).getMonth() === this.mes &&
-          new Date(transaccion.fecha).getFullYear() === this.anio &&
-          transaccion.tipo === tipo
-      );
+      return this.transacciones.some(transaccion => {
+        const partesFecha = transaccion.fecha.split("-");
+        const fechaFormateada = new Date(`${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`);
 
-      if (transaccionesDelDia.length > 0) {
-        this.tooltipTexto = transaccionesDelDia.map(
-          (transaccion) => `${transaccion.concepto}: ${transaccion.cantidad}€`
+        console.log(`📅 Comparando con transacción: ${transaccion.fecha}, Usuario: ${transaccion.usuario.idUsuario}`);
+
+        return (
+          fechaFormateada.getDate() === dia &&
+          fechaFormateada.getMonth() === this.mes &&
+          fechaFormateada.getFullYear() === this.anio &&
+          transaccion.categoria &&
+          transaccion.categoria.nombre === categoriaFiltro &&
+          transaccion.usuario &&
+          transaccion.usuario.idUsuario === this.usuarioIdNum
         );
-        this.tooltipTipo = tipo;
+      });
+    },
+
+    mostrarInformacion(dia, event) {
+      // Filtrar transacciones de ingreso
+      const transaccionesIngreso = this.transacciones.filter(transaccion => {
+        const partesFecha = transaccion.fecha.split("-");
+        const fecha = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]); // Formato correcto: año, mes (0-indexed), día
+
+        return (
+          fecha.getDate() === dia &&
+          fecha.getMonth() === this.mes &&
+          fecha.getFullYear() === this.anio &&
+          transaccion.categoria &&
+          transaccion.categoria.nombre === 'ingreso' &&
+          transaccion.usuario &&
+          transaccion.usuario.idUsuario === this.usuarioIdNum
+        );
+      });
+
+      // Filtrar transacciones de gasto
+      const transaccionesGasto = this.transacciones.filter(transaccion => {
+        const partesFecha = transaccion.fecha.split("-");
+        const fecha = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]);
+
+        return (
+          fecha.getDate() === dia &&
+          fecha.getMonth() === this.mes &&
+          fecha.getFullYear() === this.anio &&
+          transaccion.categoria &&
+          transaccion.categoria.nombre === 'gasto' &&
+          transaccion.usuario &&
+          transaccion.usuario.idUsuario === this.usuarioIdNum
+        );
+      });
+
+      // Mostrar las transacciones en el tooltip si existen
+      if (transaccionesIngreso.length > 0 || transaccionesGasto.length > 0) {
+        this.tooltipTexto = [
+          ...transaccionesIngreso.map(transaccion => `${transaccion.tipo}: ${transaccion.cantidad}€`),
+          ...transaccionesGasto.map(transaccion => `${transaccion.tipo}: ${transaccion.cantidad}€`)
+        ];
+
+        this.tooltipTipo = transaccionesIngreso.length > 0 ? 'ingreso' : 'gasto';
         this.tooltipX = event.pageX + 10;
         this.tooltipY = event.pageY + 10;
         this.mostrarTooltipFlag = true;
@@ -140,24 +228,19 @@ export default {
       this.mostrarTooltipFlag = false;
     },
     seleccionarFecha(dia) {
-      if (!dia) return;
-
-      // Crea la fecha sin cambiar la zona horaria
+      console.log("Día seleccionado:", dia);
+      if (dia === null) return; // Si es un día vacío, no hacer nada
       const fechaSeleccionada = new Date(this.anio, this.mes, dia);
-
-      // Convertir a formato sin problemas de zona horaria
-      const formatoFecha = fechaSeleccionada.getFullYear() + '-' +
-        String(fechaSeleccionada.getMonth() + 1).padStart(2, '0') + '-' +
-        String(fechaSeleccionada.getDate()).padStart(2, '0');
-
-      this.$emit("fecha-seleccionada", formatoFecha);
+      const formatoFecha = `${fechaSeleccionada.getFullYear()}-${String(fechaSeleccionada.getMonth() + 1).padStart(2, '0')}-${String(fechaSeleccionada.getDate()).padStart(2, '0')}`;
+      this.$emit("fecha-seleccionada", formatoFecha); // Emitir la fecha seleccionada
     },
-  },
+
+
+  }
 };
 </script>
 
 <style scoped>
-/* 📌 Estilos generales */
 .calendario-container {
   flex: 7;
   max-width: 70%;
@@ -167,7 +250,6 @@ export default {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
   height: 83vh;
-  /* Ajusta la altura para que ocupe el 90% de la pantalla */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -175,7 +257,6 @@ export default {
   margin: auto;
 }
 
-/* 📆 Tabla del calendario */
 .calendario {
   width: 100%;
   border-collapse: collapse;
@@ -187,7 +268,6 @@ export default {
 .calendario td {
   padding: 10px;
   height: 50px;
-  /* Reduce altura de las celdas */
   font-size: 0.9rem;
   border: 1px solid black;
 }
@@ -197,15 +277,11 @@ export default {
   transform: scale(1);
 }
 
-/* 📆 Tabla del calendario */
 .calendario td.dia-vacio {
   pointer-events: none;
   border: none;
-  /* Desactiva la selección de los días vacíos */
-
 }
 
-/* 📌 Puntos */
 .puntos {
   display: flex;
   justify-content: center;
@@ -231,8 +307,6 @@ export default {
   background-color: #c0392b;
 }
 
-
-/* 🔄 Navegación del mes */
 .navegacion {
   display: flex;
   align-items: center;
@@ -260,12 +334,10 @@ export default {
   transform: translateY(0);
 }
 
-/* Tooltip de ingreso (verde) */
 .ingreso-tooltip {
   background-color: #27ae60;
 }
 
-/* Tooltip de gasto (rojo) */
 .gasto-tooltip {
   background-color: #c0392b;
 }
@@ -275,8 +347,6 @@ export default {
   overflow-y: auto;
 }
 
-
-/* 📌 Botones */
 .btn-nav {
   background-color: #007bff;
   color: white;

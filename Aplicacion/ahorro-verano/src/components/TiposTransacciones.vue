@@ -165,7 +165,8 @@ export default {
 /* 📌 Estilos generales */
 .registro-transacciones {
   flex: 3;
-  max-width: 30%;
+  max-width: 100%;
+  width: 40%;
   text-align: center;
   background: white;
   padding: 25px;
@@ -174,6 +175,7 @@ export default {
   margin: auto;
   transition: transform 0.3s ease-in-out;
   margin-left: 5%;
+  margin-top: 5%;
 }
 
 .registro-transacciones:hover {

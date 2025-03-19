@@ -136,18 +136,21 @@ export default {
 </script>
 
 <style scoped>
+body {
+  overflow: hidden;
+}
 .calendario-container {
-  max-width: 70%;
+  max-width: 80%;
+  width: 65%;
   background: white;
   padding: 15px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  height: 100vh;
+  height: 60vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  margin: auto;
 }
 
 .calendario {
@@ -160,7 +163,7 @@ export default {
 .calendario th,
 .calendario td {
   padding: 15px;
-  height: 70px;
+  height: 35px;
   font-size: 1rem;
   border: 2px solid black;
   text-align: center;

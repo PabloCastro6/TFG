@@ -10,7 +10,7 @@
     </div>
 
     <!-- Tabla del calendario -->
-    <table>
+    <table class="calendario">
       <thead>
         <tr>
           <th v-for="diaSemana in diasSemana" :key="diaSemana">{{ diaSemana }}</th>
@@ -19,31 +19,19 @@
       <tbody>
         <tr v-for="(row, rowIndex) in crearCalendario(diasDelMes, diasAntes)" :key="rowIndex">
           <td v-for="(dia, colIndex) in row" :key="colIndex" :class="['dia', { 'dia-vacio': dia === null }]"
-            @click="seleccionarFecha(dia)" @mouseover="mostrarInformacion(dia, $event)" @mouseout="ocultarInformacion"
-            :style="dia === null ? { pointerEvents: 'none' } : {}">
+            @click="seleccionarFecha(dia)" :style="dia === null ? { pointerEvents: 'none' } : {}">
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
-            <div class="puntos">
-              <span v-if="hayTransaccion(dia, 'ingreso')" class="punto ingreso"></span>
-              <span v-if="hayTransaccion(dia, 'gasto')" class="punto gasto"></span>
+            <!-- Puntos de transacciones con tooltip -->
+            <div class="puntos" v-if="dia">
+              <span v-for="trans in transaccionesDelDia(dia)" :key="trans.idTransaccion"
+                :data-tooltip="`${trans.tipo}: ${trans.cantidad}€`"
+                :class="['punto', trans.categoria.nombre.toLowerCase(), 'tooltip']">
+              </span>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
-    <!-- Tooltip para mostrar información de las transacciones -->
-    <div v-if="mostrarTooltipFlag" class="tooltip show"
-      :class="{ 'ingreso-tooltip': tooltipTipo === 'ingreso', 'gasto-tooltip': tooltipTipo === 'gasto' }"
-      :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }">
-      <div class="tooltip-content">
-        <strong>{{ tooltipTipo === 'ingreso' ? 'Ingresos' : 'Gastos' }}:</strong>
-        <ul>
-          <li v-for="(valor, idx) in tooltipTexto" :key="idx">{{ valor }}</li>
-        </ul>
-      </div>
-    </div>
-    <div v-for="transaccion in transacciones" :key="transaccion.idTransaccion">
-      <p>{{ transaccion.fecha }}: {{ transaccion.cantidad }} </p>
-    </div>
   </div>
 </template>
 
@@ -54,6 +42,10 @@ export default {
     transacciones: {
       type: Array,
       required: true
+    },
+    usuarioId: {
+      type: String,
+      required: true
     }
   },
   watch: {
@@ -63,74 +55,36 @@ export default {
   },
   data() {
     const hoy = new Date();
-    const mes = hoy.getMonth(); // Mes actual
-    const anio = hoy.getFullYear(); // Año actual
-
-    // Obtener el primer día del mes
+    const mes = hoy.getMonth();
+    const anio = hoy.getFullYear();
     const primerDiaDelMes = new Date(anio, mes, 1);
-
-    // Obtener el número de días en el mes
     const ultimoDiaDelMes = new Date(anio, mes + 1, 0);
     const diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
-
-    // Calcular el primer día de la semana para el mes
-    const primerDiaDeLaSemana = primerDiaDelMes.getDay(); // 0: Domingo, 1: Lunes, etc.
-    const diasAntes = primerDiaDeLaSemana === 0 ? 6 : primerDiaDeLaSemana - 1; // Ajustamos para que la semana comience en lunes
-
+    const primerDiaDeLaSemana = primerDiaDelMes.getDay();
+    const diasAntes = primerDiaDeLaSemana === 0 ? 6 : primerDiaDeLaSemana - 1;
     return {
-      mes: mes,
-      anio: anio,
+      mes,
+      anio,
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-      diasDelMes: diasDelMes,
-      diasAntes: diasAntes, // Número de días en blanco al inicio del mes
-      mostrarTooltipFlag: false,
-      tooltipTexto: [],
-      tooltipTipo: "",
-      tooltipX: 0,
-      tooltipY: 0,
+      diasDelMes,
+      diasAntes
     };
-  },
-
-  mounted() {
-    console.log("📡 Transacciones antes de pasar a Calendario:", this.transacciones);
   },
   computed: {
     nombreMes() {
       return new Date(this.anio, this.mes).toLocaleString("es-ES", { month: "long" });
     },
-    diasEnMes() {
-      return new Date(this.anio, this.mes + 1, 0).getDate();
-    },
-    semanas() {
-      let primerDiaMes = new Date(this.anio, this.mes, 1).getDay();
-      // Si getDay() retorna 0 (domingo), lo convertimos a 6 para que la semana inicie en lunes.
-      primerDiaMes = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
-      let diasMes = this.diasEnMes;
-      let dias = Array(primerDiaMes).fill(null).concat([...Array(diasMes).keys()].map(i => i + 1));
-      let semanas = [];
-      while (dias.length) {
-        semanas.push(dias.splice(0, 7));
-      }
-      return semanas;
-    },
-    // Convierte usuarioId a número para comparaciones
     usuarioIdNum() {
-      return parseInt(this.usuarioId) || 0; // Si no hay usuarioId, usar 0 para evitar errores
+      return parseInt(this.usuarioId) || 0;
     }
-
   },
   methods: {
-
     crearCalendario(diasDelMes, diasAntes) {
       const calendario = [];
       let semana = [];
-
-      // Crear los primeros días vacíos para alinear el calendario
       for (let i = 0; i < diasAntes; i++) {
-        semana.push(null); // Los primeros días antes del inicio del mes
+        semana.push(null);
       }
-
-      // Agregar los días del mes
       diasDelMes.forEach((dia) => {
         semana.push(dia);
         if (semana.length === 7) {
@@ -138,15 +92,11 @@ export default {
           semana = [];
         }
       });
-
-      // Si quedan días en la semana incompleta, añadirla también
       if (semana.length > 0) {
         calendario.push(semana);
       }
-
       return calendario;
     },
-
     cambiarMes(direccion) {
       this.mes += direccion;
       if (this.mes < 0) {
@@ -156,120 +106,64 @@ export default {
         this.mes = 0;
         this.anio++;
       }
+      const primerDiaDelMes = new Date(this.anio, this.mes, 1);
+      const ultimoDiaDelMes = new Date(this.anio, this.mes + 1, 0);
+      this.diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
+      const primerDiaDeLaSemana = primerDiaDelMes.getDay();
+      this.diasAntes = primerDiaDeLaSemana === 0 ? 6 : primerDiaDeLaSemana - 1;
     },
-    hayTransaccion(dia, categoriaFiltro) {
-      console.log(`🔍 Verificando transacciones para el día: ${dia}, Mes: ${this.mes + 1}, Año: ${this.anio}`);
-
-      return this.transacciones.some(transaccion => {
+    transaccionesDelDia(dia) {
+      return this.transacciones.filter(transaccion => {
         const partesFecha = transaccion.fecha.split("-");
         const fechaFormateada = new Date(`${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`);
-
-        console.log(`📅 Comparando con transacción: ${transaccion.fecha}, Usuario: ${transaccion.usuario.idUsuario}`);
-
         return (
           fechaFormateada.getDate() === dia &&
           fechaFormateada.getMonth() === this.mes &&
           fechaFormateada.getFullYear() === this.anio &&
-          transaccion.categoria &&
-          transaccion.categoria.nombre === categoriaFiltro &&
           transaccion.usuario &&
           transaccion.usuario.idUsuario === this.usuarioIdNum
         );
       });
-    },
-
-    mostrarInformacion(dia, event) {
-      // Filtrar transacciones de ingreso
-      const transaccionesIngreso = this.transacciones.filter(transaccion => {
-        const partesFecha = transaccion.fecha.split("-");
-        const fecha = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]); // Formato correcto: año, mes (0-indexed), día
-
-        return (
-          fecha.getDate() === dia &&
-          fecha.getMonth() === this.mes &&
-          fecha.getFullYear() === this.anio &&
-          transaccion.categoria &&
-          transaccion.categoria.nombre === 'ingreso' &&
-          transaccion.usuario &&
-          transaccion.usuario.idUsuario === this.usuarioIdNum
-        );
-      });
-
-      // Filtrar transacciones de gasto
-      const transaccionesGasto = this.transacciones.filter(transaccion => {
-        const partesFecha = transaccion.fecha.split("-");
-        const fecha = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]);
-
-        return (
-          fecha.getDate() === dia &&
-          fecha.getMonth() === this.mes &&
-          fecha.getFullYear() === this.anio &&
-          transaccion.categoria &&
-          transaccion.categoria.nombre === 'gasto' &&
-          transaccion.usuario &&
-          transaccion.usuario.idUsuario === this.usuarioIdNum
-        );
-      });
-
-      // Mostrar las transacciones en el tooltip si existen
-      if (transaccionesIngreso.length > 0 || transaccionesGasto.length > 0) {
-        this.tooltipTexto = [
-          ...transaccionesIngreso.map(transaccion => `${transaccion.tipo}: ${transaccion.cantidad}€`),
-          ...transaccionesGasto.map(transaccion => `${transaccion.tipo}: ${transaccion.cantidad}€`)
-        ];
-
-        this.tooltipTipo = transaccionesIngreso.length > 0 ? 'ingreso' : 'gasto';
-        this.tooltipX = event.pageX + 10;
-        this.tooltipY = event.pageY + 10;
-        this.mostrarTooltipFlag = true;
-      }
-    },
-    ocultarInformacion() {
-      this.mostrarTooltipFlag = false;
     },
     seleccionarFecha(dia) {
-      console.log("Día seleccionado:", dia);
-      if (dia === null) return; // Si es un día vacío, no hacer nada
+      if (dia === null) return;
       const fechaSeleccionada = new Date(this.anio, this.mes, dia);
       const formatoFecha = `${fechaSeleccionada.getFullYear()}-${String(fechaSeleccionada.getMonth() + 1).padStart(2, '0')}-${String(fechaSeleccionada.getDate()).padStart(2, '0')}`;
-      this.$emit("fecha-seleccionada", formatoFecha); // Emitir la fecha seleccionada
-    },
-
-
+      this.$emit("fecha-seleccionada", formatoFecha);
+    }
   }
 };
 </script>
 
 <style scoped>
 .calendario-container {
-  flex: 7;
   max-width: 70%;
   background: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  height: 83vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+  justify-content: space-around;
   margin: auto;
 }
 
 .calendario {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid black;
-  flex-grow: 1;
+  border: 2px solid black;
+  margin-bottom: 15px;
 }
 
 .calendario th,
 .calendario td {
-  padding: 10px;
-  height: 50px;
-  font-size: 0.9rem;
-  border: 1px solid black;
+  padding: 15px;
+  height: 70px;
+  font-size: 1rem;
+  border: 2px solid black;
+  text-align: center;
 }
 
 .calendario td:hover {
@@ -286,11 +180,12 @@ export default {
   display: flex;
   justify-content: center;
   gap: 5px;
+  margin-top: 5px;
 }
 
 .punto {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   transition: transform 0.2s ease-in-out;
 }
@@ -299,6 +194,7 @@ export default {
   transform: scale(1.2);
 }
 
+/* Colores según la categoría */
 .ingreso {
   background-color: #27ae60;
 }
@@ -314,39 +210,6 @@ export default {
   margin-bottom: 10px;
 }
 
-.tooltip {
-  position: absolute;
-  background-color: #27ae60;
-  color: #fff;
-  border-radius: 8px;
-  padding: 10px;
-  max-width: 250px;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
-}
-
-.tooltip.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.ingreso-tooltip {
-  background-color: #27ae60;
-}
-
-.gasto-tooltip {
-  background-color: #c0392b;
-}
-
-.tooltip-content {
-  max-height: 150px;
-  overflow-y: auto;
-}
-
 .btn-nav {
   background-color: #007bff;
   color: white;
@@ -359,5 +222,45 @@ export default {
 
 .btn-nav:hover {
   background-color: #0056b3;
+}
+
+/* Estilo general del tooltip */
+.tooltip {
+  position: relative;
+  cursor: pointer;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 14px;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Mostrar el tooltip cuando el mouse está encima */
+.tooltip:hover::after {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+/* Estilos para ingresos (verde) */
+.ingreso.tooltip::after {
+  background-color: #2ecc71;
+}
+
+/* Estilos para gastos (rojo) */
+.gasto.tooltip::after {
+  background-color: #e74c3c;
 }
 </style>

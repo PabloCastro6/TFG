@@ -2,7 +2,8 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- 📅 Calendario con transacciones filtradas -->
-      <Calendario :transacciones="transacciones" @fecha-seleccionada="actualizarFecha" />
+      <Calendario :transacciones="transacciones" :usuarioId="userId" @fecha-seleccionada="actualizarFecha" />
+      
 
       <!-- 📌 Formulario de transacciones -->
       <TiposTransacciones :fechaPreseleccionada="fechaSeleccionada" @nueva-transaccion="agregarTransaccion" />

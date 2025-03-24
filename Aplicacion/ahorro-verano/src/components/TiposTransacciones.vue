@@ -7,16 +7,10 @@
 
     <label for="tipo">🔄 Categoría:</label>
     <div class="tipo-opciones">
-      <button
-        :class="{ activo: categoriaSeleccionada === 'ingreso' }"
-        @click="seleccionarCategoria('ingreso')"
-      >
+      <button :class="{ activo: categoriaSeleccionada === 'ingreso' }" @click="seleccionarCategoria('ingreso')">
         💰 Ingreso
       </button>
-      <button
-        :class="{ activo: categoriaSeleccionada === 'gasto' }"
-        @click="seleccionarCategoria('gasto')"
-      >
+      <button :class="{ activo: categoriaSeleccionada === 'gasto' }" @click="seleccionarCategoria('gasto')">
         💸 Gasto
       </button>
     </div>
@@ -26,23 +20,14 @@
       <label for="subtipo">📋 Concepto:</label>
       <select v-model="conceptoSeleccionado" class="label">
         <option value="" disabled>Selecciona un concepto</option>
-        <option
-          v-for="(opcion, index) in opcionesDisponibles"
-          :key="index"
-          :value="opcion"
-        >
+        <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
           {{ opcion }}
         </option>
       </select>
     </div>
 
     <label for="cantidad">💵 Cantidad (€):</label>
-    <input
-      type="number"
-      class="label"
-      v-model="cantidadSeleccionada"
-      placeholder="Introduce la cantidad"
-    />
+    <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
 
     <button :disabled="!registrado" class="guardar-btn" @click="guardarRegistro">
       Guardar
@@ -54,6 +39,8 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
+
 export default {
   name: "TiposTransacciones",
   props: {
@@ -105,42 +92,31 @@ export default {
     },
     async guardarRegistro() {
       if (!this.registrado) {
-        alert("Debes iniciar sesión para realizar esta acción.");
+        Swal.fire("⚠️ Atención", "Debes iniciar sesión para realizar esta acción.", "warning");
         return;
       }
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada || !this.conceptoSeleccionado) {
-        alert("⚠️ Por favor, completa todos los campos, incluido el concepto.");
+        Swal.fire("⚠️ Campos incompletos", "Por favor, completa todos los campos.", "error");
         return;
       }
-      
-      // Convertir la fecha del input (yyyy-MM-dd) a dd-MM-yyyy
+
       const [year, month, day] = this.fechaSeleccionada.split("-");
       const fechaParaEnviar = `${day}-${month}-${year}`;
 
-      // Construye el objeto de la nueva transacción
       const nuevaTransaccion = {
         fecha: fechaParaEnviar,
         cantidad: parseFloat(this.cantidadSeleccionada),
-        usuario: {
-          idUsuario: parseInt(this.userId)
-        },
-        // La categoría se envía como objeto con la propiedad "nombre"
-        categoria: {
-          nombre: this.categoriaSeleccionada
-        },
-        // El campo "tipo" se usa para almacenar el concepto seleccionado
-        tipo: this.conceptoSeleccionado
+        usuario: { idUsuario: parseInt(this.userId) },
+        categoria: { nombre: this.categoriaSeleccionada },
+        tipo: this.conceptoSeleccionado,
       };
 
-      // Emite el evento (opcional)
       this.$emit("nueva-transaccion", nuevaTransaccion);
 
       try {
         const respuesta = await fetch("http://localhost:8080/transacciones/transaccion", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nuevaTransaccion),
         });
 
@@ -148,15 +124,23 @@ export default {
           throw new Error("Error en la llamada a la API");
         }
 
-        const data = await respuesta.json();
-        console.log("Transacción creada:", data);
+        Swal.fire({
+          title: "✅ Transacción registrada",
+          html: `
+        <b>📅 Fecha:</b> ${nuevaTransaccion.fecha} <br>
+        <b>🔄 Categoría:</b> ${nuevaTransaccion.categoria.nombre} <br>
+        <b>📋 Concepto:</b> ${nuevaTransaccion.tipo} <br>
+        <b>💵 Cantidad:</b> ${nuevaTransaccion.cantidad}€ <br>
+      `,
+          icon: "success",
+        });
 
-        alert(`✅ Transacción registrada: ${nuevaTransaccion.categoria.nombre} - ${nuevaTransaccion.tipo} de ${nuevaTransaccion.cantidad}€ el ${this.fechaFormateada}. ID de usuario: ${this.userId}`);
       } catch (error) {
         console.error("Error al enviar la transacción:", error);
-        alert("❌ Error al enviar la transacción a la API");
+        Swal.fire("❌ Error", "No se pudo registrar la transacción. Inténtalo de nuevo.", "error");
       }
     }
+
   }
 };
 </script>
@@ -260,6 +244,7 @@ input:focus {
 .subtipo-opciones {
   margin-top: 10px;
 }
+
 .subtipo-opciones select {
   width: 90%;
   padding: 12px;
@@ -268,6 +253,7 @@ input:focus {
   font-size: 1rem;
   transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
+
 .subtipo-opciones select:focus {
   border-color: #2c3e50;
   outline: none;
@@ -288,6 +274,7 @@ input:focus {
   cursor: pointer;
   transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
+
 .guardar-btn:hover {
   background: #1a252f;
   transform: scale(1.05);
@@ -303,9 +290,11 @@ input:focus {
   .registro-transacciones {
     width: 90%;
   }
+
   .tipo-opciones {
     flex-direction: column;
   }
+
   .tipo-opciones button {
     margin: 5px 0;
   }

@@ -58,6 +58,6 @@ ALTER TABLE categorias AUTO_INCREMENT = 1;
 ALTER TABLE transacciones AUTO_INCREMENT = 1;
 
 DELETE FROM categorias WHERE idCategoria = 2;
-DELETE FROM transacciones WHERE idTransaccion > 0;
+DELETE FROM transacciones WHERE idTransaccion = 4;
 
 SHOW DATABASES;

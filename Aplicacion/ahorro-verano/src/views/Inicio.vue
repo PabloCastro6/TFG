@@ -52,6 +52,7 @@
         <button type="button" class="btn-register" @click="goToRegistroUsuarios">
           Crear nuevo usuario
         </button>
+
       </div>
     </div>
 
@@ -63,6 +64,8 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
+
 export default {
   name: "PaginaInicio",
   data() {
@@ -73,6 +76,7 @@ export default {
       gastoDiario: 10, // Valor por defecto
       porcentajeReduccion: 10, // Valor por defecto
       usuarioLogueado: localStorage.getItem("registrado") === "true", // 🔥 Estado inicial desde localStorage
+      mensajeExito: "",
     };
   },
   computed: {
@@ -82,15 +86,6 @@ export default {
   },
   methods: {
     async submitForm() {
-      if (
-        localStorage.getItem("registrado") === "true" &&
-        localStorage.getItem("correo") &&
-        localStorage.getItem("correo").toLowerCase() === this.email.toLowerCase()
-      ) {
-        alert("Sesión ya iniciada para: " + this.email);
-        return;
-      }
-
       try {
         const response = await fetch("http://localhost:8080/usuarios/iniciarSesion", {
           method: "POST",
@@ -109,22 +104,36 @@ export default {
         }
 
         const data = await response.json();
-        console.log("Respuesta del servidor:", data);
+        console.log("Respuesta del servidor:", data); // 🔥 Aquí ves el mensaje en consola
 
         if (data.success) {
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
           localStorage.setItem("userId", data.userId);
+          localStorage.setItem("nombreUsuario", data.nombre); // 🔥 Guarda el nombre del usuario
 
-          this.usuarioLogueado = true; // 🔥 ACTUALIZA EL ESTADO EN TIEMPO REAL
-          alert(data.message);
-          this.$router.push("/");
+          this.usuarioLogueado = true;
+          this.nombreUsuario = data.nombre; // 🔥 Guarda el nombre en data()
+
+          this.mensajeExito = data.message; // 🔥 Usa el mensaje del backend
+
+          // Alerta de bienvenida
+          Swal.fire({
+            title: `¡Bienvenido!`,
+            text: data.message,
+            icon: "success",
+            confirmButtonText: "¡Perfecto!",
+          });
+
+          setTimeout(() => {
+            this.$router.push("/");  // Redirigir después de la alerta
+          }, 2000);
         } else {
-          alert("Credenciales incorrectas");
+          this.mensajeExito = "Credenciales incorrectas. Inténtalo de nuevo.";
         }
       } catch (error) {
         console.error("Error en inicio de sesión:", error);
-        alert("Hubo un problema al iniciar sesión: " + error.message);
+        this.mensajeExito = "Hubo un problema al iniciar sesión.";
       }
     },
     goToRegistroUsuarios() {
@@ -320,6 +329,22 @@ export default {
   animation: fadeIn 0.6s ease-in-out;
 }
 
+/* Clases de transición para Vue */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+}
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active para versiones anteriores de Vue */
+  {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+
 .boton-cerrar {
   background-color: #002b71;
   color: white;
@@ -346,6 +371,7 @@ export default {
 .boton-cerrar:active {
   transform: scale(1.05);
 }
+
 
 input[type="number"] {
   width: 80%;
@@ -382,6 +408,16 @@ input[type="number"]:focus {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }
 </style>

@@ -18,15 +18,23 @@
       </thead>
       <tbody>
         <tr v-for="(row, rowIndex) in crearCalendario(diasDelMes, diasAntes)" :key="rowIndex">
-          <td v-for="(dia, colIndex) in row" :key="colIndex" :class="['dia', { 'dia-vacio': dia === null }]"
-            @click="seleccionarFecha(dia)" :style="dia === null ? { pointerEvents: 'none' } : {}">
+          <td
+            v-for="(dia, colIndex) in row"
+            :key="colIndex"
+            :class="['dia', { 'dia-vacio': dia === null }]"
+            @click="seleccionarFecha(dia)"
+            :style="dia === null ? { pointerEvents: 'none' } : {}"
+          >
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
-            <!-- Puntos de transacciones con tooltip -->
+            <!-- Puntos de transacciones con tooltip y opción para eliminar -->
             <div class="puntos" v-if="dia">
-              <span v-for="trans in transaccionesDelDia(dia)" :key="trans.idTransaccion"
+              <span
+                v-for="trans in transaccionesDelDia(dia)"
+                :key="trans.idTransaccion"
                 :data-tooltip="`${trans.tipo}: ${trans.cantidad}€`"
-                :class="['punto', trans.categoria.nombre.toLowerCase(), 'tooltip']">
-              </span>
+                :class="['punto', trans.categoria.nombre.toLowerCase(), 'tooltip']"
+                @click.stop="eliminarTransaccion(trans)"
+              ></span>
             </div>
           </td>
         </tr>
@@ -44,7 +52,7 @@ export default {
       required: true
     },
     usuarioId: {
-      type: String,
+      type: [String, Number],
       required: true
     }
   },
@@ -130,6 +138,12 @@ export default {
       const fechaSeleccionada = new Date(this.anio, this.mes, dia);
       const formatoFecha = `${fechaSeleccionada.getFullYear()}-${String(fechaSeleccionada.getMonth() + 1).padStart(2, '0')}-${String(fechaSeleccionada.getDate()).padStart(2, '0')}`;
       this.$emit("fecha-seleccionada", formatoFecha);
+    },
+    eliminarTransaccion(trans) {
+      if (confirm(`¿Estás seguro de eliminar la transacción ${trans.tipo} de ${trans.cantidad}€?`)) {
+        // Emitir un evento para que el componente padre elimine la transacción
+        this.$emit("eliminar-transaccion", trans.idTransaccion);
+      }
     }
   }
 };
@@ -191,6 +205,7 @@ body {
   height: 16px;
   border-radius: 50%;
   transition: transform 0.2s ease-in-out;
+  cursor: pointer;
 }
 
 .punto:hover {
@@ -250,7 +265,6 @@ body {
   transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
-/* Mostrar el tooltip cuando el mouse está encima */
 .tooltip:hover::after {
   visibility: visible;
   opacity: 1;

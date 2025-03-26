@@ -2,9 +2,8 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- 📅 Calendario con transacciones filtradas -->
-      <Calendario :transacciones="transacciones" :usuarioId="userId" @fecha-seleccionada="actualizarFecha" />
-      
-
+      <Calendario :transacciones="transacciones" :usuarioId="userId" @fecha-seleccionada="actualizarFecha"
+        @eliminar-transaccion="eliminarTransaccionPadre" />
       <!-- 📌 Formulario de transacciones -->
       <TiposTransacciones :fechaPreseleccionada="fechaSeleccionada" @nueva-transaccion="agregarTransaccion" />
     </div>
@@ -25,7 +24,10 @@ export default {
     return {
       transacciones: [],
       fechaSeleccionada: "",
-      userId: localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId")) : null
+      // Si el userId se almacena en localStorage como string, considera pasarlo sin parseInt o ajusta la prop en Calendario
+      userId: localStorage.getItem("userId")
+        ? parseInt(localStorage.getItem("userId"))
+        : null,
     };
   },
   watch: {
@@ -34,8 +36,8 @@ export default {
         console.log("🔄 Transacciones en ConfiguracionAhorro.vue:", nuevasTransacciones);
       },
       deep: true,
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   mounted() {
     this.obtenerTransacciones();
@@ -54,7 +56,9 @@ export default {
         }
 
         // Filtrar transacciones del usuario logueado
-        this.transacciones = data.filter(t => t.usuario && t.usuario.idUsuario === this.userId);
+        this.transacciones = data.filter(
+          (t) => t.usuario && t.usuario.idUsuario === this.userId
+        );
         console.log("✅ Transacciones del usuario:", this.transacciones);
       } catch (error) {
         console.error("❌ Error al obtener transacciones:", error);
@@ -66,6 +70,32 @@ export default {
     actualizarFecha(fecha) {
       this.fechaSeleccionada = fecha;
     },
+    async eliminarTransaccionPadre(idTransaccion) {
+      try {
+
+        const response = await fetch(`http://localhost:8080/transacciones/transaccion/${idTransaccion}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          console.error("❌ Error al eliminar la transacción en la base de datos");
+          return;
+        }
+        const transaccionEliminada = this.transacciones.find(
+          (t) => t.idTransaccion === idTransaccion
+        );
+        // Eliminarla del array local
+        this.transacciones = this.transacciones.filter(
+          (t) => t.idTransaccion !== idTransaccion
+        );
+        if (transaccionEliminada) {
+          console.log(`Transacción "${transaccionEliminada.nombre}" eliminada`);
+        } else {
+          console.log(`No se encontró la transacción con id ${idTransaccion}`);
+        }
+      } catch (error) {
+        console.error("❌ Error al eliminar la transacción:", error);
+      }
+    }
   },
 };
 </script>

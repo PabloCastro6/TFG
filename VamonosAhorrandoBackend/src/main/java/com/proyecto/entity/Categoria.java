@@ -7,18 +7,16 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "categorias")
 public class Categoria {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "idCategoria")
-    private Integer idCategoria;
-    
-    @Column (name = "nombre")
-    private String nombre;
-    
-    @OneToMany(mappedBy = "categoria")
-    private List<Transaccion> transacciones;
-    
-    
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "idCategoria")
+	private Integer idCategoria;
+
+	@Column(name = "nombre")
+	private String nombre;
+
+	@OneToMany(mappedBy = "categoria")
+	private List<Transaccion> transacciones;
 
 	public Categoria() {
 		super();
@@ -45,6 +43,5 @@ public class Categoria {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-    
-    
+
 }

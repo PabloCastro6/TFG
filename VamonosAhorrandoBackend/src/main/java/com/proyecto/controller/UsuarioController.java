@@ -16,41 +16,42 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:8081") // Permitir peticiones desde Vue para pruebas
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    
-    // Método para listar usuarios (opcional)
-    @GetMapping
-    public List<Usuario> listarUsuarios() {
-        return usuarioRepository.findAll();
-    }
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
-    // Método para crear un nuevo usuario
-    @PostMapping
-    public Usuario crearUsuario(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
+	// Método para listar usuarios (opcional)
+	@GetMapping
+	public List<Usuario> listarUsuarios() {
+		return usuarioRepository.findAll();
+	}
 
-    @PostMapping("/iniciarSesion")
-    public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
-        // Usamos el método findByCorreoAndPassword (asegúrate de tenerlo en tu repositorio)
-        Usuario usuarioEncontrado = usuarioRepository.findByCorreoAndPassword(usuario.getCorreo(), usuario.getPassword());
-        
-        if (usuarioEncontrado != null) {
-            // Construir una respuesta JSON con el id del usuario
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("userId", usuarioEncontrado.getIdUsuario());
-            response.put("message", "Inicio de sesión exitoso para: " + usuarioEncontrado.getNombreCompleto());
-            return ResponseEntity.ok(response);
-        } else {
-            // Devuelve un error si las credenciales son incorrectas
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("message", "Credenciales incorrectas");
-            return ResponseEntity.status(401).body(errorResponse);
-        }
-    }
+	// Método para crear un nuevo usuario
+	@PostMapping
+	public Usuario crearUsuario(@RequestBody Usuario usuario) {
+		return usuarioRepository.save(usuario);
+	}
 
+	@PostMapping("/iniciarSesion")
+	public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
+		// Usamos el método findByCorreoAndPassword (asegúrate de tenerlo en tu
+		// repositorio)
+		Usuario usuarioEncontrado = usuarioRepository.findByCorreoAndPassword(usuario.getCorreo(),
+				usuario.getPassword());
+
+		if (usuarioEncontrado != null) {
+			// Construir una respuesta JSON con el id del usuario
+			Map<String, Object> response = new HashMap<>();
+			response.put("success", true);
+			response.put("userId", usuarioEncontrado.getIdUsuario());
+			response.put("message", "Inicio de sesión exitoso para: " + usuarioEncontrado.getNombreCompleto());
+			return ResponseEntity.ok(response);
+		} else {
+			// Devuelve un error si las credenciales son incorrectas
+			Map<String, Object> errorResponse = new HashMap<>();
+			errorResponse.put("success", false);
+			errorResponse.put("message", "Credenciales incorrectas");
+			return ResponseEntity.status(401).body(errorResponse);
+		}
+	}
 
 }

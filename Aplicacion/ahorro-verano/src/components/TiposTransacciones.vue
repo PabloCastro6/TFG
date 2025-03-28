@@ -121,9 +121,11 @@ export default {
         if (!respuesta.ok) {
           throw new Error("Error en la llamada a la API");
         }
-        
+
+        // Aquí capturamos la respuesta del backend, que debe incluir el id asignado
         const transaccionCreada = await respuesta.json();
 
+        // Emitimos la transacción con id válida al componente padre
         this.$emit("nueva-transaccion", transaccionCreada);
 
         Swal.fire({

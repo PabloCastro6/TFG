@@ -11,5 +11,4 @@ import com.proyecto.entity.Categoria;
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
 	Optional<Categoria> findByNombre(String nombre);
 
-
 }

@@ -7,10 +7,16 @@
 
     <label for="tipo">🔄 Categoría:</label>
     <div class="tipo-opciones">
-      <button :class="{ activo: categoriaSeleccionada === 'ingreso' }" @click="seleccionarCategoria('ingreso')">
+      <button
+        :class="{ activo: categoriaSeleccionada === 'ingreso' }"
+        @click="seleccionarCategoria('ingreso')"
+      >
         💰 Ingreso
       </button>
-      <button :class="{ activo: categoriaSeleccionada === 'gasto' }" @click="seleccionarCategoria('gasto')">
+      <button
+        :class="{ activo: categoriaSeleccionada === 'gasto' }"
+        @click="seleccionarCategoria('gasto')"
+      >
         💸 Gasto
       </button>
     </div>
@@ -20,16 +26,29 @@
       <label for="subtipo">📋 Concepto:</label>
       <select v-model="conceptoSeleccionado" class="label">
         <option value="" disabled>Selecciona un concepto</option>
-        <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
+        <option
+          v-for="(opcion, index) in opcionesDisponibles"
+          :key="index"
+          :value="opcion"
+        >
           {{ opcion }}
         </option>
       </select>
     </div>
 
     <label for="cantidad">💵 Cantidad (€):</label>
-    <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
+    <input
+      type="number"
+      class="label"
+      v-model="cantidadSeleccionada"
+      placeholder="Introduce la cantidad"
+    />
 
-    <button :disabled="!registrado" class="guardar-btn" @click="guardarRegistro">
+    <button
+      :disabled="!registrado"
+      class="guardar-btn"
+      @click="guardarRegistro"
+    >
       Guardar
     </button>
     <p v-if="!registrado" class="alerta">
@@ -49,7 +68,7 @@ export default {
   watch: {
     fechaPreseleccionada(nuevaFecha) {
       this.fechaSeleccionada = nuevaFecha;
-    }
+    },
   },
   data() {
     return {
@@ -82,7 +101,7 @@ export default {
       return this.categoriaSeleccionada === "ingreso"
         ? this.opcionesIngreso
         : this.opcionesGasto;
-    }
+    },
   },
   methods: {
     seleccionarCategoria(categoria) {
@@ -92,11 +111,23 @@ export default {
     },
     async guardarRegistro() {
       if (!this.registrado) {
-        Swal.fire("⚠️ Atención", "Debes iniciar sesión para realizar esta acción.", "warning");
+        Swal.fire(
+          "⚠️ Atención",
+          "Debes iniciar sesión para realizar esta acción.",
+          "warning"
+        );
         return;
       }
-      if (!this.fechaSeleccionada || !this.cantidadSeleccionada || !this.conceptoSeleccionado) {
-        Swal.fire("⚠️ Campos incompletos", "Por favor, completa todos los campos.", "error");
+      if (
+        !this.fechaSeleccionada ||
+        !this.cantidadSeleccionada ||
+        !this.conceptoSeleccionado
+      ) {
+        Swal.fire(
+          "⚠️ Campos incompletos",
+          "Por favor, completa todos los campos.",
+          "error"
+        );
         return;
       }
 
@@ -114,11 +145,14 @@ export default {
       this.$emit("nueva-transaccion", nuevaTransaccion);
 
       try {
-        const respuesta = await fetch("http://localhost:8080/transacciones/transaccion", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(nuevaTransaccion),
-        });
+        const respuesta = await fetch(
+          "http://localhost:8080/transacciones/transaccion",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevaTransaccion),
+          }
+        );
 
         if (!respuesta.ok) {
           throw new Error("Error en la llamada a la API");
@@ -134,14 +168,16 @@ export default {
       `,
           icon: "success",
         });
-
       } catch (error) {
         console.error("Error al enviar la transacción:", error);
-        Swal.fire("❌ Error", "No se pudo registrar la transacción. Inténtalo de nuevo.", "error");
+        Swal.fire(
+          "❌ Error",
+          "No se pudo registrar la transacción. Inténtalo de nuevo.",
+          "error"
+        );
       }
-    }
-
-  }
+    },
+  },
 };
 </script>
 

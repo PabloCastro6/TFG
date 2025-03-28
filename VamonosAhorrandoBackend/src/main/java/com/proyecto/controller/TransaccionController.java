@@ -16,55 +16,54 @@ import com.proyecto.repository.UsuarioRepository;
 @RequestMapping("/transacciones")
 public class TransaccionController {
 
-    @Autowired
-    TransaccionService transaccionService;
-    
-    // Se inyectan los repositorios de Categoria y Usuario
-    @Autowired
-    CategoriaRepository categoriaRepository;
-    
-    @Autowired
-    UsuarioRepository usuarioRepository;
+	@Autowired
+	TransaccionService transaccionService;
 
-    @GetMapping("")
-    public Iterable<Transaccion> listarTransacciones() {
-        return transaccionService.listarTransacciones();
-    }
+	// Se inyectan los repositorios de Categoria y Usuario
+	@Autowired
+	CategoriaRepository categoriaRepository;
 
-    @GetMapping("/transaccion/{id}")
-    public Transaccion listarTransaccionesPorId(@PathVariable Integer id) {
-        return transaccionService.obtenerTransaccionPorId(id);
-    }
-    
-    @PostMapping("/transaccion")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Transaccion crearTransaccion(@RequestBody Transaccion transaccion) {
-        // Recupera el nombre de la categoría enviado en el JSON
-        String categoriaNombre = transaccion.getCategoria().getNombre();
-        // Busca la categoría completa en la base de datos usando el nombre
-        Categoria categoriaCompleta = categoriaRepository.findByNombre(categoriaNombre)
-            .orElseThrow(() -> new RuntimeException("Categoría no encontrada con el nombre: " + categoriaNombre));
-        transaccion.setCategoria(categoriaCompleta);
+	@Autowired
+	UsuarioRepository usuarioRepository;
 
-        // Recupera el objeto Usuario completo a partir del id enviado en el JSON
-        int usuarioId = transaccion.getUsuario().getIdUsuario();
-        Usuario usuarioCompleto = usuarioRepository.findById(usuarioId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        transaccion.setUsuario(usuarioCompleto);
+	@GetMapping("")
+	public Iterable<Transaccion> listarTransacciones() {
+		return transaccionService.listarTransacciones();
+	}
 
-        return transaccionService.crearTransaccion(transaccion);
-    }
+	@GetMapping("/transaccion/{id}")
+	public Transaccion listarTransaccionesPorId(@PathVariable Integer id) {
+		return transaccionService.obtenerTransaccionPorId(id);
+	}
 
-    
-    @PutMapping("/transaccion/{id}")
-    public Transaccion modificarTransaccion(@PathVariable Integer id, @RequestBody Transaccion transaccion) {
-        transaccion.setIdTransaccion(id);
-        return transaccionService.actualizarTransaccion(transaccion);
-    }
-    
-    @DeleteMapping("/transaccion/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void borrarTransaccion(@PathVariable Integer id) {
-         transaccionService.eliminarTransaccion(id);
-    }
+	@PostMapping("/transaccion")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaccion crearTransaccion(@RequestBody Transaccion transaccion) {
+		// Recupera el nombre de la categoría enviado en el JSON
+		String categoriaNombre = transaccion.getCategoria().getNombre();
+		// Busca la categoría completa en la base de datos usando el nombre
+		Categoria categoriaCompleta = categoriaRepository.findByNombre(categoriaNombre)
+				.orElseThrow(() -> new RuntimeException("Categoría no encontrada con el nombre: " + categoriaNombre));
+		transaccion.setCategoria(categoriaCompleta);
+
+		// Recupera el objeto Usuario completo a partir del id enviado en el JSON
+		int usuarioId = transaccion.getUsuario().getIdUsuario();
+		Usuario usuarioCompleto = usuarioRepository.findById(usuarioId)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		transaccion.setUsuario(usuarioCompleto);
+
+		return transaccionService.crearTransaccion(transaccion);
+	}
+
+	@PutMapping("/transaccion/{id}")
+	public Transaccion modificarTransaccion(@PathVariable Integer id, @RequestBody Transaccion transaccion) {
+		transaccion.setIdTransaccion(id);
+		return transaccionService.actualizarTransaccion(transaccion);
+	}
+
+	@DeleteMapping("/transaccion/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void borrarTransaccion(@PathVariable Integer id) {
+		transaccionService.eliminarTransaccion(id);
+	}
 }

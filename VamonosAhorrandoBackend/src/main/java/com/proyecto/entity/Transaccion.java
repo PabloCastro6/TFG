@@ -9,30 +9,31 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "transacciones")
 public class Transaccion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="idTransaccion")
-    private Integer idTransaccion;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "idTransaccion")
+	private Integer idTransaccion;
 
-    @Column(name="fecha")
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate fecha;
+	@Column(name = "fecha")
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private LocalDate fecha;
 
-    @Column(name="cantidad")
-    private double cantidad;
+	@Column(name = "cantidad")
+	private double cantidad;
 
-    @ManyToOne
-    @JoinColumn(name = "categoriaId", referencedColumnName = "idCategoria", nullable = false)
-    private Categoria categoria;
+	@ManyToOne
+	@JoinColumn(name = "categoriaId", referencedColumnName = "idCategoria", nullable = false)
+	private Categoria categoria;
 
-    @ManyToOne
-    @JoinColumn(name = "usuarioId", referencedColumnName = "idUsuario", nullable = false)
-    private Usuario usuario;
-    
-    @Column(name="tipo")
-    private String tipo;
+	@ManyToOne
+	@JoinColumn(name = "usuarioId", referencedColumnName = "idUsuario", nullable = false)
+	private Usuario usuario;
 
-    public Transaccion() {}
+	@Column(name = "tipo")
+	private String tipo;
+
+	public Transaccion() {
+	}
 
 	public Transaccion(Integer idTransaccion, LocalDate fecha, double cantidad, Categoria categoria, Usuario usuario,
 			String tipo) {
@@ -93,5 +94,4 @@ public class Transaccion {
 		this.tipo = tipo;
 	}
 
-    
 }

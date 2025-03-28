@@ -13,15 +13,29 @@
           <div v-if="mostrarCalculadora" class="calculadora">
             <h3 class="gasto">Calculadora de Ahorro</h3>
             <label for="gasto" class="gasto">Gasto Diario (€):</label>
-            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
-            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
-            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
+            <input
+              type="number"
+              v-model.number="gastoDiario"
+              placeholder="Introduce tu gasto diario"
+            />
+            <label for="reduccion" class="reduccion"
+              >Reducción de Gasto (%)</label
+            >
+            <input
+              type="range"
+              v-model.number="porcentajeReduccion"
+              min="0"
+              max="50"
+            />
             <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
             <p class="resultado">
-              Si reduces tus gastos un <strong>{{ porcentajeReduccion }}%</strong>, podrías ahorrar:
+              Si reduces tus gastos un
+              <strong>{{ porcentajeReduccion }}%</strong>, podrías ahorrar:
               <strong>{{ ahorroEstimado.toFixed(2) }}€</strong> al mes.
             </p>
-            <button class="boton-cerrar" @click="mostrarCalculadora = false">Cerrar</button>
+            <button class="boton-cerrar" @click="mostrarCalculadora = false">
+              Cerrar
+            </button>
           </div>
         </transition>
 
@@ -39,20 +53,35 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
-              autocomplete="username" />
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              required
+              placeholder="Introduce tu correo electrónico"
+              autocomplete="username"
+            />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
-              autocomplete="current-password" />
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              required
+              placeholder="Introduce tu contraseña"
+              autocomplete="current-password"
+            />
           </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
-        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
+        <button
+          type="button"
+          class="btn-register"
+          @click="goToRegistroUsuarios"
+        >
           Crear nuevo usuario
         </button>
-
       </div>
     </div>
 
@@ -87,16 +116,19 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch("http://localhost:8080/usuarios/iniciarSesion", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            correo: this.email,
-            password: this.password,
-          }),
-        });
+        const response = await fetch(
+          "http://localhost:8080/usuarios/iniciarSesion",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              correo: this.email,
+              password: this.password,
+            }),
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -109,7 +141,7 @@ export default {
         if (data.success) {
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
-          localStorage.setItem("userId", data.userId);
+          localStorage.setItem("usuarioId", data.userId);
           localStorage.setItem("nombreUsuario", data.nombre); // 🔥 Guarda el nombre del usuario
 
           this.usuarioLogueado = true;
@@ -126,7 +158,7 @@ export default {
           });
 
           setTimeout(() => {
-            this.$router.push("/");  // Redirigir después de la alerta
+            this.$router.push("/"); // Redirigir después de la alerta
           }, 2000);
         } else {
           this.mensajeExito = "Credenciales incorrectas. Inténtalo de nuevo.";
@@ -152,7 +184,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 /* Botón de cerrar sesión en la esquina superior derecha */
@@ -338,12 +369,10 @@ export default {
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active para versiones anteriores de Vue */
-  {
+/* .fade-leave-active para versiones anteriores de Vue */ {
   opacity: 0;
   transform: translateY(-10px);
 }
-
 
 .boton-cerrar {
   background-color: #002b71;
@@ -371,7 +400,6 @@ export default {
 .boton-cerrar:active {
   transform: scale(1.05);
 }
-
 
 input[type="number"] {
   width: 80%;

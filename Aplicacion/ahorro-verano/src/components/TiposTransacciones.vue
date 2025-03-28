@@ -111,8 +111,6 @@ export default {
         tipo: this.conceptoSeleccionado,
       };
 
-      this.$emit("nueva-transaccion", nuevaTransaccion);
-
       try {
         const respuesta = await fetch("http://localhost:8080/transacciones/transaccion", {
           method: "POST",
@@ -123,14 +121,18 @@ export default {
         if (!respuesta.ok) {
           throw new Error("Error en la llamada a la API");
         }
+        
+        const transaccionCreada = await respuesta.json();
+
+        this.$emit("nueva-transaccion", transaccionCreada);
 
         Swal.fire({
           title: "✅ Transacción registrada",
           html: `
-        <b>📅 Fecha:</b> ${nuevaTransaccion.fecha} <br>
-        <b>🔄 Categoría:</b> ${nuevaTransaccion.categoria.nombre} <br>
-        <b>📋 Concepto:</b> ${nuevaTransaccion.tipo} <br>
-        <b>💵 Cantidad:</b> ${nuevaTransaccion.cantidad}€ <br>
+        <b>📅 Fecha:</b> ${transaccionCreada.fecha} <br>
+        <b>🔄 Categoría:</b> ${transaccionCreada.categoria.nombre} <br>
+        <b>📋 Concepto:</b> ${transaccionCreada.tipo} <br>
+        <b>💵 Cantidad:</b> ${transaccionCreada.cantidad}€ <br>
       `,
           icon: "success",
         });
@@ -140,7 +142,6 @@ export default {
         Swal.fire("❌ Error", "No se pudo registrar la transacción. Inténtalo de nuevo.", "error");
       }
     }
-
   }
 };
 </script>

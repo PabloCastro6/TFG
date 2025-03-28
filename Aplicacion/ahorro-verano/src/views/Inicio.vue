@@ -73,6 +73,27 @@
               autocomplete="current-password"
             />
           </div>
+
+          <!-- Tipo de usuario-->
+          <div class="form-group">
+            <label>Tipo de usuario:</label>
+            <div class="rol-buttons">
+              <button
+                type="button"
+                :class="{ activo: rol === 'USUARIO' }"
+                @click="rol = 'USUARIO'"
+              >
+                👤 Usuario
+              </button>
+              <button
+                type="button"
+                :class="{ activo: rol === 'ADMINISTRADOR' }"
+                @click="rol = 'ADMINISTRADOR'"
+              >
+                🛠️ Administrador
+              </button>
+            </div>
+          </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
         <button
@@ -102,6 +123,7 @@ export default {
       mostrarCalculadora: false,
       email: "",
       password: "",
+      rol: "Usuario",
       gastoDiario: 10, // Valor por defecto
       porcentajeReduccion: 10, // Valor por defecto
       usuarioLogueado: localStorage.getItem("registrado") === "true", // 🔥 Estado inicial desde localStorage
@@ -126,6 +148,7 @@ export default {
             body: JSON.stringify({
               correo: this.email,
               password: this.password,
+              rol: this.rol,
             }),
           }
         );
@@ -326,6 +349,36 @@ export default {
 
 .btn-register:hover {
   background-color: #0056b3;
+}
+
+/*Tipo de usuario*/
+.rol-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.rol-buttons button {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.rol-buttons button.activo {
+  background-color: #2ecc71;
+  color: white;
+  border-color: #27ae60;
+}
+
+.rol-buttons button:hover {
+  background-color: #ecf0f1;
 }
 
 /* Botón para abrir la calculadora */

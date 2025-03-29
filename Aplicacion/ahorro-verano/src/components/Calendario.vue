@@ -161,7 +161,7 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  height: 78vh;
+  height: 85vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;

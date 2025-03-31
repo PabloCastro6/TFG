@@ -2,14 +2,12 @@
   <div class="calendario-container">
     <h2>📅 Calendario de Gastos e Ingresos</h2>
 
-    <!-- Navegación del mes -->
     <div class="navegacion">
       <button class="btn-nav" @click="cambiarMes(-1)">&#10094; Anterior</button>
       <h3 class="mes-actual">{{ nombreMes }} {{ anio }}</h3>
       <button class="btn-nav" @click="cambiarMes(1)">Siguiente &#10095;</button>
     </div>
 
-    <!-- Tabla del calendario -->
     <table class="calendario">
       <thead>
         <tr>
@@ -18,23 +16,23 @@
       </thead>
       <tbody>
         <tr v-for="(row, rowIndex) in crearCalendario(diasDelMes, diasAntes)" :key="rowIndex">
-          <td
-            v-for="(dia, colIndex) in row"
-            :key="colIndex"
-            :class="['dia', { 'dia-vacio': dia === null }]"
-            @click="seleccionarFecha(dia)"
-            :style="dia === null ? { pointerEvents: 'none' } : {}"
-          >
+          <td v-for="(dia, colIndex) in row" :key="colIndex" :class="['dia', { 'dia-vacio': dia === null }]"
+            @click="seleccionarFecha(dia)" :style="dia === null ? { pointerEvents: 'none' } : {}">
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
-            <!-- Puntos de transacciones con tooltip y opción para eliminar -->
             <div class="puntos" v-if="dia">
-              <span
-                v-for="trans in transaccionesDelDia(dia)"
-                :key="trans.idTransaccion"
-                :data-tooltip="`${trans.tipo}: ${trans.cantidad}€`"
-                :class="['punto', trans.categoria.nombre.toLowerCase(), 'tooltip']"
-                @click.stop="eliminarTransaccion(trans)"
-              ></span>
+              <!-- Transacciones -->
+              <span v-for="trans in transaccionesDelDia(dia)" :key="trans.idTransaccion"
+                :data-tooltip="trans && trans.cantidad && trans.tipo ? `${trans.tipo}: ${trans.cantidad}€` : 'Datos no disponibles'"
+                :class="['punto', trans.categoria?.nombre.toLowerCase() || 'desconocido', 'tooltip']"
+                @click.stop="eliminarTransaccion(trans)">
+              </span>
+            </div>
+            <!-- Recordatorios -->
+            <div class="puntos" v-if="dia">
+              <span v-for="rec in recordatoriosDelDia(dia)" :key="rec.idRecordatorio || rec.fecha + rec.concepto"
+                :data-tooltip="`Recordatorio: ${rec.concepto}, ${rec.cantidad}€`" class="punto recordatorio tooltip"
+                style="background-color: yellow;">
+              </span>
             </div>
           </td>
         </tr>
@@ -44,22 +42,20 @@
 </template>
 
 <script>
+import { eventBus } from "@/eventBus.js";
+
 export default {
   name: "Calendario",
   props: {
     transacciones: {
       type: Array,
-      required: true
+      default: () => []
     },
-    usuarioId: {
-      type: [String, Number],
-      required: true
-    }
-  },
-  watch: {
-    transacciones(newTransacciones) {
-      console.log("📋 Transacciones recibidas en Calendario.vue:", JSON.stringify(newTransacciones, null, 2));
-    }
+    recordatorios: {
+      type: Array,
+      default: () => []
+    },
+    usuarioId: [String, Number]
   },
   data() {
     const hoy = new Date();
@@ -67,42 +63,53 @@ export default {
     const anio = hoy.getFullYear();
     const primerDiaDelMes = new Date(anio, mes, 1);
     const ultimoDiaDelMes = new Date(anio, mes + 1, 0);
-    const diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
-    const primerDiaDeLaSemana = primerDiaDelMes.getDay();
-    const diasAntes = primerDiaDeLaSemana === 0 ? 6 : primerDiaDeLaSemana - 1;
     return {
       mes,
       anio,
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-      diasDelMes,
-      diasAntes
+      diasDelMes: Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1),
+      diasAntes: primerDiaDelMes.getDay() === 0 ? 6 : primerDiaDelMes.getDay() - 1,
+      recordatoriosInternos: [...this.recordatorios] // Copia inicial
     };
   },
   computed: {
     nombreMes() {
       return new Date(this.anio, this.mes).toLocaleString("es-ES", { month: "long" });
-    },
-    usuarioIdNum() {
-      return parseInt(this.usuarioId) || 0;
+    }
+  },
+  mounted() {
+    console.log("Calendario montado, esperando eventos...");
+    eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
+  },
+  beforeUnmount() {
+    eventBus.off("nuevo-recordatorio", this.agregarRecordatorio);
+  },
+  watch: {
+    recordatorios: {
+      handler(newVal) {
+        // Asegúrate de que recordatorios no sea null ni undefined
+        if (newVal && Array.isArray(newVal)) {
+          this.recordatoriosInternos = [...newVal];
+        } else {
+          console.warn("Los recordatorios no son un arreglo válido:", newVal);
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
     crearCalendario(diasDelMes, diasAntes) {
       const calendario = [];
-      let semana = [];
-      for (let i = 0; i < diasAntes; i++) {
-        semana.push(null);
-      }
-      diasDelMes.forEach((dia) => {
+      let semana = new Array(diasAntes).fill(null);
+      diasDelMes.forEach(dia => {
         semana.push(dia);
         if (semana.length === 7) {
           calendario.push(semana);
           semana = [];
         }
       });
-      if (semana.length > 0) {
-        calendario.push(semana);
-      }
+      if (semana.length) calendario.push(semana);
       return calendario;
     },
     cambiarMes(direccion) {
@@ -114,35 +121,46 @@ export default {
         this.mes = 0;
         this.anio++;
       }
-      const primerDiaDelMes = new Date(this.anio, this.mes, 1);
-      const ultimoDiaDelMes = new Date(this.anio, this.mes + 1, 0);
-      this.diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
-      const primerDiaDeLaSemana = primerDiaDelMes.getDay();
-      this.diasAntes = primerDiaDeLaSemana === 0 ? 6 : primerDiaDeLaSemana - 1;
+      this.$forceUpdate();
     },
     transaccionesDelDia(dia) {
-      return this.transacciones.filter(transaccion => {
-        const partesFecha = transaccion.fecha.split("-");
-        const fechaFormateada = new Date(`${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`);
-        return (
-          fechaFormateada.getDate() === dia &&
-          fechaFormateada.getMonth() === this.mes &&
-          fechaFormateada.getFullYear() === this.anio &&
-          transaccion.usuario &&
-          transaccion.usuario.idUsuario === this.usuarioIdNum
+      return this.transacciones.filter(({ fecha, usuario }) => {
+        const [d, m, y] = fecha.split("-");
+        if (!d || !m || !y) return false;
+        return +d === dia && +m - 1 === this.mes && +y === this.anio && usuario?.idUsuario == this.usuarioId;
+      });
+    },
+    recordatoriosDelDia(dia) {
+      return this.recordatoriosInternos.filter(({ fecha }) => {
+        // Convierte la fecha ISO a objeto Date
+        const fechaObj = new Date(fecha);
+        // Compara día, mes y año
+        const isValid = (
+          fechaObj.getDate() === dia &&
+          fechaObj.getMonth() === this.mes &&
+          fechaObj.getFullYear() === this.anio
         );
+        console.log(isValid, fechaObj, dia);  // Verifica los datos
+        return isValid;
       });
     },
     seleccionarFecha(dia) {
-      if (dia === null) return;
-      const fechaSeleccionada = new Date(this.anio, this.mes, dia);
-      const formatoFecha = `${fechaSeleccionada.getFullYear()}-${String(fechaSeleccionada.getMonth() + 1).padStart(2, '0')}-${String(fechaSeleccionada.getDate()).padStart(2, '0')}`;
-      this.$emit("fecha-seleccionada", formatoFecha);
+      if (dia !== null) {
+        const fecha = `${this.anio}-${String(this.mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+        this.$emit("fecha-seleccionada", fecha);
+      }
     },
     eliminarTransaccion(trans) {
-      if (confirm(`¿Estás seguro de eliminar la transacción ${trans.tipo} de ${trans.cantidad}€?`)) {
-        // Emitir un evento para que el componente padre elimine la transacción
+      if (confirm(`¿Eliminar la transacción ${trans.tipo} de ${trans.cantidad}€?`)) {
         this.$emit("eliminar-transaccion", trans.idTransaccion);
+      }
+    },
+    agregarRecordatorio(recordatorio) {
+      console.log("📌 Recibido en Calendario:", recordatorio);
+      if (recordatorio && recordatorio.fecha) {
+        this.recordatoriosInternos.push(recordatorio);
+      } else {
+        console.warn("⚠️ Recordatorio inválido recibido:", recordatorio);
       }
     }
   }
@@ -153,6 +171,7 @@ export default {
 body {
   overflow: hidden;
 }
+
 .calendario-container {
   max-width: 80%;
   width: 65%;
@@ -242,42 +261,42 @@ body {
   background-color: #0056b3;
 }
 
-/* Estilo general del tooltip */
-.tooltip {
-  position: relative;
+.recordatorios {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.recordatorio-icon {
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
-.tooltip::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 8px;
-  border-radius: 5px;
-  font-size: 14px;
-  white-space: nowrap;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
+.punto.recordatorio {
+  background-color: rgb(247, 247, 68) !important; /* Color de fondo para los círculos de los recordatorios */
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
 }
 
 .tooltip:hover::after {
-  visibility: visible;
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -30px; /* Puedes ajustar la posición del tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background-color: #0b0b0b; /* Fondo oscuro */
+  color: rgb(255, 255, 255); /* Texto blanco */
+  border-radius: 5px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  z-index: 10;
   opacity: 1;
-  transform: translateX(-50%) translateY(-5px);
+  transition: opacity 0.2s;
 }
 
-/* Estilos para ingresos (verde) */
-.ingreso.tooltip::after {
-  background-color: #2ecc71;
-}
-
-/* Estilos para gastos (rojo) */
-.gasto.tooltip::after {
-  background-color: #e74c3c;
-}
 </style>

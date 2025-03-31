@@ -8,10 +8,22 @@ CREATE TABLE `categorias` (
   PRIMARY KEY (`idCategoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE recordatorios (
+    idRecordatorio INT AUTO_INCREMENT PRIMARY KEY,
+    concepto VARCHAR(255) NOT NULL,
+    cantidad DECIMAL(10,2) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    fecha DATE NOT NULL,
+    id_usuario INT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(idUsuario)
+);
+
+
 
 SELECT * FROM usuarios;
 SELECT * FROM transacciones;
 SELECT * FROM categorias;
+SELECT * FROM recordatorios;
 
 CREATE TABLE `transacciones` (
   `idTransaccion` int NOT NULL,

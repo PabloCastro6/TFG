@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Inicio from "@/views/Inicio.vue";
-import Recordatorio from "@/views/Recordatorio.vue";
+import Recordatorio from "@/components/Recordatorio.vue";
 import ConfiguracionAhorro from "@/views/ConfiguracionAhorro.vue";
 import TiposGastos from "@/views/TiposGastos.vue";
 import Estadisticas from "@/views/Estadisticas.vue";

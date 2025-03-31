@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyecto.DTO.TipoTransaccionDTO;
 import com.proyecto.entity.TipoTransaccion;
 import com.proyecto.service.TipoTransaccionService;
 
@@ -23,8 +24,8 @@ public class TipoTransaccionController {
     private TipoTransaccionService servicio;
 
     @PostMapping
-    public void crearTipo(@RequestBody TipoTransaccion tipo) {
-        servicio.guardar(tipo);
+    public void crearTipo(@RequestBody TipoTransaccionDTO tipo) {
+        servicio.guardarDesdeDTO(tipo);
     }
 
     @GetMapping("/{usuarioId}/{tipoCategoriaId}")

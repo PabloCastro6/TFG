@@ -7,29 +7,47 @@
 
     <label for="tipo">🔄 Categoría:</label>
     <div class="tipo-opciones">
-      <button :class="{ activo: categoriaSeleccionada === 'ingreso' }" @click="seleccionarCategoria('ingreso')">
+      <button
+        :class="{ activo: categoriaSeleccionada === 'ingreso' }"
+        @click="seleccionarCategoria('ingreso')"
+      >
         💰 Ingreso
       </button>
-      <button :class="{ activo: categoriaSeleccionada === 'gasto' }" @click="seleccionarCategoria('gasto')">
+      <button
+        :class="{ activo: categoriaSeleccionada === 'gasto' }"
+        @click="seleccionarCategoria('gasto')"
+      >
         💸 Gasto
       </button>
     </div>
 
-    <!-- Desplegable para seleccionar el concepto, que será el tipo (subtipo) -->
     <div class="subtipo-opciones" v-if="categoriaSeleccionada">
       <label for="subtipo">📋 Concepto:</label>
       <select v-model="conceptoSeleccionado" class="label">
         <option value="" disabled>Selecciona un concepto</option>
-        <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
+        <option
+          v-for="(opcion, index) in opcionesDisponibles"
+          :key="index"
+          :value="opcion"
+        >
           {{ opcion }}
         </option>
       </select>
     </div>
 
     <label for="cantidad">💵 Cantidad (€):</label>
-    <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
+    <input
+      type="number"
+      class="label"
+      v-model="cantidadSeleccionada"
+      placeholder="Introduce la cantidad"
+    />
 
-    <button :disabled="!registrado" class="guardar-btn" @click="guardarRegistro">
+    <button
+      :disabled="!registrado"
+      class="guardar-btn"
+      @click="guardarRegistro"
+    >
       Guardar
     </button>
     <p v-if="!registrado" class="alerta">
@@ -46,105 +64,132 @@ export default {
   props: {
     fechaPreseleccionada: String,
   },
-  watch: {
-    fechaPreseleccionada(nuevaFecha) {
-      this.fechaSeleccionada = nuevaFecha;
-    }
-  },
   data() {
     return {
       fechaSeleccionada: "",
-      // "categoriaSeleccionada" define "ingreso" o "gasto"
-      categoriaSeleccionada: "ingreso", // valor por defecto
+      categoriaSeleccionada: "ingreso",
       cantidadSeleccionada: "",
-      // "conceptoSeleccionado" será el concepto (subtipo) que se elige en el desplegable
       conceptoSeleccionado: "",
-      // Opciones para el desplegable según la categoría
       opcionesIngreso: ["Salario", "Bonificación", "Otro ingreso"],
       opcionesGasto: ["Alimentación", "Transporte", "Entretenimiento"],
     };
   },
   computed: {
-    // Convierte la fecha de yyyy-MM-dd a dd-MM-yyyy para el mensaje
-    fechaFormateada() {
-      if (!this.fechaSeleccionada) return "";
-      const [year, month, day] = this.fechaSeleccionada.split("-");
-      return `${day}-${month}-${year}`;
-    },
     registrado() {
       return localStorage.getItem("registrado") === "true";
     },
     userId() {
       return localStorage.getItem("userId") || "Desconocido";
     },
-    // Opciones según la categoría seleccionada
     opcionesDisponibles() {
       return this.categoriaSeleccionada === "ingreso"
         ? this.opcionesIngreso
         : this.opcionesGasto;
+    },
+  },
+  watch: {
+    fechaPreseleccionada(nuevaFecha) {
+      this.fechaSeleccionada = nuevaFecha;
+    },
+  },
+  mounted() {
+    const ingresosGuardados = localStorage.getItem("categoriasIngresos");
+    const gastosGuardados = localStorage.getItem("categoriasGastos");
+
+    if (ingresosGuardados) {
+      const opciones = JSON.parse(ingresosGuardados).map((t) => t.nombre);
+      this.opcionesIngreso.push(
+        ...opciones.filter((n) => !this.opcionesIngreso.includes(n))
+      );
+    }
+
+    if (gastosGuardados) {
+      const opciones = JSON.parse(gastosGuardados).map((t) => t.nombre);
+      this.opcionesGasto.push(
+        ...opciones.filter((n) => !this.opcionesGasto.includes(n))
+      );
     }
   },
   methods: {
     seleccionarCategoria(categoria) {
       this.categoriaSeleccionada = categoria;
-      // Resetea el concepto al cambiar de categoría
       this.conceptoSeleccionado = "";
     },
-    async guardarRegistro() {
+    guardarRegistro() {
       if (!this.registrado) {
-        Swal.fire("⚠️ Atención", "Debes iniciar sesión para realizar esta acción.", "warning");
-        return;
-      }
-      if (!this.fechaSeleccionada || !this.cantidadSeleccionada || !this.conceptoSeleccionado) {
-        Swal.fire("⚠️ Campos incompletos", "Por favor, completa todos los campos.", "error");
+        Swal.fire(
+          "⚠️ Atención",
+          "Debes iniciar sesión para realizar esta acción.",
+          "warning"
+        );
         return;
       }
 
-      const [year, month, day] = this.fechaSeleccionada.split("-");
-      const fechaParaEnviar = `${day}-${month}-${year}`;
+      if (
+        !this.fechaSeleccionada ||
+        !this.cantidadSeleccionada ||
+        !this.conceptoSeleccionado
+      ) {
+        Swal.fire(
+          "⚠️ Campos incompletos",
+          "Por favor, completa todos los campos.",
+          "error"
+        );
+        return;
+      }
 
-      const nuevaTransaccion = {
-        fecha: fechaParaEnviar,
+      const userId = parseInt(localStorage.getItem("userId"));
+
+      const transaccion = {
+        fecha: this.fechaSeleccionada,
         cantidad: parseFloat(this.cantidadSeleccionada),
-        usuario: { idUsuario: parseInt(this.userId) },
-        categoria: { nombre: this.categoriaSeleccionada },
+        usuario: { idUsuario: parseInt(localStorage.getItem("userId")) },
+        categoria: {
+          nombre: this.categoriaSeleccionada === "gasto" ? "Gasto" : "Ingreso",
+        },
         tipo: this.conceptoSeleccionado,
       };
 
-      try {
-        const respuesta = await fetch("http://localhost:8080/transacciones/transaccion", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(nuevaTransaccion),
+      console.log("ENVIADO", JSON.stringify(transaccion, null, 2));
+
+      fetch("http://localhost:8080/transacciones/transaccion", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transaccion),
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error("Error al guardar en el backend");
+          return response.json();
+        })
+        .then((data) => {
+          this.$emit("nueva-transaccion", data); // Enviar al componente padre
+          Swal.fire({
+            title: "✅ Transacción registrada",
+            html: `
+              <b>📅 Fecha:</b> ${data.fecha} <br>
+              <b>🔄 Categoría:</b> ${data.categoria.nombre} <br>
+              <b>📋 Concepto:</b> ${data.tipo} <br>
+              <b>💵 Cantidad:</b> ${data.cantidad}€ <br>
+            `,
+            icon: "success",
+          });
+
+          this.fechaSeleccionada = "";
+          this.conceptoSeleccionado = "";
+          this.cantidadSeleccionada = "";
+        })
+        .catch((error) => {
+          console.error("Error al guardar transacción:", error);
+          Swal.fire(
+            "❌ Error",
+            "No se pudo guardar la transacción. Inténtalo de nuevo.",
+            "error"
+          );
         });
-
-        if (!respuesta.ok) {
-          throw new Error("Error en la llamada a la API");
-        }
-
-        // Aquí capturamos la respuesta del backend, que debe incluir el id asignado
-        const transaccionCreada = await respuesta.json();
-
-        // Emitimos la transacción con id válida al componente padre
-        this.$emit("nueva-transaccion", transaccionCreada);
-
-        Swal.fire({
-          title: "✅ Transacción registrada",
-          html: `
-        <b>📅 Fecha:</b> ${transaccionCreada.fecha} <br>
-        <b>🔄 Categoría:</b> ${transaccionCreada.categoria.nombre} <br>
-        <b>📋 Concepto:</b> ${transaccionCreada.tipo} <br>
-        <b>💵 Cantidad:</b> ${transaccionCreada.cantidad}€ <br>
-      `,
-          icon: "success",
-        });
-
-      } catch (error) {
-        console.error("Error al enviar la transacción:", error);
-        Swal.fire("❌ Error", "No se pudo registrar la transacción. Inténtalo de nuevo.", "error");
-      }
-    }
-  }
+    },
+  },
 };
 </script>
 

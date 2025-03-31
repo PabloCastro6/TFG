@@ -142,38 +142,55 @@ export default {
         alert("Debes iniciar sesión para realizar esta acción.");
         return;
       }
+
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
         alert("⚠️ Por favor, selecciona una fecha y una cantidad.");
         return;
       }
-      this.transacciones.push({
-        nombre: this.tipoSeleccionado.nombre,
-        tipo: this.tipoSeleccionado.tipo,
+
+      const transaccion = {
         fecha: this.fechaSeleccionada,
-        cantidad: parseFloat(this.cantidadSeleccionada).toFixed(2),
-      });
+        cantidad: parseFloat(this.cantidadSeleccionada),
+        usuario: { idUsuario: parseInt(localStorage.getItem("userId")) },
+        categoria: { nombre: this.tipoSeleccionado.tipo }, // "gasto" o "ingreso"
+        tipo: this.tipoSeleccionado.nombre, // Ejemplo: "Coche", "Salud"
+      };
 
-      this.$emit("nueva-transaccion", this.transacciones);
-
-      alert(
-        `✅ ${this.tipoSeleccionado.nombre} registrado como ${this.tipoSeleccionado.tipo} el ${this.fechaSeleccionada} con ${this.cantidadSeleccionada}€`
-      );
-      this.cerrarModal();
+      fetch("http://localhost:8080/transacciones/transaccion", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transaccion),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Error al guardar en backend");
+          return res.json();
+        })
+        .then((transCreada) => {
+          this.$emit("nueva-transaccion", transCreada);
+          alert("✅ Transacción guardada correctamente");
+          this.cerrarModal();
+        })
+        .catch((err) => {
+          console.error("❌ Error al guardar:", err);
+          alert("❌ No se pudo guardar la transacción");
+        });
     },
+
     agregarNuevoTipo(tipo) {
       if (tipo === "gasto" && this.nuevoGasto.trim()) {
         const nuevo = {
           nombre: this.nuevoGasto.trim(),
-          icono: "fas fa-tags",
         };
-        this.categoriasGastos.push(nuevo);
+        this.categoriasGastos.push({ ...nuevo, icono: "fas fa-tags" });
         localStorage.setItem(
           "categoriasGastos",
           JSON.stringify(this.categoriasGastos)
         );
 
         // Enviar al backend
-        fetch("http://localhost:8080/tipos", {
+        fetch("http://localhost:8080/api/tipos", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -181,7 +198,7 @@ export default {
           body: JSON.stringify({
             nombre: nuevo.nombre,
             tipo: "gasto",
-            icono: nuevo.icono,
+            usuarioId: parseInt(localStorage.getItem("userId")),
           }),
         });
 
@@ -191,16 +208,15 @@ export default {
       if (tipo === "ingreso" && this.nuevoIngreso.trim()) {
         const nuevo = {
           nombre: this.nuevoIngreso.trim(),
-          icono: "fas fa-coins",
         };
-        this.categoriasIngresos.push(nuevo);
+        this.categoriasIngresos.push({ ...nuevo, icono: "fas fa-tags" });
         localStorage.setItem(
           "categoriasIngresos",
           JSON.stringify(this.categoriasIngresos)
         );
 
         // Enviar al backend
-        fetch("http://localhost:8080/tipos", {
+        fetch("http://localhost:8080/api/tipos", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -208,7 +224,7 @@ export default {
           body: JSON.stringify({
             nombre: nuevo.nombre,
             tipo: "ingreso",
-            icono: nuevo.icono,
+            usuarioId: parseInt(localStorage.getItem("userId")),
           }),
         });
 

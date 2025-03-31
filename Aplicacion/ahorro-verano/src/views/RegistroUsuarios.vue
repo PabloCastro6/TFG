@@ -4,15 +4,30 @@
     <form class="formulario" @submit.prevent="registrarUsuario">
       <div class="campo">
         <label>Nombre Completo:</label>
-        <input v-model="usuario.nombreCompleto" placeholder="Pepe Perez Rodriguez" type="text" required />
+        <input
+          v-model="usuario.nombreCompleto"
+          placeholder="Pepe Perez Rodriguez"
+          type="text"
+          required
+        />
       </div>
       <div class="campo">
         <label>Correo:</label>
-        <input v-model="usuario.correo" placeholder="example@gmail.com" type="email" required />
+        <input
+          v-model="usuario.correo"
+          placeholder="example@gmail.com"
+          type="email"
+          required
+        />
       </div>
       <div class="campo">
         <label>Contraseña:</label>
-        <input v-model="usuario.password" placeholder="*********" type="password" required />
+        <input
+          v-model="usuario.password"
+          placeholder="*********"
+          type="password"
+          required
+        />
       </div>
       <button class="guardar-btn" type="submit">Registrar</button>
     </form>
@@ -31,9 +46,33 @@ export default {
     };
   },
   methods: {
-    registrarUsuario() {
-      console.log("Usuario registrado:", this.usuario);
-      alert("Usuario registrado ");
+    async registrarUsuario() {
+      try {
+        const response = await fetch("http://localhost:8080/usuarios", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(this.usuario),
+        });
+
+        if (!response.ok) throw new Error("Error al registrar usuario");
+
+        const usuarioRegistrado = await response.json();
+
+        // Guarda solo una clave: userId
+        localStorage.setItem("userId", usuarioRegistrado.idUsuario);
+        localStorage.setItem("correo", usuarioRegistrado.correo);
+        localStorage.setItem("registrado", "true");
+
+        alert("✅ Usuario registrado correctamente");
+
+        // Redirige a la pantalla principal
+        this.$router.push("/ConfiguracionAhorro");
+      } catch (error) {
+        console.error("❌ Error al registrar usuario:", error);
+        alert("❌ No se pudo registrar el usuario.");
+      }
     },
   },
 };

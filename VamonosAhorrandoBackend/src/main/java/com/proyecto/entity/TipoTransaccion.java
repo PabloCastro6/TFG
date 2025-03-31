@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "tipos_transaccion")
@@ -15,9 +16,11 @@ public class TipoTransaccion {
     private Integer idTipo;
 
     private String nombre;
-    private String icono;
     private Integer tipoCategoriaId; // 1: Gasto, 2: Ingreso
     private Integer usuarioId;
+    
+    @Transient // NO se guarda en la BBDD
+    private String tipo; // "gasto" o "ingreso" que viene desde el frontend
 
     // Getters y setters
     public Integer getIdTipo() { return idTipo; }
@@ -26,12 +29,13 @@ public class TipoTransaccion {
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getIcono() { return icono; }
-    public void setIcono(String icono) { this.icono = icono; }
-
+  
     public Integer getTipoCategoriaId() { return tipoCategoriaId; }
     public void setTipoCategoriaId(Integer tipoCategoriaId) { this.tipoCategoriaId = tipoCategoriaId; }
 
     public Integer getUsuarioId() { return usuarioId; }
     public void setUsuarioId(Integer usuarioId) { this.usuarioId = usuarioId; }
+    
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 }

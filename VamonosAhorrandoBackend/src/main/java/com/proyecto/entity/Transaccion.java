@@ -15,7 +15,7 @@ public class Transaccion {
 	private Integer idTransaccion;
 
 	@Column(name = "fecha")
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate fecha;
 
 	@Column(name = "cantidad")

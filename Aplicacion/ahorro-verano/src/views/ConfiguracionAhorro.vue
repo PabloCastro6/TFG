@@ -1,18 +1,17 @@
 <template>
   <div class="configuracion-ahorro">
     <div class="contenedor">
-      <!-- Calendario con transacciones y recordatorios -->
-      <Calendario 
-        :transacciones="transacciones" 
-        :recordatorios="recordatorios"
-        :usuarioId="userId" 
+      <!-- 📅 Calendario con transacciones filtradas -->
+      <Calendario
+        :transacciones="transacciones"
+        :usuarioId="userId"
         @fecha-seleccionada="actualizarFecha"
-        @eliminar-transaccion="eliminarTransaccionPadre" 
+        @eliminar-transaccion="eliminarTransaccionPadre"
       />
-      <!-- Formulario de transacciones -->
-      <TiposTransacciones 
-        :fechaPreseleccionada="fechaSeleccionada" 
-        @nueva-transaccion="agregarTransaccion" 
+      <!-- 📌 Formulario de transacciones -->
+      <TiposTransacciones
+        :fechaPreseleccionada="fechaSeleccionada"
+        @nueva-transaccion="agregarTransaccion"
       />
     </div>
   </div>
@@ -27,7 +26,7 @@ export default {
   name: "ConfiguracionAhorro",
   components: {
     Calendario,
-    TiposTransacciones
+    TiposTransacciones,
   },
   data() {
     return {
@@ -39,6 +38,20 @@ export default {
         : null,
     };
   },
+
+  watch: {
+    transacciones: {
+      handler(nuevasTransacciones) {
+        console.log(
+          "🔄 Transacciones en ConfiguracionAhorro.vue:",
+          nuevasTransacciones
+        );
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+
   mounted() {
     this.obtenerTransacciones();
     this.obtenerRecordatorios();
@@ -46,7 +59,10 @@ export default {
     // Escuchar cuando se cree un nuevo recordatorio desde cualquier otro componente
     eventBus.on("nuevo-recordatorio", (recordatorio) => {
       this.recordatorios.push(recordatorio);
-      console.log("✅ Nuevo recordatorio recibido en ConfiguracionAhorro:", recordatorio);
+      console.log(
+        "✅ Nuevo recordatorio recibido en ConfiguracionAhorro:",
+        recordatorio
+      );
     });
   },
   methods: {
@@ -54,12 +70,15 @@ export default {
       try {
         const response = await fetch("http://localhost:8080/transacciones");
         const data = await response.json();
-        if (Array.isArray(data)) {
-          this.transacciones = data.filter(
-            (t) => t.usuario && t.usuario.idUsuario === this.userId
+
+        console.log("📡 Datos recibidos del backend:", data);
+
+        if (!Array.isArray(data)) {
+          console.error(
+            "❌ Error: El backend no devuelve un array de transacciones, sino:",
+            data
           );
-        } else {
-          console.error("❌ Error: El backend no devuelve un array:", data);
+          return;
         }
       } catch (error) {
         console.error("❌ Error al obtener transacciones:", error);
@@ -81,18 +100,24 @@ export default {
       }
     },
     agregarTransaccion(transaccion) {
-      this.transacciones.push(transaccion);
+      this.obtenerTransacciones();
     },
     actualizarFecha(fecha) {
       this.fechaSeleccionada = fecha;
     },
     async eliminarTransaccionPadre(idTransaccion) {
       try {
-        const response = await fetch(`http://localhost:8080/transacciones/transaccion/${idTransaccion}`, {
-          method: 'DELETE',
-        });
+        const response = await fetch(
+          `http://localhost:8080/transacciones/transaccion/${idTransaccion}`,
+          {
+            method: "DELETE",
+          }
+        );
+
         if (!response.ok) {
-          console.error("❌ Error al eliminar la transacción en la base de datos");
+          console.error(
+            "❌ Error al eliminar la transacción en la base de datos"
+          );
           return;
         }
         this.transacciones = this.transacciones.filter(
@@ -101,8 +126,8 @@ export default {
       } catch (error) {
         console.error("❌ Error al eliminar la transacción:", error);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

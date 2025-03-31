@@ -16,6 +16,12 @@
       </div>
     </div>
 
+    <!-- FORMULARIO PARA AÑADIR NUEVO GASTO -->
+    <div class="nuevo-tipo">
+      <input v-model="nuevoGasto" placeholder="Nuevo tipo de gasto" />
+      <button @click="agregarNuevoTipo('gasto')">Añadir</button>
+    </div>
+
     <!-- SECCIÓN DE INGRESOS -->
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
@@ -32,12 +38,21 @@
       </div>
     </div>
 
+    <!-- FORMULARIO PARA AÑADIR NUEVO INGRESO -->
+    <div class="nuevo-tipo">
+      <input v-model="nuevoIngreso" placeholder="Nuevo tipo de ingreso" />
+
+      <button @click="agregarNuevoTipo('ingreso')">Añadir</button>
+    </div>
+
     <!-- MODAL PARA INGRESAR DETALLES -->
     <div v-if="mostrarModal" class="modal">
       <div class="modal-contenido">
         <h3>
           Registrar {{ tipoSeleccionado.nombre }} como
-          <span :class="tipoSeleccionado.tipo">{{ tipoSeleccionado.tipo }}</span>
+          <span :class="tipoSeleccionado.tipo">{{
+            tipoSeleccionado.tipo
+          }}</span>
         </h3>
         <input type="date" v-model="fechaSeleccionada" />
         <input
@@ -78,6 +93,10 @@ export default {
   name: "TiposTransacciones",
   data() {
     return {
+      nuevoGasto: "",
+      nuevoIngreso: "",
+      nuevoIconoGasto: "fas fa-question",
+      nuevoIconoIngreso: "fas fa-question",
       categoriasGastos: [
         { nombre: "Coche", icono: "fas fa-car" },
         { nombre: "Ropa", icono: "fas fa-tshirt" },
@@ -98,7 +117,7 @@ export default {
       tipoSeleccionado: {},
       fechaSeleccionada: "",
       cantidadSeleccionada: "",
-      transacciones: [], // Guardará los registros
+      transacciones: [],
     };
   },
   computed: {
@@ -119,7 +138,6 @@ export default {
       this.cantidadSeleccionada = "";
     },
     guardarRegistro() {
-      // Verifica si el usuario está registrado
       if (!this.registrado) {
         alert("Debes iniciar sesión para realizar esta acción.");
         return;
@@ -128,8 +146,6 @@ export default {
         alert("⚠️ Por favor, selecciona una fecha y una cantidad.");
         return;
       }
-
-      // Guardamos el registro en el array de transacciones
       this.transacciones.push({
         nombre: this.tipoSeleccionado.nombre,
         tipo: this.tipoSeleccionado.tipo,
@@ -137,13 +153,67 @@ export default {
         cantidad: parseFloat(this.cantidadSeleccionada).toFixed(2),
       });
 
-      // Enviar la transacción a la configuración de ahorro (si es necesario)
       this.$emit("nueva-transaccion", this.transacciones);
 
       alert(
         `✅ ${this.tipoSeleccionado.nombre} registrado como ${this.tipoSeleccionado.tipo} el ${this.fechaSeleccionada} con ${this.cantidadSeleccionada}€`
       );
       this.cerrarModal();
+    },
+    agregarNuevoTipo(tipo) {
+      if (tipo === "gasto" && this.nuevoGasto.trim()) {
+        const nuevo = {
+          nombre: this.nuevoGasto.trim(),
+          icono: "fas fa-tags",
+        };
+        this.categoriasGastos.push(nuevo);
+        localStorage.setItem(
+          "categoriasGastos",
+          JSON.stringify(this.categoriasGastos)
+        );
+
+        // Enviar al backend
+        fetch("http://localhost:8080/tipos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: nuevo.nombre,
+            tipo: "gasto",
+            icono: nuevo.icono,
+          }),
+        });
+
+        this.nuevoGasto = "";
+      }
+
+      if (tipo === "ingreso" && this.nuevoIngreso.trim()) {
+        const nuevo = {
+          nombre: this.nuevoIngreso.trim(),
+          icono: "fas fa-coins",
+        };
+        this.categoriasIngresos.push(nuevo);
+        localStorage.setItem(
+          "categoriasIngresos",
+          JSON.stringify(this.categoriasIngresos)
+        );
+
+        // Enviar al backend
+        fetch("http://localhost:8080/tipos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: nuevo.nombre,
+            tipo: "ingreso",
+            icono: nuevo.icono,
+          }),
+        });
+
+        this.nuevoIngreso = "";
+      }
     },
   },
 };
@@ -250,6 +320,25 @@ input {
   color: red;
   font-weight: bold;
   margin-top: 10px;
+}
+
+.nuevo-tipo {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.nuevo-tipo input {
+  padding: 6px;
+  width: 200px;
+}
+.nuevo-tipo button {
+  padding: 5px 10px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 /* LISTA DE TRANSACCIONES */

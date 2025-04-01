@@ -1,14 +1,15 @@
 <template>
   <div class="configuracion-ahorro">
     <div class="contenedor">
-      <!-- 📅 Calendario con transacciones filtradas -->
+      <!-- Calendario con transacciones y recordatorios -->
       <Calendario
         :transacciones="transacciones"
+        :recordatorios="recordatorios"
         :usuarioId="userId"
         @fecha-seleccionada="actualizarFecha"
         @eliminar-transaccion="eliminarTransaccionPadre"
       />
-      <!-- 📌 Formulario de transacciones -->
+      <!-- Formulario de transacciones -->
       <TiposTransacciones
         :fechaPreseleccionada="fechaSeleccionada"
         @nueva-transaccion="agregarTransaccion"
@@ -53,7 +54,9 @@ export default {
   data() {
     return {
       transacciones: [],
+
       recordatorios: [],
+
       fechaSeleccionada: "",
       userId: localStorage.getItem("userId")
         ? parseInt(localStorage.getItem("userId"))
@@ -62,6 +65,7 @@ export default {
       anioActual: new Date().getFullYear(),
     };
   },
+
   computed: {
     transaccionesFiltradasPorMes() {
       return this.transacciones.filter((t) => {
@@ -87,6 +91,7 @@ export default {
       immediate: true,
     },
   },
+
   mounted() {
     this.obtenerTransacciones();
     this.obtenerRecordatorios();
@@ -105,9 +110,13 @@ export default {
         const response = await fetch("http://localhost:8080/transacciones");
         const data = await response.json();
 
-        if (!Array.isArray(data)) {
+        if (Array.isArray(data)) {
+          this.transacciones = data.filter(
+            (t) => t.usuario && t.usuario.idUsuario === this.userId
+          );
+          console.log("📡 Transacciones cargadas:", this.transacciones);
+        } else {
           console.error("❌ Error: El backend no devuelve un array:", data);
-          return;
         }
 
         this.transacciones = data.filter(
@@ -121,7 +130,6 @@ export default {
       try {
         const response = await fetch(`http://localhost:8080/recordatorios`);
         const data = await response.json();
-
         if (Array.isArray(data)) {
           this.recordatorios = data;
         } else {
@@ -132,6 +140,7 @@ export default {
       }
     },
     agregarTransaccion(transaccion) {
+      // Se puede optar por volver a cargar o agregar directamente
       this.obtenerTransacciones();
     },
     actualizarFecha(fecha) {
@@ -145,9 +154,7 @@ export default {
             method: "DELETE",
           }
         );
-
         if (!response.ok) {
-          console.error("❌ Error al eliminar la transacción");
           return;
         }
 

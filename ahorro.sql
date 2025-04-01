@@ -18,8 +18,6 @@ CREATE TABLE recordatorios (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(idUsuario)
 );
 
-
-
 SELECT * FROM usuarios;
 SELECT * FROM transacciones;
 SELECT * FROM categorias;

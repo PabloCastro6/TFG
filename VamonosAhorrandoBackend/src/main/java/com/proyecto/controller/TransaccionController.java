@@ -58,6 +58,19 @@ public class TransaccionController {
 	@PutMapping("/transaccion/{id}")
 	public Transaccion modificarTransaccion(@PathVariable Integer id, @RequestBody Transaccion transaccion) {
 		transaccion.setIdTransaccion(id);
+
+		// Recuperar categoría completa
+		String categoriaNombre = transaccion.getCategoria().getNombre();
+		Categoria categoriaCompleta = categoriaRepository.findByNombre(categoriaNombre)
+				.orElseThrow(() -> new RuntimeException("Categoría no encontrada con el nombre: " + categoriaNombre));
+		transaccion.setCategoria(categoriaCompleta);
+
+		// Recuperar usuario completo
+		int usuarioId = transaccion.getUsuario().getIdUsuario();
+		Usuario usuarioCompleto = usuarioRepository.findById(usuarioId)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		transaccion.setUsuario(usuarioCompleto);
+
 		return transaccionService.actualizarTransaccion(transaccion);
 	}
 

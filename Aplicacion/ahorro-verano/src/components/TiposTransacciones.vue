@@ -2,10 +2,10 @@
   <div class="registro-transacciones">
     <h2>Registrar Transacción</h2>
 
-    <label for="fecha">📅 Fecha:</label>
+    <label>📅 Fecha:</label>
     <input type="date" class="label" v-model="fechaSeleccionada" />
 
-    <label for="tipo">🔄 Categoría:</label>
+    <label>🔄 Categoría:</label>
     <div class="tipo-opciones">
       <button
         :class="{ activo: categoriaSeleccionada === 'ingreso' }"
@@ -22,7 +22,7 @@
     </div>
 
     <div class="subtipo-opciones" v-if="categoriaSeleccionada">
-      <label for="subtipo">📋 Concepto:</label>
+      <label>📋 Concepto:</label>
       <select v-model="conceptoSeleccionado" class="label">
         <option value="" disabled>Selecciona un concepto</option>
         <option
@@ -35,7 +35,7 @@
       </select>
     </div>
 
-    <label for="cantidad">💵 Cantidad (€):</label>
+    <label>💵 Cantidad (€):</label>
     <input
       type="number"
       class="label"
@@ -77,9 +77,6 @@ export default {
   computed: {
     registrado() {
       return localStorage.getItem("registrado") === "true";
-    },
-    userId() {
-      return localStorage.getItem("userId") || "Desconocido";
     },
     opcionesDisponibles() {
       return this.categoriaSeleccionada === "ingreso"
@@ -138,8 +135,6 @@ export default {
         return;
       }
 
-      const userId = parseInt(localStorage.getItem("userId"));
-
       const transaccion = {
         fecha: this.fechaSeleccionada,
         cantidad: parseFloat(this.cantidadSeleccionada),
@@ -150,8 +145,6 @@ export default {
         tipo: this.conceptoSeleccionado,
       };
 
-      console.log("ENVIADO", JSON.stringify(transaccion, null, 2));
-
       fetch("http://localhost:8080/transacciones/transaccion", {
         method: "POST",
         headers: {
@@ -159,29 +152,29 @@ export default {
         },
         body: JSON.stringify(transaccion),
       })
-        .then((response) => {
-          if (!response.ok) throw new Error("Error al guardar en el backend");
-          return response.json();
+        .then((res) => {
+          if (!res.ok) throw new Error("Error al guardar en el backend");
+          return res.json();
         })
-        .then((data) => {
-          this.$emit("nueva-transaccion", data); // Enviar al componente padre
+        .then((transCreada) => {
+          this.$emit("nueva-transaccion", transCreada);
           Swal.fire({
+            icon: "success",
             title: "✅ Transacción registrada",
             html: `
-              <b>📅 Fecha:</b> ${data.fecha} <br>
-              <b>🔄 Categoría:</b> ${data.categoria.nombre} <br>
-              <b>📋 Concepto:</b> ${data.tipo} <br>
-              <b>💵 Cantidad:</b> ${data.cantidad}€ <br>
+              <b>📅 Fecha:</b> ${transCreada.fecha} <br>
+              <b>🔄 Categoría:</b> ${transCreada.categoria.nombre} <br>
+              <b>📋 Concepto:</b> ${transCreada.tipo} <br>
+              <b>💵 Cantidad:</b> ${transCreada.cantidad}€ <br>
             `,
-            icon: "success",
           });
 
           this.fechaSeleccionada = "";
           this.conceptoSeleccionado = "";
           this.cantidadSeleccionada = "";
         })
-        .catch((error) => {
-          console.error("Error al guardar transacción:", error);
+        .catch((err) => {
+          console.error("❌ Error al guardar transacción:", err);
           Swal.fire(
             "❌ Error",
             "No se pudo guardar la transacción. Inténtalo de nuevo.",

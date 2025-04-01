@@ -1,4 +1,4 @@
-<template>
+  <template>
   <div class="registro-transacciones center">
     <h2>📅 Crear Recordatorio</h2>
 

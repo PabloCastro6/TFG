@@ -15,23 +15,22 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in crearCalendario(diasDelMes, diasAntes)" :key="rowIndex">
+        <tr v-for="(row, rowIndex) in crearCalendario()" :key="rowIndex">
           <td v-for="(dia, colIndex) in row" :key="colIndex" :class="['dia', { 'dia-vacio': dia === null }]"
             @click="seleccionarFecha(dia)" :style="dia === null ? { pointerEvents: 'none' } : {}">
             <span v-if="dia" class="numero-dia">{{ dia }}</span>
             <div class="puntos" v-if="dia">
-              <!-- Transacciones -->
+              <!-- Transacciones: usando conversión de fecha -->
               <span v-for="trans in transaccionesDelDia(dia)" :key="trans.idTransaccion"
-                :data-tooltip="trans && trans.cantidad && trans.tipo ? `${trans.tipo}: ${trans.cantidad}€` : 'Datos no disponibles'"
+                :data-tooltip="`${trans.tipo}: ${trans.cantidad}€`"
                 :class="['punto', trans.categoria?.nombre.toLowerCase() || 'desconocido', 'tooltip']"
                 @click.stop="eliminarTransaccion(trans)">
               </span>
             </div>
-            <!-- Recordatorios -->
             <div class="puntos" v-if="dia">
+              <!-- Recordatorios: se muestran como círculos amarillos -->
               <span v-for="rec in recordatoriosDelDia(dia)" :key="rec.idRecordatorio || rec.fecha + rec.concepto"
-                :data-tooltip="`Recordatorio: ${rec.concepto}, ${rec.cantidad}€`" class="punto recordatorio tooltip"
-                style="background-color: yellow;">
+                :data-tooltip="`Recordatorio: ${rec.concepto}, ${rec.cantidad}€`" class="punto recordatorio tooltip">
               </span>
             </div>
           </td>
@@ -75,6 +74,9 @@ export default {
   computed: {
     nombreMes() {
       return new Date(this.anio, this.mes).toLocaleString("es-ES", { month: "long" });
+    },
+    usuarioIdNum() {
+      return parseInt(this.usuarioId) || 0;
     }
   },
   mounted() {
@@ -87,7 +89,6 @@ export default {
   watch: {
     recordatorios: {
       handler(newVal) {
-        // Asegúrate de que recordatorios no sea null ni undefined
         if (newVal && Array.isArray(newVal)) {
           this.recordatoriosInternos = [...newVal];
         } else {
@@ -96,13 +97,22 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    transacciones(newVal) {
+      console.log("📆 Transacciones en Calendario:", newVal);
+      console.log("👤 UsuarioId en Calendario:", this.usuarioIdNum);
     }
   },
   methods: {
-    crearCalendario(diasDelMes, diasAntes) {
+    // Convierte fecha de transacción de "DD-MM-YYYY" a "YYYY-MM-DD"
+    convertirFechaTransaccion(fechaTransaccion) {
+      const [dia, mes, anio] = fechaTransaccion.split("-");
+      return `${anio}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+    },
+    crearCalendario() {
       const calendario = [];
-      let semana = new Array(diasAntes).fill(null);
-      diasDelMes.forEach(dia => {
+      let semana = new Array(this.diasAntes).fill(null);
+      this.diasDelMes.forEach(dia => {
         semana.push(dia);
         if (semana.length === 7) {
           calendario.push(semana);
@@ -121,27 +131,23 @@ export default {
         this.mes = 0;
         this.anio++;
       }
+      const primerDiaDelMes = new Date(this.anio, this.mes, 1);
+      const ultimoDiaDelMes = new Date(this.anio, this.mes + 1, 0);
+      this.diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
+      this.diasAntes = primerDiaDelMes.getDay() === 0 ? 6 : primerDiaDelMes.getDay() - 1;
       this.$forceUpdate();
     },
     transaccionesDelDia(dia) {
       return this.transacciones.filter(({ fecha, usuario }) => {
-        const [d, m, y] = fecha.split("-");
-        if (!d || !m || !y) return false;
-        return +d === dia && +m - 1 === this.mes && +y === this.anio && usuario?.idUsuario == this.usuarioId;
+        const [year, month, day] = fecha.split("-").map(Number);
+        return day === dia && month === (this.mes + 1) && year === this.anio;
       });
     },
     recordatoriosDelDia(dia) {
       return this.recordatoriosInternos.filter(({ fecha }) => {
-        // Convierte la fecha ISO a objeto Date
-        const fechaObj = new Date(fecha);
-        // Compara día, mes y año
-        const isValid = (
-          fechaObj.getDate() === dia &&
-          fechaObj.getMonth() === this.mes &&
-          fechaObj.getFullYear() === this.anio
-        );
-        console.log(isValid, fechaObj, dia);  // Verifica los datos
-        return isValid;
+        // Los recordatorios vienen en formato "YYYY-MM-DD"
+        const [year, month, day] = fecha.split("-").map(Number);
+        return day === dia && month - 1 === this.mes && year === this.anio;
       });
     },
     seleccionarFecha(dia) {
@@ -231,7 +237,7 @@ body {
   transform: scale(1.2);
 }
 
-/* Colores según la categoría */
+/* Colores para transacciones */
 .ingreso {
   background-color: #27ae60;
 }
@@ -240,6 +246,7 @@ body {
   background-color: #c0392b;
 }
 
+/* Navegación */
 .navegacion {
   display: flex;
   align-items: center;
@@ -261,22 +268,12 @@ body {
   background-color: #0056b3;
 }
 
-.recordatorios {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  margin-top: 5px;
-}
-
-.recordatorio-icon {
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
+/* Recordatorios: Círculo amarillo */
 .punto.recordatorio {
-  background-color: rgb(247, 247, 68) !important; /* Color de fondo para los círculos de los recordatorios */
+  background-color: rgb(247, 247, 68) !important;
 }
 
+/* Tooltip */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -285,12 +282,12 @@ body {
 .tooltip:hover::after {
   content: attr(data-tooltip);
   position: absolute;
-  top: -30px; /* Puedes ajustar la posición del tooltip */
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
   padding: 5px 10px;
-  background-color: #0b0b0b; /* Fondo oscuro */
-  color: rgb(255, 255, 255); /* Texto blanco */
+  background-color: #0b0b0b;
+  color: rgb(255, 255, 255);
   border-radius: 5px;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -298,5 +295,4 @@ body {
   opacity: 1;
   transition: opacity 0.2s;
 }
-
 </style>

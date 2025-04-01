@@ -1,14 +1,15 @@
 <template>
   <div class="configuracion-ahorro">
     <div class="contenedor">
-      <!-- 📅 Calendario con transacciones filtradas -->
+      <!-- Calendario con transacciones y recordatorios -->
       <Calendario
         :transacciones="transacciones"
+        :recordatorios="recordatorios"
         :usuarioId="userId"
         @fecha-seleccionada="actualizarFecha"
         @eliminar-transaccion="eliminarTransaccionPadre"
       />
-      <!-- 📌 Formulario de transacciones -->
+      <!-- Formulario de transacciones -->
       <TiposTransacciones
         :fechaPreseleccionada="fechaSeleccionada"
         @nueva-transaccion="agregarTransaccion"
@@ -31,38 +32,21 @@ export default {
   data() {
     return {
       transacciones: [],
-      recordatorios: [], // Aquí se almacenarán los recordatorios obtenidos del backend
+      recordatorios: [], // Recordatorios obtenidos del backend
       fechaSeleccionada: "",
       userId: localStorage.getItem("userId")
         ? parseInt(localStorage.getItem("userId"))
         : null,
     };
   },
-
-  watch: {
-    transacciones: {
-      handler(nuevasTransacciones) {
-        console.log(
-          "🔄 Transacciones en ConfiguracionAhorro.vue:",
-          nuevasTransacciones
-        );
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
-
   mounted() {
     this.obtenerTransacciones();
     this.obtenerRecordatorios();
 
-    // Escuchar cuando se cree un nuevo recordatorio desde cualquier otro componente
+    // Escuchar nuevos recordatorios emitidos desde otros componentes
     eventBus.on("nuevo-recordatorio", (recordatorio) => {
       this.recordatorios.push(recordatorio);
-      console.log(
-        "✅ Nuevo recordatorio recibido en ConfiguracionAhorro:",
-        recordatorio
-      );
+      console.log("✅ Nuevo recordatorio recibido en ConfiguracionAhorro:", recordatorio);
     });
   },
   methods: {
@@ -70,15 +54,13 @@ export default {
       try {
         const response = await fetch("http://localhost:8080/transacciones");
         const data = await response.json();
-
-        console.log("📡 Datos recibidos del backend:", data);
-
-        if (!Array.isArray(data)) {
-          console.error(
-            "❌ Error: El backend no devuelve un array de transacciones, sino:",
-            data
+        if (Array.isArray(data)) {
+          this.transacciones = data.filter(
+            (t) => t.usuario && t.usuario.idUsuario === this.userId
           );
-          return;
+          console.log("📡 Transacciones cargadas:", this.transacciones);
+        } else {
+          console.error("❌ Error: El backend no devuelve un array:", data);
         }
       } catch (error) {
         console.error("❌ Error al obtener transacciones:", error);
@@ -88,7 +70,6 @@ export default {
       try {
         const response = await fetch(`http://localhost:8080/recordatorios`);
         const data = await response.json();
-
         if (Array.isArray(data)) {
           this.recordatorios = data;
           console.log("✅ Recordatorios cargados:", this.recordatorios);
@@ -100,6 +81,7 @@ export default {
       }
     },
     agregarTransaccion(transaccion) {
+      // Se puede optar por volver a cargar o agregar directamente
       this.obtenerTransacciones();
     },
     actualizarFecha(fecha) {
@@ -107,17 +89,11 @@ export default {
     },
     async eliminarTransaccionPadre(idTransaccion) {
       try {
-        const response = await fetch(
-          `http://localhost:8080/transacciones/transaccion/${idTransaccion}`,
-          {
-            method: "DELETE",
-          }
-        );
-
+        const response = await fetch(`http://localhost:8080/transacciones/transaccion/${idTransaccion}`, {
+          method: "DELETE",
+        });
         if (!response.ok) {
-          console.error(
-            "❌ Error al eliminar la transacción en la base de datos"
-          );
+          console.error("❌ Error al eliminar la transacción en la base de datos");
           return;
         }
         this.transacciones = this.transacciones.filter(
@@ -126,8 +102,8 @@ export default {
       } catch (error) {
         console.error("❌ Error al eliminar la transacción:", error);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

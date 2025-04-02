@@ -41,11 +41,10 @@
     <!-- FORMULARIO PARA AÑADIR NUEVO INGRESO -->
     <div class="nuevo-tipo">
       <input v-model="nuevoIngreso" placeholder="Nuevo tipo de ingreso" />
-
       <button @click="agregarNuevoTipo('ingreso')">Añadir</button>
     </div>
 
-    <!-- MODAL PARA INGRESAR DETALLES -->
+    <!-- MODAL -->
     <div v-if="mostrarModal" class="modal">
       <div class="modal-contenido">
         <h3>
@@ -89,15 +88,17 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
+
 export default {
-  name: "TiposTransacciones",
+  name: "TiposGastos",
   data() {
     return {
       nuevoGasto: "",
       nuevoIngreso: "",
-      nuevoIconoGasto: "fas fa-question",
-      nuevoIconoIngreso: "fas fa-question",
-      categoriasGastos: [
+      categoriasGastos: JSON.parse(
+        localStorage.getItem("categoriasGastos")
+      ) || [
         { nombre: "Coche", icono: "fas fa-car" },
         { nombre: "Ropa", icono: "fas fa-tshirt" },
         { nombre: "Entretenimiento", icono: "fas fa-film" },
@@ -108,7 +109,9 @@ export default {
         { nombre: "Vacaciones", icono: "fas fa-plane" },
         { nombre: "Deportes", icono: "fas fa-football-ball" },
       ],
-      categoriasIngresos: [
+      categoriasIngresos: JSON.parse(
+        localStorage.getItem("categoriasIngresos")
+      ) || [
         { nombre: "Trabajo", icono: "fas fa-briefcase" },
         { nombre: "Alquileres Casas", icono: "fas fa-home" },
         { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
@@ -117,7 +120,7 @@ export default {
       tipoSeleccionado: {},
       fechaSeleccionada: "",
       cantidadSeleccionada: "",
-      transacciones: [],
+      transacciones: JSON.parse(localStorage.getItem("transacciones")) || [],
     };
   },
   computed: {
@@ -139,12 +142,20 @@ export default {
     },
     guardarRegistro() {
       if (!this.registrado) {
-        alert("Debes iniciar sesión para realizar esta acción.");
+        Swal.fire(
+          "⚠️ Atención",
+          "Debes iniciar sesión para realizar esta acción.",
+          "warning"
+        );
         return;
       }
 
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
-        alert("⚠️ Por favor, selecciona una fecha y una cantidad.");
+        Swal.fire(
+          "⚠️ Campos vacíos",
+          "Selecciona una fecha y una cantidad",
+          "warning"
+        );
         return;
       }
 
@@ -152,8 +163,9 @@ export default {
         fecha: this.fechaSeleccionada,
         cantidad: parseFloat(this.cantidadSeleccionada),
         usuario: { idUsuario: parseInt(localStorage.getItem("userId")) },
-        categoria: { nombre: this.tipoSeleccionado.tipo }, // "gasto" o "ingreso"
-        tipo: this.tipoSeleccionado.nombre, // Ejemplo: "Coche", "Salud"
+        categoria: { nombre: this.tipoSeleccionado.tipo },
+        nombre: this.tipoSeleccionado.nombre,
+        tipo: this.tipoSeleccionado.tipo,
       };
 
       fetch("http://localhost:8080/transacciones/transaccion", {
@@ -168,33 +180,39 @@ export default {
           return res.json();
         })
         .then((transCreada) => {
-          this.$emit("nueva-transaccion", transCreada);
-          alert("✅ Transacción guardada correctamente");
+          this.transacciones.push(transCreada);
+          localStorage.setItem(
+            "transacciones",
+            JSON.stringify(this.transacciones)
+          );
+
+          Swal.fire(
+            "✅ Éxito",
+            "Transacción guardada correctamente",
+            "success"
+          );
           this.cerrarModal();
         })
         .catch((err) => {
           console.error("❌ Error al guardar:", err);
-          alert("❌ No se pudo guardar la transacción");
+          Swal.fire("❌ Error", "No se pudo guardar la transacción", "error");
         });
     },
-
     agregarNuevoTipo(tipo) {
       if (tipo === "gasto" && this.nuevoGasto.trim()) {
         const nuevo = {
           nombre: this.nuevoGasto.trim(),
+          icono: "fas fa-tags",
         };
-        this.categoriasGastos.push({ ...nuevo, icono: "fas fa-tags" });
+        this.categoriasGastos.push(nuevo);
         localStorage.setItem(
           "categoriasGastos",
           JSON.stringify(this.categoriasGastos)
         );
 
-        // Enviar al backend
         fetch("http://localhost:8080/api/tipos", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             nombre: nuevo.nombre,
             tipo: "gasto",
@@ -203,24 +221,27 @@ export default {
         });
 
         this.nuevoGasto = "";
+        Swal.fire(
+          "🎉 Gasto añadido",
+          `"${nuevo.nombre}" ha sido creado`,
+          "success"
+        );
       }
 
       if (tipo === "ingreso" && this.nuevoIngreso.trim()) {
         const nuevo = {
           nombre: this.nuevoIngreso.trim(),
+          icono: "fas fa-tags",
         };
-        this.categoriasIngresos.push({ ...nuevo, icono: "fas fa-tags" });
+        this.categoriasIngresos.push(nuevo);
         localStorage.setItem(
           "categoriasIngresos",
           JSON.stringify(this.categoriasIngresos)
         );
 
-        // Enviar al backend
         fetch("http://localhost:8080/api/tipos", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             nombre: nuevo.nombre,
             tipo: "ingreso",
@@ -229,6 +250,11 @@ export default {
         });
 
         this.nuevoIngreso = "";
+        Swal.fire(
+          "🎉 Ingreso añadido",
+          `"${nuevo.nombre}" ha sido creado`,
+          "success"
+        );
       }
     },
   },

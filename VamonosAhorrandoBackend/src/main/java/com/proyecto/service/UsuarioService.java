@@ -35,4 +35,8 @@ public class UsuarioService {
 	        return repository.findByRol(rol);
 	    }
 
+		public Usuario buscarPorCorreoYPassword(String correo, String password) {
+			 return repository.findByCorreoAndPassword(correo, password);
+		}
+
 }

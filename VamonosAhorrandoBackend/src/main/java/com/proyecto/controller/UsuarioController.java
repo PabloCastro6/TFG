@@ -2,6 +2,7 @@ package com.proyecto.controller;
 
 import com.proyecto.entity.Rol;
 import com.proyecto.entity.Usuario;
+import com.proyecto.repository.UsuarioRepository;
 import com.proyecto.service.UsuarioService;
 
 import java.util.HashMap;
@@ -9,22 +10,51 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "http://localhost:8081")
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     // ✅ Obtener todos los usuarios
     @GetMapping
     public List<Usuario> listarUsuarios() {
         return usuarioService.obtenerTodos();
     }
+
+    @PostMapping("/iniciarSesion")
+    public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
+        Usuario existente = usuarioRepository.findByCorreo(usuario.getCorreo());
+
+        if (existente == null || !existente.getPassword().equals(usuario.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+        }
+
+        // Validar si el rol que intenta usar coincide con el de la base de datos
+        if (usuario.getRol() != null && !usuario.getRol().equals(existente.getRol())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Este usuario no tiene permisos para iniciar sesión como " + usuario.getRol());
+        }
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("success", true);
+        respuesta.put("userId", existente.getIdUsuario());
+        respuesta.put("nombre", existente.getNombreCompleto());
+        respuesta.put("rol", existente.getRol()); // 🔥 Puedes devolverlo si quieres
+
+        respuesta.put("message", "Inicio de sesión correcto.");
+        return ResponseEntity.ok(respuesta);
+    }
+
+
+
 
     // ✅ Obtener un usuario por ID
     @GetMapping("/{id}")

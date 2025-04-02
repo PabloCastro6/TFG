@@ -234,12 +234,12 @@ export default {
     },
 
     checkRol() {
-      const rol = localStorage.getItem("rol");
+      const rolGuardado = localStorage.getItem("rol");
       const registrado = localStorage.getItem("registrado");
 
-      if (rol === "ADMINISTRADOR" && registrado === "true") {
+      if (rolGuardado === "ADMINISTRADOR" && registrado === "true") {
         this.esAdmin = true;
-        this.obtenerUsuarios();
+        this.obtenerUsuarios(); // 👈 carga la tabla
       } else {
         this.esAdmin = false;
         this.listaUsuarios = [];

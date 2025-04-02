@@ -124,9 +124,9 @@ export default {
       email: "",
       password: "",
       rol: "Usuario",
-      gastoDiario: 10, // Valor por defecto
-      porcentajeReduccion: 10, // Valor por defecto
-      usuarioLogueado: localStorage.getItem("registrado") === "true", // 🔥 Estado inicial desde localStorage
+      gastoDiario: 10,
+      porcentajeReduccion: 10,
+      usuarioLogueado: localStorage.getItem("registrado") === "true",
       mensajeExito: "",
     };
   },
@@ -159,20 +159,19 @@ export default {
         }
 
         const data = await response.json();
-        console.log("Respuesta del servidor:", data); // 🔥 Aquí ves el mensaje en consola
+        console.log("Respuesta del servidor:", data);
 
         if (data.success) {
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
           localStorage.setItem("usuarioId", data.userId);
-          localStorage.setItem("nombreUsuario", data.nombre); // 🔥 Guarda el nombre del usuario
+          localStorage.setItem("nombreUsuario", data.nombre);
+          localStorage.setItem("rol", this.rol); // ✅ LÍNEA AÑADIDA
 
           this.usuarioLogueado = true;
-          this.nombreUsuario = data.nombre; // 🔥 Guarda el nombre en data()
+          this.nombreUsuario = data.nombre;
+          this.mensajeExito = data.message;
 
-          this.mensajeExito = data.message; // 🔥 Usa el mensaje del backend
-
-          // Alerta de bienvenida
           Swal.fire({
             title: `¡Bienvenido!`,
             text: data.message,
@@ -181,28 +180,45 @@ export default {
           });
 
           setTimeout(() => {
-            this.$router.push("/"); // Redirigir después de la alerta
+            this.$router.push("/");
           }, 2000);
         } else {
           this.mensajeExito = "Credenciales incorrectas. Inténtalo de nuevo.";
         }
       } catch (error) {
         console.error("Error en inicio de sesión:", error);
-        this.mensajeExito = "Hubo un problema al iniciar sesión.";
+
+        if (error.message.includes("permisos")) {
+          Swal.fire({
+            icon: "error",
+            title: "❌ Acceso denegado",
+            text: error.message,
+          });
+        } else if (error.message.includes("Credenciales")) {
+          Swal.fire({
+            icon: "error",
+            title: "❌ Credenciales inválidas",
+            text: "Correo o contraseña incorrectos.",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "❌ Error",
+            text: "Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
+          });
+        }
       }
     },
     goToRegistroUsuarios() {
       this.$router.push("/RegistroUsuarios");
     },
     cerrarSesion() {
-      localStorage.removeItem("registrado");
-      localStorage.removeItem("correo");
-      this.usuarioLogueado = false; // 🔥 ACTUALIZA EL ESTADO EN TIEMPO REAL
+      localStorage.clear();
+      this.usuarioLogueado = false;
       this.$router.push("/");
     },
   },
   mounted() {
-    // 🔥 Verifica el estado de sesión al cargar la página
     this.usuarioLogueado = localStorage.getItem("registrado") === "true";
   },
 };

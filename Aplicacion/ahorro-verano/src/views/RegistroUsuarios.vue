@@ -1,36 +1,113 @@
 <template>
-  <div class="registro-container">
-    <h2 class="titulo">👤 Registrar Usuario</h2>
-    <form class="formulario" @submit.prevent="registrarUsuario">
-      <div class="campo">
-        <label>Nombre Completo:</label>
-        <input
-          v-model="usuario.nombreCompleto"
-          placeholder="Pepe Perez Rodriguez"
-          type="text"
-          required
-        />
-      </div>
-      <div class="campo">
-        <label>Correo:</label>
-        <input
-          v-model="usuario.correo"
-          placeholder="example@gmail.com"
-          type="email"
-          required
-        />
-      </div>
-      <div class="campo">
-        <label>Contraseña:</label>
-        <input
-          v-model="usuario.password"
-          placeholder="*********"
-          type="password"
-          required
-        />
-      </div>
-      <button class="guardar-btn" type="submit">Registrar</button>
-    </form>
+  <div class="registro-y-tabla">
+    <!-- 📋 FORMULARIO -->
+    <div class="registro-container">
+      <h2 class="titulo">👤 Registrar Usuario</h2>
+      <form class="formulario" @submit.prevent="registrarUsuario">
+        <div class="campo">
+          <label>Nombre Completo:</label>
+          <input
+            v-model="usuario.nombreCompleto"
+            type="text"
+            placeholder="Pepe Perez"
+            required
+          />
+        </div>
+        <div class="campo">
+          <label>Correo:</label>
+          <input
+            v-model="usuario.correo"
+            type="email"
+            placeholder="correo@correo.com"
+            required
+          />
+        </div>
+        <div class="campo">
+          <label>Contraseña:</label>
+          <input
+            v-model="usuario.password"
+            type="password"
+            placeholder="********"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de usuario:</label>
+          <div class="rol-buttons">
+            <button
+              type="button"
+              :class="{ activo: rol === 'USUARIO' }"
+              @click="rol = 'USUARIO'"
+            >
+              👤 Usuario
+            </button>
+            <button
+              type="button"
+              :class="{ activo: rol === 'ADMINISTRADOR' }"
+              @click="rol = 'ADMINISTRADOR'"
+            >
+              🛠️ Administrador
+            </button>
+          </div>
+        </div>
+
+        <button class="guardar-btn" type="submit">Registrar</button>
+
+        <button class="cerrar-sesion" v-if="esAdmin" @click="cerrarSesion">
+          Cerrar sesión
+        </button>
+      </form>
+    </div>
+
+    <!-- 📊 TABLA DE USUARIOS -->
+    <div v-if="esAdmin" class="tabla-usuarios">
+      <h3>📋 Lista de Usuarios</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="u in listaUsuarios" :key="u.idUsuario">
+            <td>{{ u.idUsuario }}</td>
+
+            <template v-if="usuarioEditando === u.idUsuario">
+              <td><input v-model="usuarioEditado.nombreCompleto" /></td>
+              <td><input v-model="usuarioEditado.correo" /></td>
+              <td>
+                <select v-model="usuarioEditado.rol">
+                  <option value="USUARIO">Usuario</option>
+                  <option value="ADMINISTRADOR">Administrador</option>
+                </select>
+              </td>
+              <td>
+                <button @click="guardarEdicion">💾</button>
+                <button @click="cancelarEdicion">❌</button>
+              </td>
+            </template>
+
+            <template v-else>
+              <td>{{ u.nombreCompleto }}</td>
+              <td>{{ u.correo }}</td>
+              <td>{{ u.rol }}</td>
+              <td>
+                <template v-if="u.rol === 'USUARIO'">
+                  <button @click="editarUsuario(u)">✏️</button>
+                  <button @click="eliminarUsuario(u.idUsuario)">🗑️</button>
+                </template>
+                <span v-else>-</span>
+              </td>
+            </template>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -43,6 +120,11 @@ export default {
         correo: "",
         password: "",
       },
+      rol: "USUARIO",
+      listaUsuarios: [],
+      esAdmin: false,
+      usuarioEditando: null,
+      usuarioEditado: null,
     };
   },
   methods: {
@@ -53,47 +135,146 @@ export default {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(this.usuario),
+          body: JSON.stringify({ ...this.usuario, rol: this.rol }),
         });
 
         if (!response.ok) throw new Error("Error al registrar usuario");
 
-        const usuarioRegistrado = await response.json();
+        const data = await response.json();
+        const usuarioRegistrado = data.usuarioRegistrado || data;
 
-        // Guarda solo una clave: userId
         localStorage.setItem("userId", usuarioRegistrado.idUsuario);
         localStorage.setItem("correo", usuarioRegistrado.correo);
+        localStorage.setItem("rol", usuarioRegistrado.rol);
         localStorage.setItem("registrado", "true");
 
         alert("✅ Usuario registrado correctamente");
 
-        // Redirige a la pantalla principal
-        this.$router.push("/ConfiguracionAhorro");
+        if (usuarioRegistrado.rol === "ADMINISTRADOR") {
+          this.esAdmin = true;
+          await this.obtenerUsuarios(); // ⚠️ Importante el await
+        } else {
+          this.$router.push("/ConfiguracionAhorro");
+        }
       } catch (error) {
         console.error("❌ Error al registrar usuario:", error);
         alert("❌ No se pudo registrar el usuario.");
       }
     },
+
+    async obtenerUsuarios() {
+      try {
+        const response = await fetch("http://localhost:8080/usuarios");
+        this.listaUsuarios = await response.json();
+      } catch (error) {
+        console.error("❌ Error al obtener usuarios:", error);
+      }
+    },
+
+    async eliminarUsuario(id) {
+      if (!confirm("¿Eliminar este usuario?")) return;
+      try {
+        await fetch(`http://localhost:8080/usuarios/${id}`, {
+          method: "DELETE",
+        });
+        this.listaUsuarios = this.listaUsuarios.filter(
+          (u) => u.idUsuario !== id
+        );
+      } catch (error) {
+        console.error("❌ Error al eliminar usuario:", error);
+      }
+    },
+
+    editarUsuario(usuario) {
+      this.usuarioEditando = usuario.idUsuario;
+      this.usuarioEditado = { ...usuario };
+    },
+
+    cerrarSesion() {
+      localStorage.clear();
+      this.esAdmin = false;
+      this.listaUsuarios = [];
+      alert("Sesión cerrada.");
+    },
+    cancelarEdicion() {
+      this.usuarioEditando = null;
+      this.usuarioEditado = null;
+    },
+    async guardarEdicion() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/usuarios/${this.usuarioEditado.idUsuario}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(this.usuarioEditado),
+          }
+        );
+
+        if (!response.ok) throw new Error("Error al guardar cambios");
+
+        // Actualiza la fila editada en la lista
+        const index = this.listaUsuarios.findIndex(
+          (u) => u.idUsuario === this.usuarioEditado.idUsuario
+        );
+        if (index !== -1) {
+          this.listaUsuarios.splice(index, 1, { ...this.usuarioEditado });
+        }
+
+        // Si se cambió el rol a ADMINISTRADOR, ocultar acciones
+        this.usuarioEditando = null;
+        this.usuarioEditado = null;
+        alert("✅ Cambios guardados correctamente");
+      } catch (error) {
+        console.error("❌ Error al guardar edición:", error);
+        alert("❌ No se pudo guardar la edición.");
+      }
+    },
+
+    checkRol() {
+      const rol = localStorage.getItem("rol");
+      const registrado = localStorage.getItem("registrado");
+
+      if (rol === "ADMINISTRADOR" && registrado === "true") {
+        this.esAdmin = true;
+        this.obtenerUsuarios();
+      } else {
+        this.esAdmin = false;
+        this.listaUsuarios = [];
+      }
+    },
+  },
+  mounted() {
+    this.checkRol();
   },
 };
 </script>
 
 <style scoped>
+.registro-y-tabla {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+}
+
 .registro-container {
   width: 350px;
-  margin: auto;
   background: white;
   padding: 20px;
-  margin-top: 8%;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
 }
 
 .titulo {
   font-size: 22px;
   margin-bottom: 20px;
   font-weight: bold;
+  text-align: center;
 }
 
 .formulario {
@@ -120,22 +301,76 @@ export default {
   font-size: 16px;
 }
 
-.guardar-btn {
+.guardar-btn,
+.cerrar-sesion {
   background: #2c3e50;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
-  padding: 14px;
-  margin-top: 20px;
-  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+  transition: background 0.3s ease-in-out;
 }
 
-.guardar-btn:hover {
+.guardar-btn:hover,
+.cerrar-sesion:hover {
   background: #1a252f;
-  transform: scale(1.05);
+}
+
+.rol-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.rol-buttons button {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.rol-buttons button.activo {
+  background-color: #2ecc71;
+  color: white;
+  border-color: #27ae60;
+}
+
+.rol-buttons button:hover {
+  background-color: #ecf0f1;
+}
+
+.tabla-usuarios {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 700px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-usuarios table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.tabla-usuarios th {
+  background-color: #2c3e50;
+  color: white;
 }
 </style>

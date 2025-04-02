@@ -4,6 +4,8 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,8 +30,9 @@ public class Usuario {
 	@Column(name = "correo")
 	private String correo;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "rol")
-	private String rol;
+	private Rol rol;
 
 	@OneToMany(mappedBy = "usuario")
 	private List<Transaccion> transacciones;
@@ -38,12 +41,11 @@ public class Usuario {
 		super();
 	}
 
-	public Usuario(String nombreCompleto, String password, String correo, String rol) {
+	public Usuario(String nombreCompleto, String password, String correo) {
 		super();
 		this.nombreCompleto = nombreCompleto;
 		this.password = password;
 		this.correo = correo;
-		this.rol = rol;
 	}
 
 	public Integer getIdUsuario() {
@@ -78,12 +80,14 @@ public class Usuario {
 		this.correo = correo;
 	}
 
-	public String getRol() {
+	public Rol getRol() {
 		return rol;
 	}
 
-	public void setRol(String rol) {
+	public void setRol(Rol rol) {
 		this.rol = rol;
 	}
+
+	
 
 }

@@ -1,7 +1,8 @@
 package com.proyecto.controller;
 
+import com.proyecto.entity.Rol;
 import com.proyecto.entity.Usuario;
-import com.proyecto.repository.UsuarioRepository;
+import com.proyecto.service.UsuarioService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,45 +14,62 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "http://localhost:8081") // Permitir peticiones desde Vue para pruebas
+@CrossOrigin(origins = "http://localhost:8081")
 public class UsuarioController {
 
-	@Autowired
-	private UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioService usuarioService;
 
-	// Método para listar usuarios (opcional)
-	@GetMapping
-	public List<Usuario> listarUsuarios() {
-		return usuarioRepository.findAll();
-	}
+    // ✅ Obtener todos los usuarios
+    @GetMapping
+    public List<Usuario> listarUsuarios() {
+        return usuarioService.obtenerTodos();
+    }
 
-	// Método para crear un nuevo usuario
-	@PostMapping
-	public Usuario crearUsuario(@RequestBody Usuario usuario) {
-		return usuarioRepository.save(usuario);
-	}
+    // ✅ Obtener un usuario por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> obtenerPorId(@PathVariable Integer id) {
+        Usuario usuario = usuarioService.buscarPorId(id);
+        return usuario != null ? ResponseEntity.ok(usuario) : ResponseEntity.notFound().build();
+    }
 
-	@PostMapping("/iniciarSesion")
-	public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
-		// Usamos el método findByCorreoAndPassword (asegúrate de tenerlo en tu
-		// repositorio)
-		Usuario usuarioEncontrado = usuarioRepository.findByCorreoAndPassword(usuario.getCorreo(),
-				usuario.getPassword());
+    // ✅ Registrar nuevo usuario
+    @PostMapping
+    public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
+        Usuario guardado = usuarioService.guardar(usuario);
 
-		if (usuarioEncontrado != null) {
-			// Construir una respuesta JSON con el id del usuario
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", true);
-			response.put("userId", usuarioEncontrado.getIdUsuario());
-			response.put("message", "Inicio de sesión exitoso para: " + usuarioEncontrado.getNombreCompleto());
-			return ResponseEntity.ok(response);
-		} else {
-			// Devuelve un error si las credenciales son incorrectas
-			Map<String, Object> errorResponse = new HashMap<>();
-			errorResponse.put("success", false);
-			errorResponse.put("message", "Credenciales incorrectas");
-			return ResponseEntity.status(401).body(errorResponse);
-		}
-	}
+        if (usuario.getRol() == Rol.ADMINISTRADOR) {
+            List<Usuario> todos = usuarioService.obtenerTodos();
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("usuarioRegistrado", guardado);
+            respuesta.put("todosLosUsuarios", todos);
+            return ResponseEntity.ok(respuesta);
+        }
 
+        return ResponseEntity.ok(guardado);
+    }
+
+    // ✅ Actualizar un usuario
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> actualizar(@PathVariable Integer id, @RequestBody Usuario datos) {
+        Usuario existente = usuarioService.buscarPorId(id);
+        if (existente == null) return ResponseEntity.notFound().build();
+
+        existente.setNombreCompleto(datos.getNombreCompleto());
+        existente.setCorreo(datos.getCorreo());
+        existente.setPassword(datos.getPassword());
+        existente.setRol(datos.getRol());
+
+        return ResponseEntity.ok(usuarioService.guardar(existente));
+    }
+
+    // ✅ Eliminar un usuario
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+        Usuario existente = usuarioService.buscarPorId(id);
+        if (existente == null) return ResponseEntity.notFound().build();
+
+        usuarioService.eliminarPorId(id);
+        return ResponseEntity.noContent().build();
+    }
 }

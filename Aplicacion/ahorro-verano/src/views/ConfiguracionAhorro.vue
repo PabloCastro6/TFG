@@ -8,6 +8,7 @@
         :usuarioId="userId"
         @fecha-seleccionada="actualizarFecha"
         @eliminar-transaccion="eliminarTransaccionPadre"
+        @mes-cambiado="actualizarMes"
       />
       <!-- Formulario de transacciones -->
       <TiposTransacciones
@@ -154,7 +155,6 @@ export default {
       }
     },
     agregarTransaccion(transaccion) {
-      // Se puede optar por volver a cargar o agregar directamente
       this.obtenerTransacciones();
     },
     actualizarFecha(fecha) {
@@ -205,6 +205,27 @@ export default {
     formatearFecha(fecha) {
       const partes = fecha.split("-");
       return `${partes[0]}/${partes[1]}/${partes[2]}`;
+    },
+    transaccionesDelMesActual() {
+      return this.transacciones.filter(({ fecha, usuario }) => {
+        const fechaObj = new Date(
+          fecha.includes("-") && fecha.split("-")[0].length === 4
+            ? fecha // formato yyyy-MM-dd
+            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${
+                fecha.split("-")[0]
+              }`
+        );
+
+        return (
+          fechaObj.getMonth() === this.mes &&
+          fechaObj.getFullYear() === this.anio &&
+          usuario?.idUsuario == this.usuarioId
+        );
+      });
+    },
+    actualizarMes({ mes, anio }) {
+      this.mesActual = mes;
+      this.anioActual = anio;
     },
   },
 };

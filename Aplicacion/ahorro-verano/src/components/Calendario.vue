@@ -118,7 +118,8 @@ export default {
     },
   },
   mounted() {
-    console.log("Calendario montado, esperando eventos...");
+    eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
+    this.$emit("mes-cambiado", { mes: this.mes, anio: this.anio });
     eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
   },
   beforeUnmount() {
@@ -173,6 +174,7 @@ export default {
       }
 
       this.actualizarDiasDelMes();
+      this.$emit("mes-cambiado", { mes: this.mes, anio: this.anio });
     },
     transaccionesDelDia(dia) {
       return this.transacciones.filter(({ fecha, usuario }) => {
@@ -316,6 +318,27 @@ body {
   background-color: #c0392b;
 }
 
+.transacciones-mensuales {
+  margin-top: 20px;
+  text-align: center;
+}
+.transacciones-mensuales ul {
+  list-style: none;
+  padding-left: 0;
+}
+.transacciones-mensuales li {
+  padding: 5px 0;
+  font-size: 1rem;
+}
+.transacciones-mensuales li.gasto {
+  color: red;
+}
+.transacciones-mensuales li.ingreso {
+  color: green;
+}
+.fecha {
+  font-weight: bold;
+}
 /* Navegación */
 .navegacion {
   display: flex;

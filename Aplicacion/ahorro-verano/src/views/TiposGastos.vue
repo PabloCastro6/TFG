@@ -224,7 +224,7 @@ export default {
           body: JSON.stringify({
             nombre: nuevo.nombre,
             tipo: "gasto",
-            usuarioId: parseInt(localStorage.getItem("usuarioId")),
+            usuarioId: parseInt(localStorage.getItem("userId")),
           }),
         });
 

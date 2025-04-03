@@ -74,12 +74,17 @@
 
     <!-- LISTA DE TRANSACCIONES REGISTRADAS -->
     <div class="transacciones">
-      <h2>📅 Registros</h2>
+      <h2>📅 Nuevos Registros</h2>
       <ul>
         <li v-for="(transaccion, index) in transacciones" :key="index">
           <span class="fecha">{{ transaccion.fecha }}</span> -
-          <span :class="transaccion.tipo">
-            {{ transaccion.nombre }}: {{ transaccion.cantidad }}€
+          <span :class="transaccion.categoria.nombre.toLowerCase()">
+            {{
+              transaccion.categoria.nombre.toLowerCase() === "gasto"
+                ? "🛒 Gasto"
+                : "💰 Ingreso"
+            }}
+            - {{ transaccion.tipo }}: {{ transaccion.cantidad }}€
           </span>
         </li>
       </ul>
@@ -163,10 +168,13 @@ export default {
         fecha: this.fechaSeleccionada,
         cantidad: parseFloat(this.cantidadSeleccionada),
         usuario: { idUsuario: parseInt(localStorage.getItem("userId")) },
-        categoria: { nombre: this.tipoSeleccionado.tipo },
-        nombre: this.tipoSeleccionado.nombre,
-        tipo: this.tipoSeleccionado.tipo,
+        categoria: {
+          nombre: this.tipoSeleccionado.tipo === "gasto" ? "Gasto" : "Ingreso",
+        },
+        tipo: this.tipoSeleccionado.nombre,
       };
+
+      console.log("🧾 Enviando transacción:", transaccion);
 
       fetch("http://localhost:8080/transacciones/transaccion", {
         method: "POST",
@@ -185,7 +193,7 @@ export default {
             "transacciones",
             JSON.stringify(this.transacciones)
           );
-
+          this.$emit("nueva-transaccion", transCreada);
           Swal.fire(
             "✅ Éxito",
             "Transacción guardada correctamente",
@@ -216,7 +224,7 @@ export default {
           body: JSON.stringify({
             nombre: nuevo.nombre,
             tipo: "gasto",
-            usuarioId: parseInt(localStorage.getItem("userId")),
+            usuarioId: parseInt(localStorage.getItem("usuarioId")),
           }),
         });
 
@@ -385,8 +393,9 @@ input {
 
 /* LISTA DE TRANSACCIONES */
 .transacciones {
-  width: 100%;
   text-align: center;
+  list-style: none;
+  padding-left: 0;
 }
 
 .fecha {

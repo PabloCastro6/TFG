@@ -164,7 +164,7 @@ export default {
         if (data.success) {
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
-          localStorage.setItem("usuarioId", data.userId);
+          localStorage.setItem("userId", data.userId);
           localStorage.setItem("nombreUsuario", data.nombre);
           localStorage.setItem("rol", this.rol); // ✅ LÍNEA AÑADIDA
 

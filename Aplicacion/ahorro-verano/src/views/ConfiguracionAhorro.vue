@@ -111,21 +111,35 @@ export default {
         const data = await response.json();
 
         if (Array.isArray(data)) {
-          this.transacciones = data.filter(
-            (t) => t.usuario && t.usuario.idUsuario === this.userId
+          this.transacciones = data
+            .filter((t) => t.usuario && t.usuario.idUsuario === this.userId)
+            .map((t) => {
+              const fechaObj = new Date(t.fecha);
+              const dia = String(fechaObj.getDate()).padStart(2, "0");
+              const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+              const anio = fechaObj.getFullYear();
+              return {
+                ...t,
+                fecha: `${dia}-${mes}-${anio}`, // formato que espera el calendario
+              };
+            });
+
+          console.log(
+            "📡 Transacciones normalizadas y cargadas:",
+            this.transacciones
           );
-          console.log("📡 Transacciones cargadas:", this.transacciones);
         } else {
           console.error("❌ Error: El backend no devuelve un array:", data);
         }
-
-        this.transacciones = data.filter(
-          (t) => t.usuario?.idUsuario === this.userId
-        );
       } catch (error) {
         console.error("❌ Error al obtener transacciones:", error);
       }
+      console.log(
+        "🚨 Transacciones finales en ConfiguracionAhorro:",
+        this.transacciones
+      );
     },
+
     async obtenerRecordatorios() {
       try {
         const response = await fetch(`http://localhost:8080/recordatorios`);

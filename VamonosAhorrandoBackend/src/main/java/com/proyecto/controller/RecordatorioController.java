@@ -12,7 +12,7 @@ import com.proyecto.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 @RestController
 @RequestMapping("/recordatorios")
 public class RecordatorioController {

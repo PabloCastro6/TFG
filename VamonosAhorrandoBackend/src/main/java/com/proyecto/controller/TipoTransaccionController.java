@@ -17,7 +17,7 @@ import com.proyecto.service.TipoTransaccionService;
 
 @RestController
 @RequestMapping("/api/tipos")
-@CrossOrigin(origins = "*")
+/*@CrossOrigin(origins = "*")*/
 public class TipoTransaccionController {
 
     @Autowired

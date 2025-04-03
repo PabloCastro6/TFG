@@ -1,7 +1,7 @@
+<!-- TiposTransacciones.vue -->
 <template>
   <div class="registro-transacciones">
     <h2>Registrar Transacción</h2>
-
     <label>📅 Fecha:</label>
     <input type="date" class="label" v-model="fechaSeleccionada" />
 
@@ -114,11 +114,14 @@ export default {
     },
     guardarRegistro() {
       if (!this.registrado) {
-        Swal.fire(
-          "⚠️ Atención",
-          "Debes iniciar sesión para realizar esta acción.",
-          "warning"
-        );
+        Swal.fire("⚠️ Atención", "Debes iniciar sesión", "warning");
+        return;
+      }
+
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        Swal.fire("⚠️ Error", "No se encontró el ID del usuario", "error");
         return;
       }
 
@@ -127,29 +130,25 @@ export default {
         !this.cantidadSeleccionada ||
         !this.conceptoSeleccionado
       ) {
-        Swal.fire(
-          "⚠️ Campos incompletos",
-          "Por favor, completa todos los campos.",
-          "error"
-        );
+        Swal.fire("⚠️ Incompleto", "Completa todos los campos", "error");
         return;
       }
 
       const transaccion = {
         fecha: this.fechaSeleccionada,
         cantidad: parseFloat(this.cantidadSeleccionada),
-        usuario: { idUsuario: parseInt(localStorage.getItem("userId")) },
+        usuario: { idUsuario: parseInt(userId) },
         categoria: {
           nombre: this.categoriaSeleccionada === "gasto" ? "Gasto" : "Ingreso",
         },
         tipo: this.conceptoSeleccionado,
       };
 
+      console.log("📤 Enviando transacción:", transaccion);
+
       fetch("http://localhost:8080/transacciones/transaccion", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transaccion),
       })
         .then((res) => {
@@ -158,15 +157,16 @@ export default {
         })
         .then((transCreada) => {
           this.$emit("nueva-transaccion", transCreada);
+
           Swal.fire({
             icon: "success",
             title: "✅ Transacción registrada",
             html: `
-              <b>📅 Fecha:</b> ${transCreada.fecha} <br>
-              <b>🔄 Categoría:</b> ${transCreada.categoria.nombre} <br>
-              <b>📋 Concepto:</b> ${transCreada.tipo} <br>
-              <b>💵 Cantidad:</b> ${transCreada.cantidad}€ <br>
-            `,
+          <b>📅 Fecha:</b> ${transCreada.fecha} <br>
+          <b>🔄 Categoría:</b> ${transCreada.categoria.nombre} <br>
+          <b>📋 Concepto:</b> ${transCreada.tipo} <br>
+          <b>💵 Cantidad:</b> ${transCreada.cantidad}€ <br>
+        `,
           });
 
           this.fechaSeleccionada = "";
@@ -174,12 +174,8 @@ export default {
           this.cantidadSeleccionada = "";
         })
         .catch((err) => {
-          console.error("❌ Error al guardar transacción:", err);
-          Swal.fire(
-            "❌ Error",
-            "No se pudo guardar la transacción. Inténtalo de nuevo.",
-            "error"
-          );
+          console.error("❌ Error:", err);
+          Swal.fire("❌ Error", "No se pudo guardar", "error");
         });
     },
   },

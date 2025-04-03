@@ -11,7 +11,7 @@ import com.proyecto.negocio.impl.TransaccionService;
 import com.proyecto.repository.CategoriaRepository;
 import com.proyecto.repository.UsuarioRepository;
 
-@CrossOrigin(origins = "*")
+/*@CrossOrigin(origins = "*")*/
 @RestController
 @RequestMapping("/transacciones")
 public class TransaccionController {

@@ -42,6 +42,12 @@ public class UsuarioController {
         if (usuario.getRol() != null && !usuario.getRol().equals(existente.getRol())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Este usuario no tiene permisos para iniciar sesión como " + usuario.getRol());
         }
+        
+        if (usuario.getRol() != null && !usuario.getRol().name().equalsIgnoreCase(existente.getRol().name())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Este usuario no tiene permisos para iniciar sesión como " + usuario.getRol());
+        }
+
 
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("success", true);

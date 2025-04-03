@@ -1,40 +1,42 @@
   <template>
-  <div class="registro-transacciones center">
-    <h2>📅 Crear Recordatorio</h2>
+    <div class="registro-transacciones center">
+      <h2>📅 Crear Recordatorio</h2>
 
-    <label for="fecha">📅 Fecha:</label>
-    <input type="date" class="label" v-model="recordatorio.fecha" :min="hoy" required />
+      <label for="fecha">📅 Fecha:</label>
+      <input type="date" class="label" v-model="recordatorio.fecha" :min="hoy" required />
 
-    <label for="tipo">🔄 Tipo:</label>
-    <div class="tipo-opciones">
-      <button :class="{ activo: recordatorio.tipo === 'ingreso' }" @click="recordatorio.tipo = 'ingreso'">
-        💰 Ingreso
-      </button>
-      <button :class="{ activo: recordatorio.tipo === 'gasto' }" @click="recordatorio.tipo = 'gasto'">
-        💸 Gasto
-      </button>
+      <label for="tipo">🔄 Tipo:</label>
+      <div class="tipo-opciones">
+        <button :class="{ activo: recordatorio.tipo === 'ingreso' }" @click="recordatorio.tipo = 'ingreso'">
+          💰 Ingreso
+        </button>
+        <button :class="{ activo: recordatorio.tipo === 'gasto' }" @click="recordatorio.tipo = 'gasto'">
+          💸 Gasto
+        </button>
+      </div>
+
+      <div class="subtipo-opciones" v-if="recordatorio.tipo">
+        <label for="subtipo">📋 Concepto:</label>
+        <select v-model="recordatorio.concepto" class="label">
+          <option value="" disabled>Selecciona un concepto</option>
+          <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
+            {{ opcion }}
+          </option>
+        </select>
+      </div>
+
+      <label for="cantidad">🔢 Cantidad:</label>
+      <input type="number" class="label" v-model="recordatorio.cantidad" placeholder="Introduce la cantidad" min="1"
+        required />
+
+      <button :disabled="!registrado" class="guardar-btn" @click="guardarRecordatorio">Guardar</button>
+      <p v-if="!registrado" class="alerta">Debes iniciar sesión para realizar esta acción.</p>
     </div>
-
-    <div class="subtipo-opciones" v-if="recordatorio.tipo">
-      <label for="subtipo">📋 Concepto:</label>
-      <select v-model="recordatorio.concepto" class="label">
-        <option value="" disabled>Selecciona un concepto</option>
-        <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
-          {{ opcion }}
-        </option>
-      </select>
-    </div>
-
-    <label for="cantidad">🔢 Cantidad:</label>
-    <input type="number" class="label" v-model="recordatorio.cantidad" placeholder="Introduce la cantidad" min="1" required />
-
-    <button :disabled="!registrado" class="guardar-btn" @click="guardarRecordatorio">Guardar</button>
-    <p v-if="!registrado" class="alerta">Debes iniciar sesión para realizar esta acción.</p>
-  </div>
-</template>
+  </template>
 
 <script>
 import { eventBus } from "@/eventBus.js";
+import Swal from "sweetalert2"; 
 
 export default {
   name: "Recordatorio",
@@ -94,12 +96,27 @@ export default {
         // Emitir el evento para que el calendario lo agregue
         eventBus.emit("nuevo-recordatorio", data);
 
+        // Mostrar el SweetAlert con el mensaje de éxito
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'Recordatorio agregado correctamente.',
+          confirmButtonText: 'Aceptar'
+        });
+
         // Limpiar el formulario
         this.recordatorio = { fecha: "", tipo: "", cantidad: "", concepto: "" };
       } catch (error) {
         console.error("❌ Error al guardar recordatorio:", error);
+        // Mostrar el SweetAlert con el mensaje de error
+        Swal.fire({
+          icon: 'error',
+          title: '¡Oops!',
+          text: 'Hubo un problema al guardar el recordatorio.',
+          confirmButtonText: 'Aceptar'
+        });
       }
-    }
+    },
   }
 };
 </script>
@@ -127,6 +144,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin: auto;
+  margin-top: 7%;
 }
 
 .label {

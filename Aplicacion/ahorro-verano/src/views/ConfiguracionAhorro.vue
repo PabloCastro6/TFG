@@ -2,18 +2,19 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- Calendario con transacciones y recordatorios -->
-      <Calendario
-        :transacciones="transacciones"
-        :recordatorios="recordatorios"
+      <Calendario 
+        :transacciones="transacciones" 
+        :recordatorios="recordatorios" 
         :usuarioId="userId"
-        @fecha-seleccionada="actualizarFecha"
+        @fecha-seleccionada="actualizarFecha" 
         @eliminar-transaccion="eliminarTransaccionPadre"
         @mes-cambiado="actualizarMes"
+        @eliminar-recordatorio="eliminarRecordatorioPadre"
       />
       <!-- Formulario de transacciones -->
-      <TiposTransacciones
-        :fechaPreseleccionada="fechaSeleccionada"
-        @nueva-transaccion="agregarTransaccion"
+      <TiposTransacciones 
+        :fechaPreseleccionada="fechaSeleccionada" 
+        @nueva-transaccion="agregarTransaccion" 
       />
     </div>
 
@@ -55,9 +56,7 @@ export default {
   data() {
     return {
       transacciones: [],
-
       recordatorios: [],
-
       fechaSeleccionada: "",
       userId: localStorage.getItem("userId")
         ? parseInt(localStorage.getItem("userId"))
@@ -66,7 +65,6 @@ export default {
       anioActual: new Date().getFullYear(),
     };
   },
-
   computed: {
     transaccionesFiltradasPorMes() {
       return this.transacciones.filter((t) => {
@@ -92,7 +90,6 @@ export default {
       immediate: true,
     },
   },
-
   mounted() {
     this.obtenerTransacciones();
     this.obtenerRecordatorios();
@@ -147,6 +144,7 @@ export default {
         const data = await response.json();
         if (Array.isArray(data)) {
           this.recordatorios = data;
+          console.log("✅ Recordatorios cargados:", this.recordatorios);
         } else {
           console.error("❌ Error: El backend no devuelve un array:", data);
         }
@@ -154,21 +152,24 @@ export default {
         console.error("❌ Error al obtener recordatorios:", error);
       }
     },
-    agregarTransaccion(transaccion) {
-      this.obtenerTransacciones();
+
+    agregarTransaccion(transaccion) { 
+      // Se puede optar por volver a cargar o agregar directamente
+      this.obtenerTransacciones(); 
     },
+
     actualizarFecha(fecha) {
       this.fechaSeleccionada = fecha;
     },
+
     async eliminarTransaccionPadre(idTransaccion) {
       try {
         const response = await fetch(
           `http://localhost:8080/transacciones/transaccion/${idTransaccion}`,
-          {
-            method: "DELETE",
-          }
+          { method: "DELETE" }
         );
         if (!response.ok) {
+          console.error("❌ Error al eliminar la transacción en el backend");
           return;
         }
 
@@ -179,6 +180,7 @@ export default {
         console.error("❌ Error al eliminar la transacción:", error);
       }
     },
+
     async eliminarTransaccionDesdeLista(idTransaccion) {
       const confirmar = confirm("¿Eliminar esta transacción?");
       if (!confirmar) return;
@@ -190,7 +192,7 @@ export default {
         );
 
         if (!response.ok) {
-          console.error("❌ Error al eliminar en backend");
+          console.error("❌ Error al eliminar la transacción en el backend");
           return;
         }
 
@@ -202,6 +204,7 @@ export default {
         console.error("❌ Error:", err);
       }
     },
+
     formatearFecha(fecha) {
       const partes = fecha.split("-");
       return `${partes[0]}/${partes[1]}/${partes[2]}`;
@@ -226,6 +229,27 @@ export default {
     actualizarMes({ mes, anio }) {
       this.mesActual = mes;
       this.anioActual = anio;
+    },
+    // Método para eliminar recordatorios (se invoca desde Calendario.vue mediante $emit)
+    async eliminarRecordatorioPadre(idRecordatorio) {
+      try {
+        const response = await fetch(`http://localhost:8080/recordatorios/${idRecordatorio}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          console.error("❌ Error al eliminar el recordatorio en el backend");
+          return;
+        }
+
+        // Actualizamos la lista local eliminando el recordatorio
+        this.recordatorios = this.recordatorios.filter(
+          (rec) => rec.idRecordatorio !== idRecordatorio
+        );
+        console.log("🗑️ Recordatorio eliminado");
+      } catch (error) {
+        console.error("❌ Error al eliminar el recordatorio:", error);
+      }
     },
   },
 };
@@ -284,6 +308,7 @@ export default {
 .gasto {
   color: #e74c3c;
 }
+
 .ingreso {
   color: #2ecc71;
 }

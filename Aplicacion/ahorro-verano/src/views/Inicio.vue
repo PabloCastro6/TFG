@@ -123,7 +123,7 @@ export default {
       mostrarCalculadora: false,
       email: "",
       password: "",
-      rol: "Usuario",
+      rol: "",
       gastoDiario: 10,
       porcentajeReduccion: 10,
       usuarioLogueado: localStorage.getItem("registrado") === "true",
@@ -148,7 +148,7 @@ export default {
             body: JSON.stringify({
               correo: this.email,
               password: this.password,
-              rol: this.rol,
+              rol: this.rol.toUpperCase(), // Asegúrate de que el rol esté en mayúsculas
             }),
           }
         );

@@ -338,40 +338,118 @@ h2 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4); /* Capa oscura */
+  backdrop-filter: blur(5px); /* Desenfoque de fondo */
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal-contenido {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  min-width: 300px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  min-width: 320px;
+  max-width: 90%;
+  animation: aparecer 0.3s ease-out;
 }
 
-input {
-  width: 100%;
-  padding: 8px;
-  font-size: 1rem;
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
   margin-bottom: 15px;
+  color: #333;
+}
+
+.modal span {
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.gasto {
+  background: #ffe0e0;
+  color: #d32f2f;
+}
+
+.ingreso {
+  background: #e0ffe0;
+  color: #388e3c;
+}
+
+.modal input {
+  width: 80%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.modal input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 6px rgba(25, 118, 210, 0.4);
+}
+
+/* Botones */
+.botones {
+  display: flex;
+  justify-content: space-between;
 }
 
 .botones button {
-  padding: 10px;
-  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
 }
 
+.botones button:first-child {
+  background-color: #1976d2;
+  color: white;
+}
+
+.botones button:first-child:hover {
+  background-color: #1565c0;
+  transform: scale(1.05);
+}
+
+.botones button:last-child {
+  background-color: #e53935;
+  color: white;
+}
+
+.botones button:last-child:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+/* Alerta */
 .alerta {
   color: red;
   font-weight: bold;
   margin-top: 10px;
 }
 
+/* FORMULARIOS PARA AÑADIR NUEVOS TIPOS */
 .nuevo-tipo {
   margin-top: 10px;
   display: flex;
@@ -379,16 +457,39 @@ input {
   align-items: center;
   gap: 5px;
 }
+
 .nuevo-tipo input {
-  padding: 6px;
-  width: 200px;
+  padding: 10px;
+  width: 250px;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 14px;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+  background-color: #f8f9fa;
+  text-align: center;
 }
+
+.nuevo-tipo input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 8px rgba(25, 118, 210, 0.5);
+  background-color: white;
+}
+
 .nuevo-tipo button {
-  padding: 5px 10px;
+  padding: 10px 15px;
   background-color: #1976d2;
   color: white;
   border: none;
+  border-radius: 20px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-size: 1rem;
+}
+
+.nuevo-tipo button:hover {
+  background-color: #1565c0;
+  transform: scale(1.05);
 }
 
 /* LISTA DE TRANSACCIONES */

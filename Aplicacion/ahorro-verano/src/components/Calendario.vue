@@ -206,9 +206,21 @@ export default {
       }
     },
     eliminarTransaccion(trans) {
-      if (confirm(`¿Eliminar la transacción ${trans.tipo} de ${trans.cantidad}€?`)) {
-        this.$emit("eliminar-transaccion", trans.idTransaccion);
-      }
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: `¿Eliminar la transacción ${trans.tipo} de ${trans.cantidad}€?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$emit("eliminar-transaccion", trans.idTransaccion);
+          Swal.fire("Eliminado", "La transacción ha sido eliminada.", "success");
+        }
+      });
     },
     agregarRecordatorio(recordatorio) {
 
@@ -229,6 +241,7 @@ export default {
       }).then((result) => {
         if (result.isConfirmed) {
           this.$emit("eliminar-recordatorio", recordatorio.idRecordatorio);
+          Swal.fire("Eliminado", "El recordatorio ha sido eliminado.", "success");
         }
       });
     },
@@ -319,23 +332,29 @@ body {
   margin-top: 20px;
   text-align: center;
 }
+
 .transacciones-mensuales ul {
   list-style: none;
   padding-left: 0;
 }
+
 .transacciones-mensuales li {
   padding: 5px 0;
   font-size: 1rem;
 }
+
 .transacciones-mensuales li.gasto {
   color: red;
 }
+
 .transacciones-mensuales li.ingreso {
   color: green;
 }
+
 .fecha {
   font-weight: bold;
 }
+
 /* Navegación */
 .navegacion {
   display: flex;

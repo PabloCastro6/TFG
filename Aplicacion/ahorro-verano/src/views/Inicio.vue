@@ -41,9 +41,9 @@
 
         <!-- Bloque de texto (logo, h1 y p) -->
         <div class="text-section">
-          <img src="../assets/ahorro.png" alt="Logo" class="logo" />
           <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
           <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
+          <img src="../assets/ahorro.png" alt="Logo" class="logo" />
         </div>
       </div>
 
@@ -177,6 +177,9 @@ export default {
             text: data.message,
             icon: "success",
             confirmButtonText: "¡Perfecto!",
+            customClass: {
+              confirmButton: 'miBotonCancelar'
+            }
           });
 
           setTimeout(() => {
@@ -290,6 +293,7 @@ export default {
   margin-bottom: 10px;
   color: #2c3e50;
   width: 100%;
+  margin-left: 5%;
 }
 
 .frase {
@@ -297,6 +301,7 @@ export default {
   font-size: 18px;
   color: #666;
   margin-bottom: 30px;
+  margin-left: 5%;
 }
 
 /* Estilos del formulario */
@@ -336,7 +341,7 @@ export default {
 
 .btn-submit {
   width: 100%;
-  background-color: #2ecc71;
+  background: #2c3e50;
   color: white;
   padding: 12px;
   border: none;
@@ -347,13 +352,13 @@ export default {
 }
 
 .btn-submit:hover {
-  background-color: #27ae60;
+  background: #1a252f;
 }
 
 .btn-register {
   width: 100%;
   margin-top: 10px;
-  background-color: #007bff;
+  background: #2c3e50;
   color: white;
   padding: 12px;
   border: none;
@@ -364,7 +369,7 @@ export default {
 }
 
 .btn-register:hover {
-  background-color: #0056b3;
+  background: #1a252f;
 }
 
 /*Tipo de usuario*/
@@ -377,20 +382,19 @@ export default {
 
 .rol-buttons button {
   flex: 1;
-  padding: 10px;
+  padding: 6px;
   font-size: 16px;
   font-weight: bold;
   border: 2px solid #ccc;
   border-radius: 6px;
   background-color: white;
   cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .rol-buttons button.activo {
-  background-color: #2ecc71;
+  background-color: #007d8b;
   color: white;
-  border-color: #27ae60;
+  border-color: #083954;
 }
 
 .rol-buttons button:hover {
@@ -399,7 +403,7 @@ export default {
 
 /* Botón para abrir la calculadora */
 .boton-calculadora {
-  background-color: #2ecc71;
+  background-color: #ff9800;
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -408,11 +412,11 @@ export default {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
-  margin-left: 9%;
+  margin-left: 21%;
 }
 
 .boton-calculadora:hover {
-  background-color: #27ae60;
+  background-color: #d38f28;
 }
 
 /* Estilos de la calculadora */

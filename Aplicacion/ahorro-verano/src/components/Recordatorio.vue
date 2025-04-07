@@ -36,7 +36,7 @@
 
 <script>
 import { eventBus } from "@/eventBus.js";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 export default {
   name: "Recordatorio",
@@ -101,7 +101,11 @@ export default {
           icon: 'success',
           title: '¡Éxito!',
           text: 'Recordatorio agregado correctamente.',
-          confirmButtonText: 'Aceptar'
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            confirmButton: 'miBotonConfirmar',
+            cancelButton: 'miBotonCancelar'
+          }
         });
 
         // Limpiar el formulario
@@ -219,6 +223,7 @@ input:focus {
 
 .subtipo-opciones {
   margin-top: 10px;
+  font-size: 120%;
 }
 
 .subtipo-opciones select {
@@ -228,6 +233,8 @@ input:focus {
   border-radius: 8px;
   font-size: 1rem;
   transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-family: 'Glaure', sans-serif;
+  font-size: 64%;
 }
 
 .subtipo-opciones select:focus {

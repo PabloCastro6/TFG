@@ -187,7 +187,10 @@ export default {
             icon: "info",
             title: "Recordatorio de Ingreso",
             text: `Hoy tienes un recordatorio de ingreso: ${rec.concepto} - ${rec.cantidad}€`,
-            confirmButtonText: "Aceptar"
+            confirmButtonText: "Aceptar",
+            customClass: {
+              confirmButton: 'miBotonCancelar',
+            }
           });
         } else if (rec.tipo === "gasto") {
           Swal.fire({
@@ -214,11 +217,24 @@ export default {
         confirmButtonColor: "#d33",
         cancelButtonColor: "#3085d6",
         confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar"
+        cancelButtonText: "Cancelar",
+        customClass: {
+          confirmButton: 'miBotonEliminar',
+          cancelButton: 'miBotonCancelar'
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           this.$emit("eliminar-transaccion", trans.idTransaccion);
-          Swal.fire("Eliminado", "La transacción ha sido eliminada.", "success");
+          Swal.fire({
+            title: "Eliminado",
+            text: "La transacción ha sido eliminada.",
+            icon: "success",
+            confirmButtonText: 'Okey',
+            customClass: {
+              confirmButton: 'miBotonCancelar'
+            }
+          });
+
         }
       });
     },
@@ -237,11 +253,24 @@ export default {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          confirmButton: 'miBotonEliminar',
+          cancelButton: 'miBotonCancelar'
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           this.$emit("eliminar-recordatorio", recordatorio.idRecordatorio);
-          Swal.fire("Eliminado", "El recordatorio ha sido eliminado.", "success");
+          Swal.fire({
+            title: "Eliminado",
+            text: "El recordatorio ha sido eliminado.",
+            icon: "success",
+            confirmButtonText: 'Okey',
+            customClass: {
+              confirmButton: 'miBotonCancelar'
+            }
+          });
+
         }
       });
     },
@@ -364,7 +393,7 @@ body {
 }
 
 .btn-nav {
-  background-color: #007bff;
+  background-color: #ff9800;
   color: white;
   padding: 8px 12px;
   border: none;
@@ -374,7 +403,7 @@ body {
 }
 
 .btn-nav:hover {
-  background-color: #0056b3;
+  background-color: #e1992d;
 }
 
 /* Recordatorios: Círculo amarillo */

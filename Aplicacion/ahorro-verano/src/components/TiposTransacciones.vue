@@ -7,16 +7,10 @@
 
     <label>🔄 Categoría:</label>
     <div class="tipo-opciones">
-      <button
-        :class="{ activo: categoriaSeleccionada === 'ingreso' }"
-        @click="seleccionarCategoria('ingreso')"
-      >
+      <button :class="{ activo: categoriaSeleccionada === 'ingreso' }" @click="seleccionarCategoria('ingreso')">
         💰 Ingreso
       </button>
-      <button
-        :class="{ activo: categoriaSeleccionada === 'gasto' }"
-        @click="seleccionarCategoria('gasto')"
-      >
+      <button :class="{ activo: categoriaSeleccionada === 'gasto' }" @click="seleccionarCategoria('gasto')">
         💸 Gasto
       </button>
     </div>
@@ -25,29 +19,16 @@
       <label>📋 Concepto:</label>
       <select v-model="conceptoSeleccionado" class="label">
         <option value="" disabled>Selecciona un concepto</option>
-        <option
-          v-for="(opcion, index) in opcionesDisponibles"
-          :key="index"
-          :value="opcion"
-        >
+        <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
           {{ opcion }}
         </option>
       </select>
     </div>
 
     <label>💵 Cantidad (€):</label>
-    <input
-      type="number"
-      class="label"
-      v-model="cantidadSeleccionada"
-      placeholder="Introduce la cantidad"
-    />
+    <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
 
-    <button
-      :disabled="!registrado"
-      class="guardar-btn"
-      @click="guardarRegistro"
-    >
+    <button :disabled="!registrado" class="guardar-btn" @click="guardarRegistro">
       Guardar
     </button>
     <p v-if="!registrado" class="alerta">
@@ -167,6 +148,10 @@ export default {
           <b>📋 Concepto:</b> ${transCreada.tipo} <br>
           <b>💵 Cantidad:</b> ${transCreada.cantidad}€ <br>
         `,
+            confirmButtonText: 'Okey',
+            customClass: {
+              confirmButton: 'miBotonConfirmar'
+            }
           });
 
           this.fechaSeleccionada = "";
@@ -280,6 +265,7 @@ input:focus {
 /* 📌 Desplegable de subtipo */
 .subtipo-opciones {
   margin-top: 10px;
+  font-size: 120%;
 }
 
 .subtipo-opciones select {
@@ -289,6 +275,8 @@ input:focus {
   border-radius: 8px;
   font-size: 1rem;
   transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  font-family: 'Glaure', sans-serif;
+  font-size: 64%;
 }
 
 .subtipo-opciones select:focus {

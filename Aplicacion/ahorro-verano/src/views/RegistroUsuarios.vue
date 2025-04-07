@@ -6,47 +6,24 @@
       <form class="formulario" @submit.prevent="registrarUsuario">
         <div class="campo">
           <label>Nombre Completo:</label>
-          <input
-            v-model="usuario.nombreCompleto"
-            type="text"
-            placeholder="Pepe Perez"
-            required
-          />
+          <input v-model="usuario.nombreCompleto" type="text" placeholder="Pepe Perez" required />
         </div>
         <div class="campo">
           <label>Correo:</label>
-          <input
-            v-model="usuario.correo"
-            type="email"
-            placeholder="correo@correo.com"
-            required
-          />
+          <input v-model="usuario.correo" type="email" placeholder="correo@correo.com" required />
         </div>
         <div class="campo">
           <label>Contraseña:</label>
-          <input
-            v-model="usuario.password"
-            type="password"
-            placeholder="********"
-            required
-          />
+          <input v-model="usuario.password" type="password" placeholder="********" required />
         </div>
 
         <div class="form-group">
           <label>Tipo de usuario:</label>
           <div class="rol-buttons">
-            <button
-              type="button"
-              :class="{ activo: rol === 'USUARIO' }"
-              @click="rol = 'USUARIO'"
-            >
+            <button type="button" :class="{ activo: rol === 'USUARIO' }" @click="rol = 'USUARIO'">
               👤 Usuario
             </button>
-            <button
-              type="button"
-              :class="{ activo: rol === 'ADMINISTRADOR' }"
-              @click="rol = 'ADMINISTRADOR'"
-            >
+            <button type="button" :class="{ activo: rol === 'ADMINISTRADOR' }" @click="rol = 'ADMINISTRADOR'">
               🛠️ Administrador
             </button>
           </div>
@@ -120,7 +97,7 @@ export default {
         correo: "",
         password: "",
       },
-      rol: "USUARIO",
+      rol: "",
       listaUsuarios: [],
       esAdmin: false,
       usuarioEditando: null,
@@ -339,9 +316,9 @@ export default {
 }
 
 .rol-buttons button.activo {
-  background-color: #2ecc71;
+  background-color: #007d8b;
   color: white;
-  border-color: #27ae60;
+  border-color: #083954;
 }
 
 .rol-buttons button:hover {
@@ -351,7 +328,8 @@ export default {
 .tabla-usuarios {
   flex: 1;
   background: white;
-  padding: 20px;
+  padding: 70px;
+  padding-right: 250px;
   border-radius: 10px;
   max-width: 700px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);

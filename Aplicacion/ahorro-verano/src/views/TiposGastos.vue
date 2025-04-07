@@ -4,12 +4,8 @@
     <div class="categorias">
       <h2>💸 Tipos de Gastos</h2>
       <div class="grid">
-        <div
-          class="card gasto"
-          v-for="(tipo, index) in categoriasGastos"
-          :key="index"
-          @click="abrirModal(tipo, 'gasto')"
-        >
+        <div class="card gasto" v-for="(tipo, index) in categoriasGastos" :key="index"
+          @click="abrirModal(tipo, 'gasto')">
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -26,12 +22,8 @@
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
       <div class="grid">
-        <div
-          class="card ingreso"
-          v-for="(tipo, index) in categoriasIngresos"
-          :key="index"
-          @click="abrirModal(tipo, 'ingreso')"
-        >
+        <div class="card ingreso" v-for="(tipo, index) in categoriasIngresos" :key="index"
+          @click="abrirModal(tipo, 'ingreso')">
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -54,12 +46,7 @@
           }}</span>
         </h3>
         <input type="date" v-model="fechaSeleccionada" />
-        <input
-          type="number"
-          v-model="cantidadSeleccionada"
-          placeholder="Cantidad (€)"
-          min="0"
-        />
+        <input type="number" v-model="cantidadSeleccionada" placeholder="Cantidad (€)" min="0" />
         <div class="botones">
           <button :disabled="!registrado" @click="guardarRegistro">
             Confirmar
@@ -104,23 +91,23 @@ export default {
       categoriasGastos: JSON.parse(
         localStorage.getItem("categoriasGastos")
       ) || [
-        { nombre: "Coche", icono: "fas fa-car" },
-        { nombre: "Ropa", icono: "fas fa-tshirt" },
-        { nombre: "Entretenimiento", icono: "fas fa-film" },
-        { nombre: "Comida", icono: "fas fa-utensils" },
-        { nombre: "Gasolina", icono: "fas fa-gas-pump" },
-        { nombre: "Regalos", icono: "fas fa-gift" },
-        { nombre: "Salud", icono: "fas fa-heartbeat" },
-        { nombre: "Vacaciones", icono: "fas fa-plane" },
-        { nombre: "Deportes", icono: "fas fa-football-ball" },
-      ],
+          { nombre: "Coche", icono: "fas fa-car" },
+          { nombre: "Ropa", icono: "fas fa-tshirt" },
+          { nombre: "Entretenimiento", icono: "fas fa-film" },
+          { nombre: "Comida", icono: "fas fa-utensils" },
+          { nombre: "Gasolina", icono: "fas fa-gas-pump" },
+          { nombre: "Regalos", icono: "fas fa-gift" },
+          { nombre: "Salud", icono: "fas fa-heartbeat" },
+          { nombre: "Vacaciones", icono: "fas fa-plane" },
+          { nombre: "Deportes", icono: "fas fa-football-ball" },
+        ],
       categoriasIngresos: JSON.parse(
         localStorage.getItem("categoriasIngresos")
       ) || [
-        { nombre: "Trabajo", icono: "fas fa-briefcase" },
-        { nombre: "Alquileres Casas", icono: "fas fa-home" },
-        { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
-      ],
+          { nombre: "Trabajo", icono: "fas fa-briefcase" },
+          { nombre: "Alquileres Casas", icono: "fas fa-home" },
+          { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
+        ],
       mostrarModal: false,
       tipoSeleccionado: {},
       fechaSeleccionada: "",
@@ -194,11 +181,16 @@ export default {
             JSON.stringify(this.transacciones)
           );
           this.$emit("nueva-transaccion", transCreada);
-          Swal.fire(
-            "✅ Éxito",
-            "Transacción guardada correctamente",
-            "success"
-          );
+          Swal.fire({
+            title: "✅ Éxito",
+            text: "Transacción guardada correctamente",
+            icon: "success",
+            confirmButtonText: 'Okey',
+            customClass: {
+              confirmButton: 'miBotonCancelar'
+            }
+          });
+
           this.cerrarModal();
         })
         .catch((err) => {
@@ -229,11 +221,16 @@ export default {
         });
 
         this.nuevoGasto = "";
-        Swal.fire(
-          "🎉 Gasto añadido",
-          `"${nuevo.nombre}" ha sido creado`,
-          "success"
-        );
+        Swal.fire({
+          title: "🎉 Gasto añadido",
+          text: `"${nuevo.nombre}" ha sido creado`,
+          icon: "success",
+          confirmButtonText: 'Okey',
+          customClass: {
+            confirmButton: 'miBotonCancelar'
+          }
+        });
+
       }
 
       if (tipo === "ingreso" && this.nuevoIngreso.trim()) {
@@ -338,8 +335,10 @@ h2 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Capa oscura */
-  backdrop-filter: blur(5px); /* Desenfoque de fondo */
+  background: rgba(0, 0, 0, 0.4);
+  /* Capa oscura */
+  backdrop-filter: blur(5px);
+  /* Desenfoque de fondo */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -362,6 +361,7 @@ h2 {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -477,7 +477,8 @@ h2 {
 }
 
 .nuevo-tipo button {
-  padding: 10px 15px;
+  padding: 10px 40px;
+  margin-top: 5%;
   background-color: #1976d2;
   color: white;
   border: none;
@@ -496,7 +497,13 @@ h2 {
 .transacciones {
   text-align: center;
   list-style: none;
+  text-decoration: none;
   padding-left: 0;
+}
+
+.transacciones ul {
+  list-style-type: none; 
+  padding: 0;
 }
 
 .fecha {

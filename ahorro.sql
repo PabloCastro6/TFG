@@ -23,6 +23,12 @@ SELECT * FROM transacciones;
 SELECT * FROM categorias;
 SELECT * FROM recordatorios;
 
+SET SQL_SAFE_UPDATES = 0; 
+
+UPDATE usuarios SET rol = 'USUARIO' WHERE rol = 'usuario';
+UPDATE usuarios SET rol = 'ADMINISTRADOR' WHERE rol = 'administrador';
+
+
 CREATE TABLE `transacciones` (
   `idTransaccion` int NOT NULL,
   `fecha` date DEFAULT NULL,

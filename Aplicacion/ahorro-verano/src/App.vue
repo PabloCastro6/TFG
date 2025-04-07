@@ -22,5 +22,49 @@ export default {
 </script>
 
 <style>
-/* Estilos de ser necesario */
+
+@font-face {
+  font-family: 'Glaure';
+  src: url('@/assets/fonts/Glaure.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+body,input {
+  font-family: 'Glaure', sans-serif;
+  font-size: 98%;
+}
+button {
+  font-family: 'Glaure', sans-serif;
+  font-size: 100%;
+}
+
+.miBotonConfirmar {
+  background-color: #4CAF50 !important; /* verde */
+  color: white !important;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: inherit; /* usa tu fuente si quieres */
+}
+.miBotonEliminar {
+  background-color: #be0a0a !important; /* verde */
+  color: white !important;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: inherit; /* usa tu fuente si quieres */
+}
+.miBotonCancelar {
+  background-color: #2c3e50 !important; /* verde */
+  color: white !important;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: inherit; /* usa tu fuente si quieres */
+}
+
+
 </style>

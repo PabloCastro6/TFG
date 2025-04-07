@@ -30,7 +30,6 @@
     margin: 0;
     overflow: hidden; 
   }
-  
 
   .acceso-denegado {
     display: flex;
@@ -39,7 +38,8 @@
     height: 88vh;
     width: 100%; 
     background: linear-gradient(135deg, #a31f1f, #f83232);
-    font-family: 'Arial', sans-serif;
+    font-family: 'Glaure', sans-serif;
+    font-size: 120%;
     color: white;
     text-align: center;
     overflow: hidden;

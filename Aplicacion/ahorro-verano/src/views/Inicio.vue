@@ -13,20 +13,9 @@
           <div v-if="mostrarCalculadora" class="calculadora">
             <h3 class="gasto">Calculadora de Ahorro</h3>
             <label for="gasto" class="gasto">Gasto Diario (€):</label>
-            <input
-              type="number"
-              v-model.number="gastoDiario"
-              placeholder="Introduce tu gasto diario"
-            />
-            <label for="reduccion" class="reduccion"
-              >Reducción de Gasto (%)</label
-            >
-            <input
-              type="range"
-              v-model.number="porcentajeReduccion"
-              min="0"
-              max="50"
-            />
+            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
+            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
+            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
             <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
             <p class="resultado">
               Si reduces tus gastos un
@@ -53,54 +42,30 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              required
-              placeholder="Introduce tu correo electrónico"
-              autocomplete="username"
-            />
+            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
+              autocomplete="username" />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input
-              type="password"
-              id="password"
-              v-model="password"
-              required
-              placeholder="Introduce tu contraseña"
-              autocomplete="current-password"
-            />
+            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
+              autocomplete="current-password" />
           </div>
 
           <!-- Tipo de usuario-->
           <div class="form-group">
             <label>Tipo de usuario:</label>
             <div class="rol-buttons">
-              <button
-                type="button"
-                :class="{ activo: rol === 'USUARIO' }"
-                @click="rol = 'USUARIO'"
-              >
+              <button type="button" :class="{ activo: rol === 'USUARIO' }" @click="rol = 'USUARIO'">
                 👤 Usuario
               </button>
-              <button
-                type="button"
-                :class="{ activo: rol === 'ADMINISTRADOR' }"
-                @click="rol = 'ADMINISTRADOR'"
-              >
+              <button type="button" :class="{ activo: rol === 'ADMINISTRADOR' }" @click="rol = 'ADMINISTRADOR'">
                 🛠️ Administrador
               </button>
             </div>
           </div>
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
-        <button
-          type="button"
-          class="btn-register"
-          @click="goToRegistroUsuarios"
-        >
+        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
           Crear nuevo usuario
         </button>
       </div>
@@ -215,10 +180,22 @@ export default {
     goToRegistroUsuarios() {
       this.$router.push("/RegistroUsuarios");
     },
+
     cerrarSesion() {
       localStorage.clear();
       this.usuarioLogueado = false;
-      this.$router.push("/");
+
+      Swal.fire({
+        icon: "info",
+        title: "👋 Sesión cerrada",
+        text: "Has cerrado sesión correctamente.",
+        confirmButtonText: "Okey",
+        customClass: {
+          confirmButton: "miBotonCancelar",
+        }
+      }).then(() => {
+        this.$router.push("/");
+      });
     },
   },
   mounted() {
@@ -442,7 +419,8 @@ export default {
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active para versiones anteriores de Vue */ {
+/* .fade-leave-active para versiones anteriores de Vue */
+  {
   opacity: 0;
   transform: translateY(-10px);
 }

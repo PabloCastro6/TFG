@@ -2,38 +2,23 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- Calendario con transacciones y recordatorios -->
-      <Calendario 
-        :transacciones="transacciones" 
-        :recordatorios="recordatorios" 
-        :usuarioId="userId"
-        @fecha-seleccionada="actualizarFecha" 
-        @eliminar-transaccion="eliminarTransaccionPadre"
-        @mes-cambiado="actualizarMes"
-        @eliminar-recordatorio="eliminarRecordatorioPadre"
-      />
+      <Calendario :transacciones="transacciones" :recordatorios="recordatorios" :usuarioId="userId"
+        @fecha-seleccionada="actualizarFecha" @eliminar-transaccion="eliminarTransaccionPadre"
+        @mes-cambiado="actualizarMes" @eliminar-recordatorio="eliminarRecordatorioPadre" />
       <!-- Formulario de transacciones -->
-      <TiposTransacciones 
-        :fechaPreseleccionada="fechaSeleccionada" 
-        @nueva-transaccion="agregarTransaccion" 
-      />
+      <TiposTransacciones :fechaPreseleccionada="fechaSeleccionada" @nueva-transaccion="agregarTransaccion" />
     </div>
 
     <!-- 📋 Lista de transacciones del mes actual -->
     <div class="lista-transacciones">
       <h3>📋 Transacciones del mes</h3>
       <ul>
-        <li
-          v-for="trans in transaccionesFiltradasPorMes"
-          :key="trans.idTransaccion"
-        >
+        <li v-for="trans in transaccionesFiltradasPorMes" :key="trans.idTransaccion">
           <span>{{ formatearFecha(trans.fecha) }}:</span>
           <span :class="trans.categoria.nombre.toLowerCase()">
             {{ trans.tipo }} - {{ trans.cantidad }}€
           </span>
-          <button
-            class="btn-eliminar"
-            @click="eliminarTransaccionDesdeLista(trans.idTransaccion)"
-          >
+          <button class="btn-eliminar" @click="eliminarTransaccionDesdeLista(trans.idTransaccion)">
             🗑️
           </button>
         </li>
@@ -46,6 +31,7 @@
 import Calendario from "@/components/Calendario.vue";
 import TiposTransacciones from "@/components/TiposTransacciones.vue";
 import { eventBus } from "@/eventBus.js";
+import Swal from "sweetalert2";
 
 export default {
   name: "ConfiguracionAhorro",
@@ -153,9 +139,9 @@ export default {
       }
     },
 
-    agregarTransaccion(transaccion) { 
+    agregarTransaccion(transaccion) {
       // Se puede optar por volver a cargar o agregar directamente
-      this.obtenerTransacciones(); 
+      this.obtenerTransacciones();
     },
 
     actualizarFecha(fecha) {
@@ -182,8 +168,20 @@ export default {
     },
 
     async eliminarTransaccionDesdeLista(idTransaccion) {
-      const confirmar = confirm("¿Eliminar esta transacción?");
-      if (!confirmar) return;
+      const { isConfirmed } = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta transacción será eliminada permanentemente.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          confirmButton: "miBotonEliminar",
+          cancelButton: "miBotonCancelar"
+        }
+      });
+
+      if (!isConfirmed) return;
 
       try {
         const response = await fetch(
@@ -193,18 +191,28 @@ export default {
 
         if (!response.ok) {
           console.error("❌ Error al eliminar la transacción en el backend");
+          Swal.fire("Error", "No se pudo eliminar la transacción", "error");
           return;
         }
 
         this.transacciones = this.transacciones.filter(
           (t) => t.idTransaccion !== idTransaccion
         );
-        console.log("🗑️ Transacción eliminada");
+
+        Swal.fire({
+          icon: "success",
+          title: "🗑️ Eliminada",
+          text: "La transacción ha sido eliminada correctamente.",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar"
+          }
+        });
       } catch (err) {
         console.error("❌ Error:", err);
+        Swal.fire("Error", "Ocurrió un problema al eliminar", "error");
       }
     },
-
     formatearFecha(fecha) {
       const partes = fecha.split("-");
       return `${partes[0]}/${partes[1]}/${partes[2]}`;
@@ -214,9 +222,8 @@ export default {
         const fechaObj = new Date(
           fecha.includes("-") && fecha.split("-")[0].length === 4
             ? fecha // formato yyyy-MM-dd
-            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${
-                fecha.split("-")[0]
-              }`
+            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${fecha.split("-")[0]
+            }`
         );
 
         return (

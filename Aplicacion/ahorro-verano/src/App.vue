@@ -29,6 +29,18 @@ export default {
   font-weight: normal;
   font-style: normal;
 }
+body {
+  font-family: 'Glaure', sans-serif;
+  font-size: 98%;
+  margin: 0;
+  padding: 0;
+  background-image: url('@/assets/background/fondo.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+}
+
 body,input {
   font-family: 'Glaure', sans-serif;
   font-size: 98%;

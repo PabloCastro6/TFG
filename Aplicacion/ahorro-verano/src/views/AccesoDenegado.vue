@@ -37,7 +37,7 @@
     align-items: center;
     height: 88vh;
     width: 100%; 
-    background: linear-gradient(135deg, #a31f1f, #f83232);
+    background: linear-gradient(135deg, #a31f1f, #082954);
     font-family: 'Glaure', sans-serif;
     font-size: 120%;
     color: white;

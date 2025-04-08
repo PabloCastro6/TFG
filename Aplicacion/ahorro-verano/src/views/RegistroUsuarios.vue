@@ -89,6 +89,8 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
+
 export default {
   data() {
     return {
@@ -105,6 +107,7 @@ export default {
     };
   },
   methods: {
+
     async registrarUsuario() {
       try {
         const response = await fetch("http://localhost:8080/usuarios", {
@@ -125,7 +128,14 @@ export default {
         localStorage.setItem("rol", usuarioRegistrado.rol);
         localStorage.setItem("registrado", "true");
 
-        alert("✅ Usuario registrado correctamente");
+        await Swal.fire({
+          icon: "success",
+          title: "✅ Usuario registrado correctamente",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar"
+          }
+        });
 
         if (usuarioRegistrado.rol === "ADMINISTRADOR") {
           this.esAdmin = true;
@@ -135,10 +145,17 @@ export default {
         }
       } catch (error) {
         console.error("❌ Error al registrar usuario:", error);
-        alert("❌ No se pudo registrar el usuario.");
+        Swal.fire({
+          icon: "error",
+          title: "❌ No se pudo registrar el usuario",
+          text: "Verifica los datos e inténtalo de nuevo.",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar"
+          }
+        });
       }
     },
-
     async obtenerUsuarios() {
       try {
         const response = await fetch("http://localhost:8080/usuarios");
@@ -149,16 +166,49 @@ export default {
     },
 
     async eliminarUsuario(id) {
-      if (!confirm("¿Eliminar este usuario?")) return;
+      const confirmacion = await Swal.fire({
+        title: "¿Eliminar este usuario?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          confirmButton: "miBotonEliminar",
+          cancelButton: "miBotonCancelar"
+        }
+      });
+
+      if (!confirmacion.isConfirmed) return;
+
       try {
         await fetch(`http://localhost:8080/usuarios/${id}`, {
           method: "DELETE",
         });
+
         this.listaUsuarios = this.listaUsuarios.filter(
           (u) => u.idUsuario !== id
         );
+
+        await Swal.fire({
+          icon: "success",
+          title: "✅ Usuario eliminado",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar"
+          }
+        });
       } catch (error) {
         console.error("❌ Error al eliminar usuario:", error);
+        Swal.fire({
+          icon: "error",
+          title: "❌ Error",
+          text: "No se pudo eliminar el usuario",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar"
+          }
+        });
       }
     },
 
@@ -171,12 +221,22 @@ export default {
       localStorage.clear();
       this.esAdmin = false;
       this.listaUsuarios = [];
-      alert("Sesión cerrada.");
+
+      Swal.fire({
+        icon: "info",
+        title: "👋 Sesión cerrada",
+        text: "Has cerrado sesión correctamente.",
+        confirmButtonText: "Okey",
+        customClass: {
+          confirmButton: "miBotonCancelar"
+        }
+      });
     },
     cancelarEdicion() {
       this.usuarioEditando = null;
       this.usuarioEditado = null;
     },
+
     async guardarEdicion() {
       try {
         const response = await fetch(
@@ -192,7 +252,6 @@ export default {
 
         if (!response.ok) throw new Error("Error al guardar cambios");
 
-        // Actualiza la fila editada en la lista
         const index = this.listaUsuarios.findIndex(
           (u) => u.idUsuario === this.usuarioEditado.idUsuario
         );
@@ -200,13 +259,33 @@ export default {
           this.listaUsuarios.splice(index, 1, { ...this.usuarioEditado });
         }
 
-        // Si se cambió el rol a ADMINISTRADOR, ocultar acciones
         this.usuarioEditando = null;
         this.usuarioEditado = null;
-        alert("✅ Cambios guardados correctamente");
+
+        // ✅ SweetAlert de éxito
+        Swal.fire({
+          icon: "success",
+          title: "✅ Cambios guardados",
+          text: "La información del usuario se actualizó correctamente.",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar",
+          },
+        });
+
       } catch (error) {
         console.error("❌ Error al guardar edición:", error);
-        alert("❌ No se pudo guardar la edición.");
+
+        // ❌ SweetAlert de error
+        Swal.fire({
+          icon: "error",
+          title: "❌ Error",
+          text: "No se pudo guardar la edición.",
+          confirmButtonText: "Entendido",
+          customClass: {
+            confirmButton: "miBotonEliminar",
+          },
+        });
       }
     },
 

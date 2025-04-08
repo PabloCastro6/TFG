@@ -49,8 +49,8 @@ export default {
         concepto: ""
       },
       hoy: new Date().toISOString().split("T")[0],
-      opcionesIngreso: ["Salario", "Bonificación", "Otro ingreso"],
-      opcionesGasto: ["Alimentación", "Transporte", "Entretenimiento"]
+      opcionesIngreso: ["Trabajo", "Alquileres Casas", "Paga de la Abuela"],
+      opcionesGasto: ["Comida", "Ropa", "Entretenimiento", "Coche", "Gasolina", "Regalos", "Salud", "Vacaciones", "Deportes"],
     };
   },
   computed: {

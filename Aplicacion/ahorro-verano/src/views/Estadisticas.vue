@@ -1,95 +1,167 @@
-<!-- Hacer una estadisticas del DIA QUE SE ELIJA sobre los gastos y los ingresos
-   y del MES global -->
-
 <template>
-  <div class="estadisticas-container">
-    <h2>📊 Estadísticas de {{ nombreMes }} {{ anio }}</h2>
-    <p>Usuario ID: {{ usuarioId }}</p>
+  <div class="estadisticas">
+    <h1>📊 Estadísticas</h1>
 
-    <button @click="cargarEstadisticas">📥 Cargar estadísticas</button>
+    <!-- Selector de mes -->
+    <input type="month" v-model="mesSeleccionado" @change="filtrarDatos" />
 
-    <div v-if="resumen">
-      <h3>Resumen mensual</h3>
-      <ul>
-        <li>💰 Ingresos: {{ resumen.ingresos }} €</li>
-        <li>💸 Gastos: {{ resumen.gastos }} €</li>
-        <li>📈 Saldo: {{ resumen.saldo }} €</li>
-      </ul>
+    <!-- Balance -->
+    <div class="balance">
+      <p><strong>💰 Ingresos:</strong> {{ totalIngresos }}€</p>
+      <p><strong>🛒 Gastos:</strong> {{ totalGastos }}€</p>
+      <p :style="{ color: balance >= 0 ? 'green' : 'red' }">
+        <strong>📈 Balance:</strong> {{ balance }}€
+      </p>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="grafico" style="height: 400px;">
+      <BarChart :data="chartData" :options="chartOptions" />
     </div>
   </div>
 </template>
 
 <script>
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "vue-chartjs";
+import Swal from "sweetalert2";
 
+ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 export default {
   name: "Estadisticas",
-
+  components: {
+    BarChart: Bar, // Usamos Bar directamente
+  },
   data() {
-    const hoy = new Date();
     return {
-      mes: hoy.getMonth() + 1,
-      anio: hoy.getFullYear(),
-      resumen: null,
-      usuarioId: parseInt(localStorage.getItem("usuarioId")) || 0, //recuperar el ID
+      transacciones: [],
+      mesSeleccionado: "",
+      totalIngresos: 0,
+      totalGastos: 0,
+      balance: 0,
+      chartData: {
+        labels: ["Ingresos", "Gastos"],
+        datasets: [
+          {
+            label: "Total (€)",
+            backgroundColor: ["#27ae60", "#c0392b"],
+            data: [0, 0],
+          },
+        ],
+      },
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+          },
+          title: {
+            display: true,
+            text: "Ingresos vs Gastos",
+          },
+        },
+      },
     };
   },
-  computed: {
-    nombreMes() {
-      return new Date(this.anio, this.mes - 1).toLocaleString("es-ES", {
-        month: "long",
-      });
-    },
-  },
   methods: {
-    async cargarEstadisticas() {
-      /*PRUEBA*/
-      this.resumen = {
-        ingresos: 1200,
-        gastos: 800,
-        saldo: 400,
-      };
+    async obtenerTransacciones() {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/estadisticas/${this.usuarioId}`,
-          {
-            params: {
-              mes: this.mes,
-              anio: this.anio,
-            },
-          }
-        );
-        this.resumen = response.data;
-        console.log("📊 Resumen recibido:", this.resumen);
+        const response = await fetch("http://localhost:8080/transacciones");
+        this.transacciones = await response.json();
       } catch (error) {
-        console.error("❌ Error al obtener estadísticas:", error);
+        console.error("❌ Error al cargar transacciones:", error);
       }
     },
+    filtrarDatos() {
+      if (!this.mesSeleccionado) return;
+
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.warn("⚠️ No se encontró el ID de usuario en localStorage");
+        return;
+      }
+
+      const [anioStr, mesStr] = this.mesSeleccionado.split("-");
+      const anio = parseInt(anioStr);
+      const mes = parseInt(mesStr);
+
+      const transaccionesMesUsuario = this.transacciones.filter((t) => {
+        if (!t.fecha || !t.usuario || t.usuario.idUsuario != userId) return false;
+
+        const [yearStr, monthStr] = t.fecha.split("-");
+        return parseInt(yearStr) === anio && parseInt(monthStr) === mes;
+      });
+
+      if (transaccionesMesUsuario.length === 0) {
+        Swal.fire({
+          icon: "info",
+          title: "Sin transacciones",
+          text: "No se encontraron ingresos ni gastos en el mes seleccionado.",
+          confirmButtonText: "Entendido",
+          customClass: {
+            confirmButton: "miBotonCancelar",
+          },
+        });
+      }
+
+      const ingresos = transaccionesMesUsuario.filter(
+        (t) => t.categoria?.nombre.toLowerCase() === "ingreso"
+      );
+      const gastos = transaccionesMesUsuario.filter(
+        (t) => t.categoria?.nombre.toLowerCase() === "gasto"
+      );
+
+      this.totalIngresos = ingresos.reduce((sum, t) => sum + t.cantidad, 0);
+      this.totalGastos = gastos.reduce((sum, t) => sum + t.cantidad, 0);
+      this.balance = this.totalIngresos - this.totalGastos;
+
+      this.chartData = {
+        labels: ["Ingresos", "Gastos"],
+        datasets: [
+          {
+            label: "Total (€)",
+            backgroundColor: ["#27ae60", "#c0392b"],
+            data: [this.totalIngresos, this.totalGastos],
+          },
+        ],
+      };
+    },
+  },
+  mounted() {
+    this.obtenerTransacciones();
   },
 };
 </script>
 
 <style scoped>
-.estadisticas-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+.estadisticas {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
 }
 
-button {
-  margin-bottom: 20px;
-  background-color: #3498db;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+input[type="month"] {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  font-size: 1rem;
 }
 
-button:hover {
-  background-color: #2980b9;
+.balance {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+}
+
+.grafico {
+  margin-top: 2rem;
 }
 </style>

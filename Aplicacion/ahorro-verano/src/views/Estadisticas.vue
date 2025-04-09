@@ -10,7 +10,16 @@
       <p><strong>💰 Ingresos:</strong> {{ totalIngresos }}€</p>
       <p><strong>🛒 Gastos:</strong> {{ totalGastos }}€</p>
       <p :style="{ color: balance >= 0 ? 'green' : 'red' }">
-        <strong>📈 Balance:</strong> {{ balance }}€
+        <strong>📈 Balance mensual:</strong> {{ balance }}€
+      </p>
+    </div>
+
+    <!-- Media anual -->
+    <div class="balance">
+      <p><strong>📆 Media anual de ingresos:</strong> {{ mediaIngresosAnual.toFixed(2) }}€</p>
+      <p><strong>📆 Media anual de gastos:</strong> {{ mediaGastosAnual.toFixed(2) }}€</p>
+      <p :style="{ color: balanceAnual >= 0 ? 'green' : 'red' }">
+        <strong>📊 Balance anual:</strong> {{ balanceAnual.toFixed(2) }}€
       </p>
     </div>
 
@@ -46,7 +55,7 @@ ChartJS.register(
 export default {
   name: "Estadisticas",
   components: {
-    BarChart: Bar, // Usamos Bar directamente
+    BarChart: Bar,
   },
   data() {
     return {
@@ -55,6 +64,9 @@ export default {
       totalIngresos: 0,
       totalGastos: 0,
       balance: 0,
+      balanceAnual: 0,
+      mediaIngresosAnual: 0,
+      mediaGastosAnual: 0,
       chartData: {
         labels: ["Ingresos", "Gastos"],
         datasets: [
@@ -102,6 +114,7 @@ export default {
       const anio = parseInt(anioStr);
       const mes = parseInt(mesStr);
 
+      // Transacciones del mes seleccionado
       const transaccionesMesUsuario = this.transacciones.filter((t) => {
         if (!t.fecha || !t.usuario || t.usuario.idUsuario != userId)
           return false;
@@ -133,6 +146,30 @@ export default {
       this.totalGastos = gastos.reduce((sum, t) => sum + t.cantidad, 0);
       this.balance = this.totalIngresos - this.totalGastos;
 
+      // Calcular medias anuales
+      const transaccionesAnioUsuario = this.transacciones.filter((t) => {
+        if (!t.fecha || !t.usuario || t.usuario.idUsuario != userId)
+          return false;
+        const [yearStr] = t.fecha.split("-");
+        return parseInt(yearStr) === anio;
+      });
+
+      const ingresosAnuales = transaccionesAnioUsuario.filter(
+        (t) => t.categoria?.nombre.toLowerCase() === "ingreso"
+      );
+      const gastosAnuales = transaccionesAnioUsuario.filter(
+        (t) => t.categoria?.nombre.toLowerCase() === "gasto"
+      );
+
+      const sumaIngresosAnual = ingresosAnuales.reduce((sum, t) => sum + t.cantidad, 0);
+      const sumaGastosAnual = gastosAnuales.reduce((sum, t) => sum + t.cantidad, 0);
+
+      this.mediaIngresosAnual = sumaIngresosAnual / 12;
+      this.mediaGastosAnual = sumaGastosAnual / 12;
+
+      this.balanceAnual = this.mediaIngresosAnual - this.mediaGastosAnual;
+
+      // Actualizar gráfico
       this.chartData = {
         labels: ["Ingresos", "Gastos"],
         datasets: [
@@ -150,6 +187,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .estadisticas {

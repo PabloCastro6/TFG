@@ -2,30 +2,38 @@
   <div class="estadisticas">
     <h1>📊 Estadísticas</h1>
 
-    <!-- Selector de mes -->
-    <input type="month" v-model="mesSeleccionado" @change="filtrarDatos" />
+    <!-- Contenedor Flex para el balance y gráfico -->
+    <div class="contenedor-estadisticas">
+      <!-- Parte izquierda: Selector de mes y balance -->
+      <div class="izquierda">
+        <!-- Selector de mes -->
+        <input type="month" v-model="mesSeleccionado" @change="filtrarDatos" />
 
-    <!-- Balance -->
-    <div class="balance">
-      <p><strong>💰 Ingresos:</strong> {{ totalIngresos }}€</p>
-      <p><strong>🛒 Gastos:</strong> {{ totalGastos }}€</p>
-      <p :style="{ color: balance >= 0 ? 'green' : 'red' }">
-        <strong>📈 Balance mensual:</strong> {{ balance }}€
-      </p>
-    </div>
+        <!-- Balance -->
+        <div class="balance">
+          <p><strong>💰 Ingresos:</strong> {{ totalIngresos }}€</p>
+          <p><strong>🛒 Gastos:</strong> {{ totalGastos }}€</p>
+          <p :style="{ color: balance >= 0 ? 'green' : 'red' }">
+            <strong>📈 Balance mensual:</strong> {{ balance }}€
+          </p>
+        </div>
 
-    <!-- Media anual -->
-    <div class="balance">
-      <p><strong>📆 Media anual de ingresos:</strong> {{ mediaIngresosAnual.toFixed(2) }}€</p>
-      <p><strong>📆 Media anual de gastos:</strong> {{ mediaGastosAnual.toFixed(2) }}€</p>
-      <p :style="{ color: balanceAnual >= 0 ? 'green' : 'red' }">
-        <strong>📊 Balance anual:</strong> {{ balanceAnual.toFixed(2) }}€
-      </p>
-    </div>
+        <!-- Media anual -->
+        <div class="balance">
+          <p><strong>📆 Media anual de ingresos:</strong> {{ mediaIngresosAnual.toFixed(2) }}€</p>
+          <p><strong>📆 Media anual de gastos:</strong> {{ mediaGastosAnual.toFixed(2) }}€</p>
+          <p :style="{ color: balanceAnual >= 0 ? 'green' : 'red' }">
+            <strong>📊 Balance anual:</strong> {{ balanceAnual.toFixed(2) }}€
+          </p>
+        </div>
+      </div>
 
-    <!-- Gráfico -->
-    <div class="grafico" style="height: 400px">
-      <BarChart :data="chartData" :options="chartOptions" />
+      <!-- Parte derecha: Gráfico -->
+      <div class="derecha">
+        <div class="grafico" style="height: 400px">
+          <BarChart :data="chartData" :options="chartOptions" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -115,7 +123,8 @@ export default {
               font: {
                 size: 13,
                 family: 'Glaure',
-                weight: 'normal'              }
+                weight: 'normal'
+              }
             },
             grid: {
               color: '#444444'
@@ -241,26 +250,59 @@ export default {
 
 
 <style scoped>
+h1{
+  margin-top: 10%;
+  width: 30%;
+}
+
 .estadisticas {
-  max-width: 800px;
+  max-width: 1000px;
+  /* Ajuste para mejor visibilidad */
   margin: auto;
 }
 
+/* Contenedor para organizar las columnas */
+.contenedor-estadisticas {
+  display: flex;
+  /* Hacer uso de Flexbox */
+  justify-content: space-between;
+  /* Separar las dos columnas */
+  margin-top: 1rem;
+}
+
+.izquierda {
+  flex: 0 0 40%;
+  /* 40% de ancho */
+  padding-right: 60px;
+  margin-right: 5%;
+  margin-top: 5%;
+}
+
+.derecha {
+  flex: 0 0 60%;
+  /* 60% de ancho */
+}
+
+/* Ajustar estilo del input de mes */
 input[type="month"] {
   margin-bottom: 1rem;
   padding: 0.5rem;
   font-size: 1rem;
+  width: 100%;
+  /* Aseguramos que el input de mes ocupe todo el espacio disponible */
 }
 
+/* Estilo de los bloques de balance */
 .balance {
   margin: 1rem 0;
   font-size: 1.1rem;
 }
 
+/* Estilo del gráfico */
 .grafico {
-  margin-top: 2rem;
   background-color: #000000;
   border-radius: 12px;
   padding: 1rem;
+  height: 100%;
 }
 </style>

@@ -83,13 +83,59 @@ export default {
         plugins: {
           legend: {
             display: true,
+            labels: {
+              color: '#ffffff',
+              font: {
+                size: 14,
+                family: 'Glaure',
+                weight: 'normal'
+              }
+            }
           },
           title: {
             display: true,
             text: "Ingresos vs Gastos",
+            color: '#ffffff',
+            font: {
+              size: 18,
+              family: 'Glaure',
+              weight: 'normal'
+            }
           },
+          tooltip: {
+            backgroundColor: '#2c3e50',
+            titleColor: '#ffffff',
+            bodyColor: '#ecf0f1',
+          }
         },
-      },
+        scales: {
+          x: {
+            ticks: {
+              color: '#ffffff',
+              font: {
+                size: 13,
+                family: 'Glaure',
+                weight: 'normal'              }
+            },
+            grid: {
+              color: '#444444'
+            }
+          },
+          y: {
+            ticks: {
+              color: '#ffffff',
+              font: {
+                size: 13,
+                family: 'Arial'
+              }
+            },
+            grid: {
+              color: '#444444'
+            }
+          }
+        }
+      }
+
     };
   },
   methods: {
@@ -177,9 +223,14 @@ export default {
             label: "Total (€)",
             backgroundColor: ["#27ae60", "#c0392b"],
             data: [this.totalIngresos, this.totalGastos],
+            barThickness: 40,
+            maxBarThickness: 50,
+            categoryPercentage: 0.6,
+            barPercentage: 0.7,
           },
         ],
       };
+
     },
   },
   mounted() {
@@ -191,7 +242,6 @@ export default {
 
 <style scoped>
 .estadisticas {
-  padding: 2rem;
   max-width: 800px;
   margin: auto;
 }
@@ -209,5 +259,8 @@ input[type="month"] {
 
 .grafico {
   margin-top: 2rem;
+  background-color: #000000;
+  border-radius: 12px;
+  padding: 1rem;
 }
 </style>

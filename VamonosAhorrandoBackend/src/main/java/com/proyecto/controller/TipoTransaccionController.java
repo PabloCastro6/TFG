@@ -3,6 +3,8 @@ package com.proyecto.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,9 @@ public class TipoTransaccionController {
 
     @Autowired
     private TipoTransaccionService servicio;
+    @Autowired
+    private TipoTransaccionService tipoTransaccionService;
+
 
     @PostMapping
     public void crearTipo(@RequestBody TipoTransaccionDTO tipo) {
@@ -34,4 +39,12 @@ public class TipoTransaccionController {
     ) {
         return servicio.obtenerPorUsuarioYTipo(usuarioId, tipoCategoriaId);
     }
+    @DeleteMapping("/{nombre}/{usuarioId}")
+    public ResponseEntity<Void> eliminarTipo(
+            @PathVariable String nombre,
+            @PathVariable int usuarioId) {
+        tipoTransaccionService.eliminarPorNombreYUsuario(nombre, usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

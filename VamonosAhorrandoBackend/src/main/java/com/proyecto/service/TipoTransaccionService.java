@@ -8,6 +8,9 @@ import com.proyecto.entity.TipoTransaccion;
 public interface TipoTransaccionService {
 	 void guardarDesdeDTO(TipoTransaccionDTO tipo);
 	    List<TipoTransaccion> obtenerPorUsuarioYTipo(Integer usuarioId, Integer tipoCategoriaId);
+	    void eliminarPorNombreYUsuario(String nombre, int usuarioId);
+	    
+	    
 	}
 
 

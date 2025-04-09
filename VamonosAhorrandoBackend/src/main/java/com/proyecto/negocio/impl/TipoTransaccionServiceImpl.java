@@ -37,5 +37,10 @@ public class TipoTransaccionServiceImpl implements TipoTransaccionService {
 	  public List<TipoTransaccion> obtenerPorUsuarioYTipo(Integer usuarioId, Integer tipoCategoriaId) {
         return repo.findByUsuarioIdAndTipoCategoriaId(usuarioId, tipoCategoriaId);
     }
+	
+	 @Override
+	    public void eliminarPorNombreYUsuario(String nombre, int usuarioId) {
+	        repo.deleteByNombreAndUsuarioId(nombre, usuarioId);
+	    }
 
 }

@@ -48,4 +48,9 @@ public class TransaccionService implements ITransaccionService {
 	public List<Transaccion> buscarPorUsuario(Integer idUsuario) {
 		return transaccionRepo.findByUsuarioIdUsuario(idUsuario);
 	}
+
+	public void eliminarPorId(int id) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -4,8 +4,12 @@
     <div class="categorias">
       <h2>💸 Tipos de Gastos</h2>
       <div class="grid">
-        <div class="card gasto" v-for="(tipo, index) in categoriasGastos" :key="index"
-          @click="abrirModal(tipo, 'gasto')">
+        <div
+          class="card gasto"
+          v-for="(tipo, index) in categoriasGastos"
+          :key="index"
+          @click="abrirModal(tipo, 'gasto')"
+        >
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -22,8 +26,12 @@
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
       <div class="grid">
-        <div class="card ingreso" v-for="(tipo, index) in categoriasIngresos" :key="index"
-          @click="abrirModal(tipo, 'ingreso')">
+        <div
+          class="card ingreso"
+          v-for="(tipo, index) in categoriasIngresos"
+          :key="index"
+          @click="abrirModal(tipo, 'ingreso')"
+        >
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -46,10 +54,18 @@
           }}</span>
         </h3>
         <input type="date" v-model="fechaSeleccionada" />
-        <input type="number" v-model="cantidadSeleccionada" placeholder="Cantidad (€)" min="0" />
+        <input
+          type="number"
+          v-model="cantidadSeleccionada"
+          placeholder="Cantidad (€)"
+          min="0"
+        />
         <div class="botones">
           <button :disabled="!registrado" @click="guardarRegistro">
             Confirmar
+          </button>
+          <button class="eliminar-tipo" @click="eliminarTipoDesdeModal">
+            ❌ Eliminar tipo
           </button>
           <button @click="cerrarModal">Cancelar</button>
         </div>
@@ -91,23 +107,23 @@ export default {
       categoriasGastos: JSON.parse(
         localStorage.getItem("categoriasGastos")
       ) || [
-          { nombre: "Coche", icono: "fas fa-car" },
-          { nombre: "Ropa", icono: "fas fa-tshirt" },
-          { nombre: "Entretenimiento", icono: "fas fa-film" },
-          { nombre: "Comida", icono: "fas fa-utensils" },
-          { nombre: "Gasolina", icono: "fas fa-gas-pump" },
-          { nombre: "Regalos", icono: "fas fa-gift" },
-          { nombre: "Salud", icono: "fas fa-heartbeat" },
-          { nombre: "Vacaciones", icono: "fas fa-plane" },
-          { nombre: "Deportes", icono: "fas fa-football-ball" },
-        ],
+        { nombre: "Coche", icono: "fas fa-car" },
+        { nombre: "Ropa", icono: "fas fa-tshirt" },
+        { nombre: "Entretenimiento", icono: "fas fa-film" },
+        { nombre: "Comida", icono: "fas fa-utensils" },
+        { nombre: "Gasolina", icono: "fas fa-gas-pump" },
+        { nombre: "Regalos", icono: "fas fa-gift" },
+        { nombre: "Salud", icono: "fas fa-heartbeat" },
+        { nombre: "Vacaciones", icono: "fas fa-plane" },
+        { nombre: "Deportes", icono: "fas fa-football-ball" },
+      ],
       categoriasIngresos: JSON.parse(
         localStorage.getItem("categoriasIngresos")
       ) || [
-          { nombre: "Trabajo", icono: "fas fa-briefcase" },
-          { nombre: "Alquileres Casas", icono: "fas fa-home" },
-          { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
-        ],
+        { nombre: "Trabajo", icono: "fas fa-briefcase" },
+        { nombre: "Alquileres Casas", icono: "fas fa-home" },
+        { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
+      ],
       mostrarModal: false,
       tipoSeleccionado: {},
       fechaSeleccionada: "",
@@ -185,10 +201,10 @@ export default {
             title: "✅ Éxito",
             text: "Transacción guardada correctamente",
             icon: "success",
-            confirmButtonText: 'Okey',
+            confirmButtonText: "Okey",
             customClass: {
-              confirmButton: 'miBotonCancelar'
-            }
+              confirmButton: "miBotonCancelar",
+            },
           });
 
           this.cerrarModal();
@@ -225,12 +241,11 @@ export default {
           title: "🎉 Gasto añadido",
           text: `"${nuevo.nombre}" ha sido creado`,
           icon: "success",
-          confirmButtonText: 'Okey',
+          confirmButtonText: "Okey",
           customClass: {
-            confirmButton: 'miBotonCancelar'
-          }
+            confirmButton: "miBotonCancelar",
+          },
         });
-
       }
 
       if (tipo === "ingreso" && this.nuevoIngreso.trim()) {
@@ -261,6 +276,60 @@ export default {
           "success"
         );
       }
+    },
+    eliminarTipoDesdeModal() {
+      const tipo = this.tipoSeleccionado.tipo;
+      const nombre = this.tipoSeleccionado.nombre;
+      const usuarioId = parseInt(localStorage.getItem("userId"));
+
+      Swal.fire({
+        title: "¿Eliminar tipo?",
+        text: `"${nombre}" se eliminará de la lista`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Backend
+          fetch(`http://localhost:8080/api/tipos/${nombre}/${usuarioId}`, {
+            method: "DELETE",
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error("Error al eliminar en backend");
+
+              // Frontend
+              if (tipo === "gasto") {
+                this.categoriasGastos = this.categoriasGastos.filter(
+                  (t) => t.nombre !== nombre
+                );
+                localStorage.setItem(
+                  "categoriasGastos",
+                  JSON.stringify(this.categoriasGastos)
+                );
+              } else {
+                this.categoriasIngresos = this.categoriasIngresos.filter(
+                  (t) => t.nombre !== nombre
+                );
+                localStorage.setItem(
+                  "categoriasIngresos",
+                  JSON.stringify(this.categoriasIngresos)
+                );
+              }
+
+              Swal.fire(
+                "✅ Eliminado",
+                `"${nombre}" ha sido eliminado.`,
+                "success"
+              );
+              this.cerrarModal(); // Cierra el modal al eliminar
+            })
+            .catch((err) => {
+              console.error("❌ Error:", err);
+              Swal.fire("❌ Error", "No se pudo eliminar el tipo", "error");
+            });
+        }
+      });
     },
   },
 };
@@ -442,6 +511,22 @@ h2 {
   transform: scale(1.05);
 }
 
+.eliminar-tipo {
+  background-color: #c62828;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.eliminar-tipo:hover {
+  background-color: #e53935;
+}
+
 /* Alerta */
 .alerta {
   color: red;
@@ -502,7 +587,7 @@ h2 {
 }
 
 .transacciones ul {
-  list-style-type: none; 
+  list-style-type: none;
   padding: 0;
 }
 

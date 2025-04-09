@@ -2,40 +2,24 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- Calendario con transacciones y recordatorios -->
-      <Calendario
-        :transacciones="transacciones"
-        :recordatorios="recordatorios"
-        :usuarioId="userId"
-        @fecha-seleccionada="actualizarFecha"
-        @eliminar-transaccion="eliminarTransaccionPadre"
-        @mes-cambiado="actualizarMes"
-        @eliminar-recordatorio="eliminarRecordatorioPadre"
-      />
+      <Calendario :transacciones="transacciones" :recordatorios="recordatorios" :usuarioId="userId"
+        @fecha-seleccionada="actualizarFecha" @eliminar-transaccion="eliminarTransaccionPadre"
+        @mes-cambiado="actualizarMes" @eliminar-recordatorio="eliminarRecordatorioPadre" />
       <!-- Formulario de transacciones -->
-      <TiposTransacciones
-        ref="tiposTransaccionesRef"
-        :fechaPreseleccionada="fechaSeleccionada"
-        @nueva-transaccion="agregarTransaccion"
-        @tipo-actualizado="actualizarTipos"
-      />
+      <TiposTransacciones ref="tiposTransaccionesRef" :fechaPreseleccionada="fechaSeleccionada"
+        :transacciones="transacciones" @nueva-transaccion="agregarTransaccion" @tipo-actualizado="actualizarTipos" />
     </div>
 
     <!-- 📋 Lista de transacciones del mes actual -->
     <div class="lista-transacciones">
       <h3>📋 Transacciones del mes</h3>
       <ul>
-        <li
-          v-for="trans in transaccionesFiltradasPorMes"
-          :key="trans.idTransaccion"
-        >
+        <li v-for="trans in transaccionesFiltradasPorMes" :key="trans.idTransaccion">
           <span>{{ formatearFecha(trans.fecha) }}:</span>
           <span :class="trans.categoria.nombre.toLowerCase()">
             {{ trans.tipo }} - {{ trans.cantidad }}€
           </span>
-          <button
-            class="btn-eliminar"
-            @click="eliminarTransaccionDesdeLista(trans.idTransaccion)"
-          >
+          <button class="btn-eliminar" @click="eliminarTransaccionDesdeLista(trans.idTransaccion)">
             🗑️
           </button>
         </li>
@@ -94,9 +78,14 @@ export default {
     },
   },
   mounted() {
-    this.obtenerTransacciones();
-    this.obtenerRecordatorios();
 
+    if (this.userId) {
+      this.obtenerTransacciones();
+      this.obtenerRecordatorios();
+      this.$refs.tiposTransaccionesRef?.cargarTiposDesdeBackend?.();  // Asegurarse de cargar los tipos
+    } else {
+      console.error("❌ Usuario no registrado");
+    }
     eventBus.on("nuevo-recordatorio", (recordatorio) => {
       this.recordatorios.push(recordatorio);
       console.log(
@@ -157,8 +146,22 @@ export default {
     },
 
     agregarTransaccion(transaccion) {
-      // Se puede optar por volver a cargar o agregar directamente
-      this.obtenerTransacciones();
+      const fechaNormalizada = this.formatearFechaParaCalendario(transaccion.fecha);
+
+      const nueva = {
+        ...transaccion,
+        fecha: fechaNormalizada,
+      };
+
+      this.transacciones.push(nueva);
+    },
+
+    formatearFechaParaCalendario(fechaISO) {
+      const fechaObj = new Date(fechaISO);
+      const dia = String(fechaObj.getDate()).padStart(2, "0");
+      const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+      const anio = fechaObj.getFullYear();
+      return `${dia}-${mes}-${anio}`;
     },
 
     actualizarFecha(fecha) {
@@ -242,9 +245,8 @@ export default {
         const fechaObj = new Date(
           fecha.includes("-") && fecha.split("-")[0].length === 4
             ? fecha // formato yyyy-MM-dd
-            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${
-                fecha.split("-")[0]
-              }`
+            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${fecha.split("-")[0]
+            }`
         );
 
         return (

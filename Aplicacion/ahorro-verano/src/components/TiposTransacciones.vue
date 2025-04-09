@@ -70,8 +70,8 @@ export default {
       categoriaSeleccionada: "ingreso",
       cantidadSeleccionada: "",
       conceptoSeleccionado: "",
-      opcionesIngreso: ["Salario", "Bonificación", "Otro ingreso"],
-      opcionesGasto: ["Alimentación", "Transporte", "Entretenimiento"],
+      opcionesIngreso: ["Trabajo", "Alquileres Casas", "Paga de la Abuela"],
+      opcionesGasto: ["Comida", "Ropa", "Entretenimiento", "Coche", "Gasolina", "Regalos", "Salud", "Vacaciones", "Deportes"],
     };
   },
   computed: {

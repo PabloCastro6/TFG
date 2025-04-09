@@ -71,7 +71,19 @@ export default {
       cantidadSeleccionada: "",
       conceptoSeleccionado: "",
       opcionesIngreso: ["Trabajo", "Alquileres Casas", "Paga de la Abuela"],
-      opcionesGasto: ["Comida", "Ropa", "Entretenimiento", "Coche", "Gasolina", "Regalos", "Salud", "Vacaciones", "Deportes"],
+      opcionesGasto: [
+        "Comida",
+        "Ropa",
+        "Entretenimiento",
+        "Coche",
+        "Gasolina",
+        "Regalos",
+        "Salud",
+        "Vacaciones",
+        "Deportes",
+      ],
+      tiposGasto: [],
+      tiposIngreso: [],
     };
   },
   computed: {
@@ -107,6 +119,7 @@ export default {
         ...opciones.filter((n) => !this.opcionesGasto.includes(n))
       );
     }
+    this.cargarTiposDesdeBackend;
   },
   methods: {
     seleccionarCategoria(categoria) {
@@ -182,6 +195,38 @@ export default {
           console.error("❌ Error:", err);
           Swal.fire("❌ Error", "No se pudo guardar", "error");
         });
+    },
+
+    async cargarTiposDesdeBackend() {
+      const userId = parseInt(localStorage.getItem("userId"));
+
+      if (!userId) return;
+
+      try {
+        const [gastos, ingresos] = await Promise.all([
+          fetch(`http://localhost:8080/api/tipos/${userId}/1`).then((res) =>
+            res.json()
+          ),
+          fetch(`http://localhost:8080/api/tipos/${userId}/2`).then((res) =>
+            res.json()
+          ),
+        ]);
+
+        localStorage.setItem(
+          "categoriasGastos",
+          JSON.stringify(
+            gastos.map((t) => ({ nombre: t.nombre, icono: "fas fa-tags" }))
+          )
+        );
+        localStorage.setItem(
+          "categoriasIngresos",
+          JSON.stringify(
+            ingresos.map((t) => ({ nombre: t.nombre, icono: "fas fa-tags" }))
+          )
+        );
+      } catch (error) {
+        console.error("❌ Error al cargar tipos:", error);
+      }
     },
   },
 };

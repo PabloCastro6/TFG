@@ -136,6 +136,9 @@ export default {
       return localStorage.getItem("registrado") === "true";
     },
   },
+  mounted() {
+    /*this.cargarTransacciones();*/
+  },
   methods: {
     abrirModal(tipo, categoria) {
       this.tipoSeleccionado = { ...tipo, tipo: categoria };
@@ -237,7 +240,7 @@ export default {
         });
 
         this.nuevoGasto = "";
-        Swal.fire({
+        Swal.fire(this.$emit("tipo-actualizado"), {
           title: "🎉 Gasto añadido",
           text: `"${nuevo.nombre}" ha sido creado`,
           icon: "success",
@@ -277,6 +280,37 @@ export default {
         );
       }
     },
+    /* async cargarTransacciones() {
+      try {
+        const userId = parseInt(localStorage.getItem("userId"));
+        const response = await fetch("http://localhost:8080/transacciones");
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+          this.transacciones = data
+            .filter((t) => t.usuario?.idUsuario === userId)
+            .map((t) => {
+              const fechaObj = new Date(t.fecha);
+              const dia = String(fechaObj.getDate()).padStart(2, "0");
+              const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+              const anio = fechaObj.getFullYear();
+              return {
+                ...t,
+                fecha: `${anio}-${mes}-${dia}`,
+              };
+            });
+
+          // Actualizar localStorage para mantenerlo sincronizado
+          localStorage.setItem(
+            "transacciones",
+            JSON.stringify(this.transacciones)
+          );
+        }
+      } catch (err) {
+        console.error("❌ Error al cargar transacciones en TiposGastos:", err);
+      }
+    },*/
+
     eliminarTipoDesdeModal() {
       const tipo = this.tipoSeleccionado.tipo;
       const nombre = this.tipoSeleccionado.nombre;
@@ -323,6 +357,14 @@ export default {
                 "success"
               );
               this.cerrarModal(); // Cierra el modal al eliminar
+              this.transacciones = this.transacciones.filter(
+                (t) => t.tipo !== nombre
+              ); // Elimina la transacción del tipo eliminado
+              localStorage.setItem(
+                "transacciones",
+                JSON.stringify(this.transacciones)
+              );
+              this.$emit("tipo-actualizado");
             })
             .catch((err) => {
               console.error("❌ Error:", err);

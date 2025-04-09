@@ -2,23 +2,40 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- Calendario con transacciones y recordatorios -->
-      <Calendario :transacciones="transacciones" :recordatorios="recordatorios" :usuarioId="userId"
-        @fecha-seleccionada="actualizarFecha" @eliminar-transaccion="eliminarTransaccionPadre"
-        @mes-cambiado="actualizarMes" @eliminar-recordatorio="eliminarRecordatorioPadre" />
+      <Calendario
+        :transacciones="transacciones"
+        :recordatorios="recordatorios"
+        :usuarioId="userId"
+        @fecha-seleccionada="actualizarFecha"
+        @eliminar-transaccion="eliminarTransaccionPadre"
+        @mes-cambiado="actualizarMes"
+        @eliminar-recordatorio="eliminarRecordatorioPadre"
+      />
       <!-- Formulario de transacciones -->
-      <TiposTransacciones :fechaPreseleccionada="fechaSeleccionada" @nueva-transaccion="agregarTransaccion" />
+      <TiposTransacciones
+        ref="tiposTransaccionesRef"
+        :fechaPreseleccionada="fechaSeleccionada"
+        @nueva-transaccion="agregarTransaccion"
+        @tipo-actualizado="actualizarTipos"
+      />
     </div>
 
     <!-- 📋 Lista de transacciones del mes actual -->
     <div class="lista-transacciones">
       <h3>📋 Transacciones del mes</h3>
       <ul>
-        <li v-for="trans in transaccionesFiltradasPorMes" :key="trans.idTransaccion">
+        <li
+          v-for="trans in transaccionesFiltradasPorMes"
+          :key="trans.idTransaccion"
+        >
           <span>{{ formatearFecha(trans.fecha) }}:</span>
           <span :class="trans.categoria.nombre.toLowerCase()">
             {{ trans.tipo }} - {{ trans.cantidad }}€
           </span>
-          <button class="btn-eliminar" @click="eliminarTransaccionDesdeLista(trans.idTransaccion)">
+          <button
+            class="btn-eliminar"
+            @click="eliminarTransaccionDesdeLista(trans.idTransaccion)"
+          >
             🗑️
           </button>
         </li>
@@ -147,6 +164,9 @@ export default {
     actualizarFecha(fecha) {
       this.fechaSeleccionada = fecha;
     },
+    actualizarTipos() {
+      this.$refs.tiposTransaccionesRef?.cargarTiposDesdeBackend?.();
+    },
 
     async eliminarTransaccionPadre(idTransaccion) {
       try {
@@ -177,8 +197,8 @@ export default {
         cancelButtonText: "Cancelar",
         customClass: {
           confirmButton: "miBotonEliminar",
-          cancelButton: "miBotonCancelar"
-        }
+          cancelButton: "miBotonCancelar",
+        },
       });
 
       if (!isConfirmed) return;
@@ -205,8 +225,8 @@ export default {
           text: "La transacción ha sido eliminada correctamente.",
           confirmButtonText: "Okey",
           customClass: {
-            confirmButton: "miBotonCancelar"
-          }
+            confirmButton: "miBotonCancelar",
+          },
         });
       } catch (err) {
         console.error("❌ Error:", err);
@@ -222,8 +242,9 @@ export default {
         const fechaObj = new Date(
           fecha.includes("-") && fecha.split("-")[0].length === 4
             ? fecha // formato yyyy-MM-dd
-            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${fecha.split("-")[0]
-            }`
+            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${
+                fecha.split("-")[0]
+              }`
         );
 
         return (
@@ -240,9 +261,12 @@ export default {
     // Método para eliminar recordatorios (se invoca desde Calendario.vue mediante $emit)
     async eliminarRecordatorioPadre(idRecordatorio) {
       try {
-        const response = await fetch(`http://localhost:8080/recordatorios/${idRecordatorio}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `http://localhost:8080/recordatorios/${idRecordatorio}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (!response.ok) {
           console.error("❌ Error al eliminar el recordatorio en el backend");

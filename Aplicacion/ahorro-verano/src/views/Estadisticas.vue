@@ -324,5 +324,4 @@ input[type="month"] {
   filter: invert(1);
 }
 
-
 </style>

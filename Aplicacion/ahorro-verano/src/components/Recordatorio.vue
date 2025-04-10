@@ -68,10 +68,17 @@ export default {
   methods: {
     async guardarRecordatorio() {
       if (!this.recordatorio.fecha || !this.recordatorio.concepto || !this.recordatorio.cantidad) {
-        alert("⚠️ Completa todos los campos antes de guardar.");
+        Swal.fire({
+          icon: "warning",
+          title: "Campos incompletos",
+          text: "⚠️ Completa todos los campos antes de guardar.",
+          confirmButtonText: "Okey",
+          customClass: {
+            confirmButton: "miBotonCancelar"
+          }
+        });
         return;
       }
-
       // Se envía el objeto recordatorio con la propiedad usuario como objeto
       const nuevoRecordatorio = {
         fecha: this.recordatorio.fecha,

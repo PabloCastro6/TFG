@@ -2,24 +2,48 @@
   <div class="configuracion-ahorro">
     <div class="contenedor">
       <!-- Calendario con transacciones y recordatorios -->
-      <Calendario :transacciones="transacciones" :recordatorios="recordatorios" :usuarioId="userId"
-        @fecha-seleccionada="actualizarFecha" @eliminar-transaccion="eliminarTransaccionPadre"
-        @mes-cambiado="actualizarMes" @eliminar-recordatorio="eliminarRecordatorioPadre" />
+      <Calendario
+        :transacciones="transacciones"
+        :recordatorios="recordatorios"
+        :usuarioId="userId"
+        @fecha-seleccionada="actualizarFecha"
+        @eliminar-transaccion="eliminarTransaccionPadre"
+        @mes-cambiado="actualizarMes"
+        @eliminar-recordatorio="eliminarRecordatorioPadre"
+      />
+      <!-- <TiposGastos ref="tiposGastosRef" style="display: none" /> -->
+
+      <!--<TiposGastos
+        ref="tiposGastosRef"
+        @transaccion-eliminada="eliminarTransaccionEnTiposGastos"
+      /> -->
+
       <!-- Formulario de transacciones -->
-      <TiposTransacciones ref="tiposTransaccionesRef" :fechaPreseleccionada="fechaSeleccionada"
-        :transacciones="transacciones" @nueva-transaccion="agregarTransaccion" @tipo-actualizado="actualizarTipos" />
+      <TiposTransacciones
+        ref="tiposTransaccionesRef"
+        :fechaPreseleccionada="fechaSeleccionada"
+        :transacciones="transacciones"
+        @nueva-transaccion="agregarTransaccion"
+        @tipo-actualizado="actualizarTipos"
+      />
     </div>
 
     <!-- 📋 Lista de transacciones del mes actual -->
     <div class="lista-transacciones">
       <h3>📋 Transacciones del mes</h3>
       <ul>
-        <li v-for="trans in transaccionesFiltradasPorMes" :key="trans.idTransaccion">
+        <li
+          v-for="trans in transaccionesFiltradasPorMes"
+          :key="trans.idTransaccion"
+        >
           <span>{{ formatearFecha(trans.fecha) }}:</span>
           <span :class="trans.categoria.nombre.toLowerCase()">
             {{ trans.tipo }} - {{ trans.cantidad }}€
           </span>
-          <button class="btn-eliminar" @click="eliminarTransaccionDesdeLista(trans.idTransaccion)">
+          <button
+            class="btn-eliminar"
+            @click="eliminarTransaccionDesdeLista(trans.idTransaccion)"
+          >
             🗑️
           </button>
         </li>
@@ -31,6 +55,7 @@
 <script>
 import Calendario from "@/components/Calendario.vue";
 import TiposTransacciones from "@/components/TiposTransacciones.vue";
+import TiposGastos from "@/views/TiposGastos.vue";
 import { eventBus } from "@/eventBus.js";
 import Swal from "sweetalert2";
 
@@ -39,6 +64,7 @@ export default {
   components: {
     Calendario,
     TiposTransacciones,
+    TiposGastos,
   },
   data() {
     return {
@@ -78,11 +104,10 @@ export default {
     },
   },
   mounted() {
-
     if (this.userId) {
       this.obtenerTransacciones();
       this.obtenerRecordatorios();
-      this.$refs.tiposTransaccionesRef?.cargarTiposDesdeBackend?.();  // Asegurarse de cargar los tipos
+      this.$refs.tiposTransaccionesRef?.cargarTiposDesdeBackend?.(); // Asegurarse de cargar los tipos
     } else {
       console.error("❌ Usuario no registrado");
     }
@@ -146,7 +171,9 @@ export default {
     },
 
     agregarTransaccion(transaccion) {
-      const fechaNormalizada = this.formatearFechaParaCalendario(transaccion.fecha);
+      const fechaNormalizada = this.formatearFechaParaCalendario(
+        transaccion.fecha
+      );
 
       const nueva = {
         ...transaccion,
@@ -185,6 +212,7 @@ export default {
         this.transacciones = this.transacciones.filter(
           (t) => t.idTransaccion !== idTransaccion
         );
+        this.$refs.tiposGastosRef?.eliminarTransaccion(idTransaccion);
       } catch (error) {
         console.error("❌ Error al eliminar la transacción:", error);
       }
@@ -221,6 +249,8 @@ export default {
         this.transacciones = this.transacciones.filter(
           (t) => t.idTransaccion !== idTransaccion
         );
+        this.$refs.tiposGastosRef?.eliminarTransaccion(idTransaccion); // ✅ Aquí actualiza TiposGastos.vue
+        eventBus.emit("transaccion-eliminada", idTransaccion);
 
         Swal.fire({
           icon: "success",
@@ -245,8 +275,9 @@ export default {
         const fechaObj = new Date(
           fecha.includes("-") && fecha.split("-")[0].length === 4
             ? fecha // formato yyyy-MM-dd
-            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${fecha.split("-")[0]
-            }`
+            : `${fecha.split("-")[2]}-${fecha.split("-")[1]}-${
+                fecha.split("-")[0]
+              }`
         );
 
         return (
@@ -260,6 +291,7 @@ export default {
       this.mesActual = mes;
       this.anioActual = anio;
     },
+
     // Método para eliminar recordatorios (se invoca desde Calendario.vue mediante $emit)
     async eliminarRecordatorioPadre(idRecordatorio) {
       try {

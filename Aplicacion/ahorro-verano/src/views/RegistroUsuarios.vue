@@ -192,7 +192,7 @@ export default {
 
         await Swal.fire({
           icon: "success",
-          title: "✅ Usuario eliminado",
+          title: "Usuario eliminado",
           confirmButtonText: "Okey",
           customClass: {
             confirmButton: "miBotonCancelar"
@@ -430,4 +430,8 @@ export default {
   background-color: #2c3e50;
   color: white;
 }
+.tabla-usuarios select {
+  font-family: 'Glaure', sans-serif;
+}
+
 </style>

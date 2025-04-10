@@ -7,7 +7,7 @@
       <!-- Parte izquierda: Selector de mes y balance -->
       <div class="izquierda">
         <!-- Selector de mes -->
-        <input type="month" v-model="mesSeleccionado" @change="filtrarDatos" />
+        <input type="month" class="mes" v-model="mesSeleccionado" @change="filtrarDatos" />
 
         <!-- Balance -->
         <div class="balance">
@@ -90,7 +90,8 @@ export default {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: true,
+            display: false,
+            onClick: null,
             labels: {
               color: '#ffffff',
               font: {
@@ -305,4 +306,23 @@ input[type="month"] {
   padding: 1rem;
   height: 100%;
 }
+.mes {
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  box-shadow: 0 0 0 1px #373737 inset;
+  transition: box-shadow 0.2s ease-in-out;
+  appearance: none;
+}
+
+.mes::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+
 </style>

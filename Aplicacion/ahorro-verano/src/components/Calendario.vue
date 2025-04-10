@@ -34,6 +34,17 @@
         </tr>
       </tbody>
     </table>
+    <div class="leyenda">
+      <div class="item-leyenda">
+        <span class="color-box ingreso"></span> Ingreso
+      </div>
+      <div class="item-leyenda">
+        <span class="color-box gasto"></span> Gasto
+      </div>
+      <div class="item-leyenda">
+        <span class="color-box recordatorio"></span> Recordatorio
+      </div>
+    </div>
   </div>
 </template>
 
@@ -433,4 +444,40 @@ body {
   opacity: 1;
   transition: opacity 0.2s;
 }
+.leyenda {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.item-leyenda {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.color-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+/* Ya usas estas clases de color, así que se aplicarán automáticamente */
+.color-box.ingreso {
+  background-color: #27ae60;
+}
+
+.color-box.gasto {
+  background-color: #c0392b;
+}
+
+.color-box.recordatorio {
+  background-color: rgb(247, 247, 68);
+  border: 1px solid #aaa;
+}
+
 </style>

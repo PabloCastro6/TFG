@@ -7,7 +7,12 @@
       <!-- Parte izquierda: Selector de mes y balance -->
       <div class="izquierda">
         <!-- Selector de mes -->
-        <input type="month" class="mes" v-model="mesSeleccionado" @change="filtrarDatos" />
+        <input
+          type="month"
+          class="mes"
+          v-model="mesSeleccionado"
+          @change="filtrarDatos"
+        />
 
         <!-- Balance -->
         <div class="balance">
@@ -18,10 +23,16 @@
           </p>
         </div>
 
-        <!-- Media anual -->
+        <!-- Media  -->
         <div class="balance">
-          <p><strong>📆 Media anual de ingresos:</strong> {{ mediaIngresosAnual.toFixed(2) }}€</p>
-          <p><strong>📆 Media anual de gastos:</strong> {{ mediaGastosAnual.toFixed(2) }}€</p>
+          <p>
+            <strong>📆 Media anual de ingresos:</strong>
+            {{ mediaIngresosAnual.toFixed(2) }}€
+          </p>
+          <p>
+            <strong>📆 Media anual de gastos:</strong>
+            {{ mediaGastosAnual.toFixed(2) }}€
+          </p>
           <p :style="{ color: balanceAnual >= 0 ? 'green' : 'red' }">
             <strong>📊 Balance anual:</strong> {{ balanceAnual.toFixed(2) }}€
           </p>
@@ -93,59 +104,58 @@ export default {
             display: false,
             onClick: null,
             labels: {
-              color: '#ffffff',
+              color: "#ffffff",
               font: {
                 size: 14,
-                family: 'Glaure',
-                weight: 'normal'
-              }
-            }
+                family: "Glaure",
+                weight: "normal",
+              },
+            },
           },
           title: {
             display: true,
             text: "Ingresos vs Gastos",
-            color: '#ffffff',
+            color: "#ffffff",
             font: {
               size: 18,
-              family: 'Glaure',
-              weight: 'normal'
-            }
+              family: "Glaure",
+              weight: "normal",
+            },
           },
           tooltip: {
-            backgroundColor: '#2c3e50',
-            titleColor: '#ffffff',
-            bodyColor: '#ecf0f1',
-          }
+            backgroundColor: "#2c3e50",
+            titleColor: "#ffffff",
+            bodyColor: "#ecf0f1",
+          },
         },
         scales: {
           x: {
             ticks: {
-              color: '#ffffff',
+              color: "#ffffff",
               font: {
                 size: 13,
-                family: 'Glaure',
-                weight: 'normal'
-              }
+                family: "Glaure",
+                weight: "normal",
+              },
             },
             grid: {
-              color: '#444444'
-            }
+              color: "#444444",
+            },
           },
           y: {
             ticks: {
-              color: '#ffffff',
+              color: "#ffffff",
               font: {
                 size: 13,
-                family: 'Arial'
-              }
+                family: "Arial",
+              },
             },
             grid: {
-              color: '#444444'
-            }
-          }
-        }
-      }
-
+              color: "#444444",
+            },
+          },
+        },
+      },
     };
   },
   methods: {
@@ -217,8 +227,14 @@ export default {
         (t) => t.categoria?.nombre.toLowerCase() === "gasto"
       );
 
-      const sumaIngresosAnual = ingresosAnuales.reduce((sum, t) => sum + t.cantidad, 0);
-      const sumaGastosAnual = gastosAnuales.reduce((sum, t) => sum + t.cantidad, 0);
+      const sumaIngresosAnual = ingresosAnuales.reduce(
+        (sum, t) => sum + t.cantidad,
+        0
+      );
+      const sumaGastosAnual = gastosAnuales.reduce(
+        (sum, t) => sum + t.cantidad,
+        0
+      );
 
       this.mediaIngresosAnual = sumaIngresosAnual / 12;
       this.mediaGastosAnual = sumaGastosAnual / 12;
@@ -240,18 +256,23 @@ export default {
           },
         ],
       };
-
     },
   },
+  created() {
+    const hoy = new Date();
+    const mesActual = hoy.toISOString().slice(0, 7); // formato YYYY-MM
+    this.mesSeleccionado = mesActual;
+  },
   mounted() {
-    this.obtenerTransacciones();
+    this.obtenerTransacciones().then(() => {
+      this.filtrarDatos();
+    });
   },
 };
 </script>
 
-
 <style scoped>
-h1{
+h1 {
   margin-top: 10%;
   width: 30%;
 }
@@ -323,5 +344,4 @@ input[type="month"] {
 .mes::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
-
 </style>

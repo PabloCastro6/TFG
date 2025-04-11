@@ -54,32 +54,18 @@
             <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
               autocomplete="current-password" />
           </div>
-          <<<<<<< HEAD <!--Tipo de usuario <div class="form-group">
-            <label>Tipo de usuario:</label>
-            <div class="rol-buttons">
-              <button type="button" :class="{ activo: rol === 'USUARIO' }" @click="rol = 'USUARIO'">
-                👤 Usuario
-              </button>
-              <button type="button" :class="{ activo: rol === 'ADMINISTRADOR' }" @click="rol = 'ADMINISTRADOR'">
-                🛠️ Administrador
-              </button>
-            </div>
+          <button type="submit" class="btn-submit" @click="submitForm">Iniciar sesión</button>
+        </form>
+        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
+          Crear nuevo usuario
+        </button>
       </div>
-      -->
-      =======
-      >>>>>>> 3930c83 (implementacion de libreria Pinia y muchos detalles mas)
-      <button type="submit" class="btn-submit">Iniciar sesión</button>
-      </form>
-      <button type="button" class="btn-register" @click="goToRegistroUsuarios">
-        Crear nuevo usuario
-      </button>
     </div>
-  </div>
 
-  <!-- Botón para abrir la calculadora -->
-  <button class="boton-calculadora" @click="mostrarCalculadora = true">
-    📊 ¿Cuánto podrías ahorrar?
-  </button>
+    <!-- Botón para abrir la calculadora -->
+    <button class="boton-calculadora" @click="mostrarCalculadora = true">
+      📊 ¿Cuánto podrías ahorrar?
+    </button>
   </div>
 </template>
 
@@ -138,8 +124,7 @@ export default {
           localStorage.setItem("correo", this.email);
           localStorage.setItem("userId", data.userId);
           localStorage.setItem("nombreUsuario", data.nombre);
-          localStorage.setItem("rol", respuesta.rol); // ✅ LÍNEA AÑADIDA
-          localStorage.setItem("rol", data.rol);
+          localStorage.setItem("rol", data.rol); // Se utiliza 'data' en lugar de 'respuesta'
 
           // Actualiza el store de auth
           const auth = useAuthStore();

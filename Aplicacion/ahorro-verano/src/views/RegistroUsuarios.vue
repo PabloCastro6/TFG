@@ -6,24 +6,47 @@
       <form class="formulario" @submit.prevent="registrarUsuario">
         <div class="campo">
           <label>Nombre Completo:</label>
-          <input v-model="usuario.nombreCompleto" type="text" placeholder="Pepe Perez" required />
+          <input
+            v-model="usuario.nombreCompleto"
+            type="text"
+            placeholder="Pepe Perez"
+            required
+          />
         </div>
         <div class="campo">
           <label>Correo:</label>
-          <input v-model="usuario.correo" type="email" placeholder="correo@correo.com" required />
+          <input
+            v-model="usuario.correo"
+            type="email"
+            placeholder="correo@correo.com"
+            required
+          />
         </div>
         <div class="campo">
           <label>Contraseña:</label>
-          <input v-model="usuario.password" type="password" placeholder="********" required />
+          <input
+            v-model="usuario.password"
+            type="password"
+            placeholder="********"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label>Tipo de usuario:</label>
           <div class="rol-buttons">
-            <button type="button" :class="{ activo: rol === 'USUARIO' }" @click="rol = 'USUARIO'">
+            <button
+              type="button"
+              :class="{ activo: rol === 'USUARIO' }"
+              @click="rol = 'USUARIO'"
+            >
               👤 Usuario
             </button>
-            <button type="button" :class="{ activo: rol === 'ADMINISTRADOR' }" @click="rol = 'ADMINISTRADOR'">
+            <button
+              type="button"
+              :class="{ activo: rol === 'ADMINISTRADOR' }"
+              @click="rol = 'ADMINISTRADOR'"
+            >
               🛠️ Administrador
             </button>
           </div>
@@ -107,7 +130,6 @@ export default {
     };
   },
   methods: {
-
     async registrarUsuario() {
       try {
         const response = await fetch("http://localhost:8080/usuarios", {
@@ -133,8 +155,8 @@ export default {
           title: "✅ Usuario registrado correctamente",
           confirmButtonText: "Okey",
           customClass: {
-            confirmButton: "miBotonCancelar"
-          }
+            confirmButton: "miBotonCancelar",
+          },
         });
 
         if (usuarioRegistrado.rol === "ADMINISTRADOR") {
@@ -148,11 +170,11 @@ export default {
         Swal.fire({
           icon: "error",
           title: "❌ No se pudo registrar el usuario",
-          text: "Verifica los datos e inténtalo de nuevo.",
+          text: "Verifica los datos: el correo ya esta en uso",
           confirmButtonText: "Okey",
           customClass: {
-            confirmButton: "miBotonCancelar"
-          }
+            confirmButton: "miBotonCancelar",
+          },
         });
       }
     },
@@ -175,8 +197,8 @@ export default {
         cancelButtonText: "Cancelar",
         customClass: {
           confirmButton: "miBotonEliminar",
-          cancelButton: "miBotonCancelar"
-        }
+          cancelButton: "miBotonCancelar",
+        },
       });
 
       if (!confirmacion.isConfirmed) return;
@@ -195,8 +217,8 @@ export default {
           title: "Usuario eliminado",
           confirmButtonText: "Okey",
           customClass: {
-            confirmButton: "miBotonCancelar"
-          }
+            confirmButton: "miBotonCancelar",
+          },
         });
       } catch (error) {
         console.error("❌ Error al eliminar usuario:", error);
@@ -206,8 +228,8 @@ export default {
           text: "No se pudo eliminar el usuario",
           confirmButtonText: "Okey",
           customClass: {
-            confirmButton: "miBotonCancelar"
-          }
+            confirmButton: "miBotonCancelar",
+          },
         });
       }
     },
@@ -228,8 +250,8 @@ export default {
         text: "Has cerrado sesión correctamente.",
         confirmButtonText: "Okey",
         customClass: {
-          confirmButton: "miBotonCancelar"
-        }
+          confirmButton: "miBotonCancelar",
+        },
       });
     },
     cancelarEdicion() {
@@ -271,7 +293,6 @@ export default {
             confirmButton: "miBotonCancelar",
           },
         });
-
       } catch (error) {
         console.error("❌ Error al guardar edición:", error);
 
@@ -429,7 +450,6 @@ export default {
   color: white;
 }
 .tabla-usuarios select {
-  font-family: 'Glaure', sans-serif;
+  font-family: "Glaure", sans-serif;
 }
-
 </style>

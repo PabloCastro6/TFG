@@ -116,6 +116,14 @@ public class UsuarioController {
     // Registrar nuevo usuario
     @PostMapping
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
+    	 // Validar si ya existe un usuario con el mismo correo
+        Usuario existente = usuarioRepository.findByCorreo(usuario.getCorreo());
+
+        if (existente != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("El correo ya está registrado. Prueba con otro");
+        }
+        
         Usuario guardado = usuarioService.guardar(usuario);
 
         if (usuario.getRol() == Rol.ADMINISTRADOR) {

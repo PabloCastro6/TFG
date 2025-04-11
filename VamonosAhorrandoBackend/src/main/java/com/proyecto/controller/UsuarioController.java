@@ -65,24 +65,13 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
 
-        // Validar si el rol que intenta usar coincide con el de la base de datos
-        if (usuario.getRol() != null && !usuario.getRol().equals(existente.getRol())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Este usuario no tiene permisos para iniciar sesión como " + usuario.getRol());
-        }
-        
-        if (usuario.getRol() != null && !usuario.getRol().name().equalsIgnoreCase(existente.getRol().name())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body("Este usuario no tiene permisos para iniciar sesión como " + usuario.getRol());
-        }
-
-
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("success", true);
         respuesta.put("userId", existente.getIdUsuario());
         respuesta.put("nombre", existente.getNombreCompleto());
-        respuesta.put("rol", existente.getRol()); // 🔥 Puedes devolverlo si quieres
-
+        respuesta.put("rol", existente.getRol());
         respuesta.put("message", "Inicio de sesión correcto.");
+
         return ResponseEntity.ok(respuesta);
     }
 
@@ -116,26 +105,20 @@ public class UsuarioController {
     // Registrar nuevo usuario
     @PostMapping
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
-    	 // Validar si ya existe un usuario con el mismo correo
+        // Validar si ya existe un usuario con el mismo correo
         Usuario existente = usuarioRepository.findByCorreo(usuario.getCorreo());
-
         if (existente != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("El correo ya está registrado. Prueba con otro");
         }
-        
+
+        // Asignar automáticamente el rol USUARIO
+        usuario.setRol(Rol.USUARIO);
+
         Usuario guardado = usuarioService.guardar(usuario);
-
-        if (usuario.getRol() == Rol.ADMINISTRADOR) {
-            List<Usuario> todos = usuarioService.obtenerTodos();
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("usuarioRegistrado", guardado);
-            respuesta.put("todosLosUsuarios", todos);
-            return ResponseEntity.ok(respuesta);
-        }
-
         return ResponseEntity.ok(guardado);
     }
+
 
     /**
      * Actualiza los datos de un usuario ya existente.

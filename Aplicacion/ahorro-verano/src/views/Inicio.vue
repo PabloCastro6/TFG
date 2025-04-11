@@ -13,9 +13,20 @@
           <div v-if="mostrarCalculadora" class="calculadora">
             <h3 class="gasto">Calculadora de Ahorro</h3>
             <label for="gasto" class="gasto">Gasto Diario (€):</label>
-            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
-            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
-            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
+            <input
+              type="number"
+              v-model.number="gastoDiario"
+              placeholder="Introduce tu gasto diario"
+            />
+            <label for="reduccion" class="reduccion"
+              >Reducción de Gasto (%)</label
+            >
+            <input
+              type="range"
+              v-model.number="porcentajeReduccion"
+              min="0"
+              max="50"
+            />
             <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
             <p class="resultado">
               Si reduces tus gastos un
@@ -42,16 +53,28 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
-              autocomplete="username" />
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              required
+              placeholder="Introduce tu correo electrónico"
+              autocomplete="username"
+            />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
-              autocomplete="current-password" />
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              required
+              placeholder="Introduce tu contraseña"
+              autocomplete="current-password"
+            />
           </div>
 
-          <!-- Tipo de usuario-->
+          <!--Tipo de usuario
           <div class="form-group">
             <label>Tipo de usuario:</label>
             <div class="rol-buttons">
@@ -63,9 +86,14 @@
               </button>
             </div>
           </div>
+        -->
           <button type="submit" class="btn-submit">Iniciar sesión</button>
         </form>
-        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
+        <button
+          type="button"
+          class="btn-register"
+          @click="goToRegistroUsuarios"
+        >
           Crear nuevo usuario
         </button>
       </div>
@@ -113,7 +141,6 @@ export default {
             body: JSON.stringify({
               correo: this.email,
               password: this.password,
-              rol: this.rol.toUpperCase(), // Asegúrate de que el rol esté en mayúsculas
             }),
           }
         );
@@ -131,7 +158,7 @@ export default {
           localStorage.setItem("correo", this.email);
           localStorage.setItem("userId", data.userId);
           localStorage.setItem("nombreUsuario", data.nombre);
-          localStorage.setItem("rol", this.rol); // ✅ LÍNEA AÑADIDA
+          localStorage.setItem("rol", respuesta.rol); // ✅ LÍNEA AÑADIDA
 
           this.usuarioLogueado = true;
           this.nombreUsuario = data.nombre;
@@ -143,8 +170,8 @@ export default {
             icon: "success",
             confirmButtonText: "¡Perfecto!",
             customClass: {
-              confirmButton: 'miBotonCancelar'
-            }
+              confirmButton: "miBotonCancelar",
+            },
           });
 
           setTimeout(() => {
@@ -192,7 +219,7 @@ export default {
         confirmButtonText: "Okey",
         customClass: {
           confirmButton: "miBotonCancelar",
-        }
+        },
       }).then(() => {
         this.$router.push("/");
       });
@@ -349,35 +376,6 @@ export default {
   background: #1a252f;
 }
 
-/*Tipo de usuario*/
-.rol-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.rol-buttons button {
-  flex: 1;
-  padding: 6px;
-  font-size: 16px;
-  font-weight: bold;
-  border: 2px solid #ccc;
-  border-radius: 6px;
-  background-color: white;
-  cursor: pointer;
-}
-
-.rol-buttons button.activo {
-  background-color: #007d8b;
-  color: white;
-  border-color: #083954;
-}
-
-.rol-buttons button:hover {
-  background-color: #ecf0f1;
-}
-
 /* Botón para abrir la calculadora */
 .boton-calculadora {
   background-color: #ff9800;
@@ -419,8 +417,7 @@ export default {
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active para versiones anteriores de Vue */
-  {
+/* .fade-leave-active para versiones anteriores de Vue */ {
   opacity: 0;
   transform: translateY(-10px);
 }

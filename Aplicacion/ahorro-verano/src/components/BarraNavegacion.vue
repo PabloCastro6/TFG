@@ -68,7 +68,13 @@ export default {
   transform: scale(1.1);
 }
 
-/* Responsividad para pantallas pequeñas */
+/* Estilo cuando el enlace está activo */
+.menu-principal .router-link-exact-active {
+  color: #ff9800; /* O el color que desees para el enlace activo */
+  transform: scale(1.1); /* Mantén el efecto de escala */
+}
+
+/* Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .menu-principal ul {
     flex-direction: column;

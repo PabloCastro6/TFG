@@ -262,7 +262,6 @@ export default {
         this.usuarioEditando = null;
         this.usuarioEditado = null;
 
-        // ✅ SweetAlert de éxito
         Swal.fire({
           icon: "success",
           title: "✅ Cambios guardados",
@@ -276,7 +275,6 @@ export default {
       } catch (error) {
         console.error("❌ Error al guardar edición:", error);
 
-        // ❌ SweetAlert de error
         Swal.fire({
           icon: "error",
           title: "❌ Error",

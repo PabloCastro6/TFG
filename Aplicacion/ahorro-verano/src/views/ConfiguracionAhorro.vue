@@ -11,12 +11,12 @@
         @mes-cambiado="actualizarMes"
         @eliminar-recordatorio="eliminarRecordatorioPadre"
       />
-      <!-- <TiposGastos ref="tiposGastosRef" style="display: none" /> -->
-
-      <!--<TiposGastos
+      <TiposGastos
+        v-show="false"
         ref="tiposGastosRef"
-        @transaccion-eliminada="eliminarTransaccionEnTiposGastos"
-      /> -->
+        :transacciones="transacciones"
+        @nueva-transaccion="agregarTransaccion"
+      />
 
       <!-- Formulario de transacciones -->
       <TiposTransacciones
@@ -212,6 +212,7 @@ export default {
         this.transacciones = this.transacciones.filter(
           (t) => t.idTransaccion !== idTransaccion
         );
+        eventBus.emit("transaccion-eliminada", idTransaccion);
         this.$refs.tiposGastosRef?.eliminarTransaccion(idTransaccion);
       } catch (error) {
         console.error("❌ Error al eliminar la transacción:", error);

@@ -7,10 +7,16 @@
 
     <label>🔄 Categoría:</label>
     <div class="tipo-opciones">
-      <button :class="{ activo: categoriaSeleccionada === 'ingreso' }" @click="seleccionarCategoria('ingreso')">
+      <button
+        :class="{ activo: categoriaSeleccionada === 'ingreso' }"
+        @click="seleccionarCategoria('ingreso')"
+      >
         💰 Ingreso
       </button>
-      <button :class="{ activo: categoriaSeleccionada === 'gasto' }" @click="seleccionarCategoria('gasto')">
+      <button
+        :class="{ activo: categoriaSeleccionada === 'gasto' }"
+        @click="seleccionarCategoria('gasto')"
+      >
         💸 Gasto
       </button>
     </div>
@@ -19,16 +25,29 @@
       <label>📋 Concepto:</label>
       <select v-model="conceptoSeleccionado" class="label">
         <option value="" disabled>Selecciona un concepto</option>
-        <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
+        <option
+          v-for="(opcion, index) in opcionesDisponibles"
+          :key="index"
+          :value="opcion"
+        >
           {{ opcion }}
         </option>
       </select>
     </div>
 
     <label>💵 Cantidad (€):</label>
-    <input type="number" class="label" v-model="cantidadSeleccionada" placeholder="Introduce la cantidad" />
+    <input
+      type="number"
+      class="label"
+      v-model="cantidadSeleccionada"
+      placeholder="Introduce la cantidad"
+    />
 
-    <button :disabled="!registrado" class="guardar-btn" @click="guardarRegistro">
+    <button
+      :disabled="!registrado"
+      class="guardar-btn"
+      @click="guardarRegistro"
+    >
       Guardar
     </button>
     <p v-if="!registrado" class="alerta">
@@ -85,7 +104,7 @@ export default {
     },
   },
   mounted() {
-    const ingresosGuardados = localStorage.getItem("categoriasIngresos");
+    /* const ingresosGuardados = localStorage.getItem("categoriasIngresos");
     const gastosGuardados = localStorage.getItem("categoriasGastos");
 
     if (ingresosGuardados) {
@@ -100,8 +119,8 @@ export default {
       this.opcionesGasto.push(
         ...opciones.filter((n) => !this.opcionesGasto.includes(n))
       );
-    }
-    this.cargarTiposDesdeBackend;
+    } */
+    this.cargarTiposDesdeBackend();
   },
   methods: {
     seleccionarCategoria(categoria) {
@@ -181,28 +200,31 @@ export default {
 
     async cargarTiposDesdeBackend() {
       try {
-
-        const [gastos, ingresos] = await Promise.all([
-          fetch(`http://localhost:8080/api/tipos/1`).then((res) => res.json()),
-          fetch(`http://localhost:8080/api/tipos/2`).then((res) => res.json()),
-        ]);
-
-        localStorage.setItem(
-          "categoriasGastos",
-          JSON.stringify(
-            gastos.map((t) => ({ nombre: t.nombre, icono: "fas fa-tags" }))
-          )
+        const userId = localStorage.getItem("userId");
+        const response = await fetch(
+          `http://localhost:8080/api/tipos/${userId}`
         );
-        localStorage.setItem(
-          "categoriasIngresos",
-          JSON.stringify(
-            ingresos.map((t) => ({ nombre: t.nombre, icono: "fas fa-tags" }))
-          )
+        const data = await response.json();
+
+        const tiposGastoBD = data
+          .filter((t) => t.tipoCategoriaId === 1)
+          .map((t) => t.nombre);
+
+        const tiposIngresoBD = data
+          .filter((t) => t.tipoCategoriaId === 2)
+          .map((t) => t.nombre);
+
+        this.opcionesGasto.push(
+          ...tiposGastoBD.filter((n) => !this.opcionesGasto.includes(n))
+        );
+
+        this.opcionesIngreso.push(
+          ...tiposIngresoBD.filter((n) => !this.opcionesIngreso.includes(n))
         );
       } catch (error) {
-        console.error("❌ Error al cargar tipos:", error);
+        console.error("❌ Error al cargar tipos personalizados:", error);
       }
-    }
+    },
   },
 };
 </script>

@@ -101,7 +101,6 @@
 
 <script>
 import Swal from "sweetalert2";
-import { eventBus } from "@/eventBus";
 
 export default {
   name: "TiposGastos",
@@ -142,12 +141,9 @@ export default {
     },
   },
   mounted() {
-    eventBus.on("transaccion-eliminada", (id) => {
-      this.transacciones = this.transacciones.filter(
-        (t) => t.idTransaccion !== id
-      );
-      localStorage.setItem("transacciones", JSON.stringify(this.transacciones));
-    });
+    if (this.registrado) {
+      this.cargarTiposDesdeBackend();
+    }
   },
   methods: {
     abrirModal(tipo, categoria) {
@@ -250,6 +246,7 @@ export default {
             nombre: nuevo.nombre,
             tipo: "gasto",
             usuarioId: parseInt(localStorage.getItem("userId")),
+            icono: nuevo.icono,
           }),
         });
 
@@ -325,12 +322,81 @@ export default {
         console.error("❌ Error al cargar transacciones en TiposGastos:", err);
       }
     },*/
+    async cargarTiposDesdeBackend() {
+      const userId = parseInt(localStorage.getItem("userId"));
+      if (!userId) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/tipos/${userId}`
+        );
+        const tipos = await response.json();
+
+        const tiposGastoBackend = tipos
+          .filter((t) => t.tipoCategoriaId === 1)
+          .map((t) => ({
+            nombre: t.nombre,
+            icono: t.icono || "fas fa-tags",
+          }));
+
+        const tiposIngresoBackend = tipos
+          .filter((t) => t.tipoCategoriaId === 2)
+          .map((t) => ({
+            nombre: t.nombre,
+            icono: t.icono || "fas fa-tags",
+          }));
+
+        this.categoriasGastos = this.fusionarSinDuplicados(
+          this.categoriasGastos,
+          tiposGastoBackend
+        );
+        this.categoriasIngresos = this.fusionarSinDuplicados(
+          this.categoriasIngresos,
+          tiposIngresoBackend
+        );
+
+        this.categoriasGastos = this.eliminarDuplicados(this.categoriasGastos);
+        this.categoriasIngresos = this.eliminarDuplicados(
+          this.categoriasIngresos
+        );
+
+        localStorage.setItem(
+          "categoriasGastos",
+          JSON.stringify(this.categoriasGastos)
+        );
+        localStorage.setItem(
+          "categoriasIngresos",
+          JSON.stringify(this.categoriasIngresos)
+        );
+      } catch (error) {
+        console.error("❌ Error al cargar tipos desde backend:", error);
+      }
+    },
+
+    fusionarSinDuplicados(listaExistente, listaNueva) {
+      const nombresExistentes = listaExistente.map((item) =>
+        item.nombre.toLowerCase()
+      );
+      const nuevos = listaNueva.filter(
+        (item) => !nombresExistentes.includes(item.nombre.toLowerCase())
+      );
+      return [...listaExistente, ...nuevos];
+    },
+    eliminarDuplicados(lista) {
+      const nombresVistos = new Set();
+      return lista.filter((item) => {
+        const nombre = item.nombre.toLowerCase();
+        if (nombresVistos.has(nombre)) return false;
+        nombresVistos.add(nombre);
+        return true;
+      });
+    },
+
     eliminarTransaccion(id) {
       this.transacciones = this.transacciones.filter(
         (t) => t.idTransaccion !== id
       );
       localStorage.setItem("transacciones", JSON.stringify(this.transacciones));
-      this.transacciones = [...this.transacciones];
     },
 
     eliminarTipoDesdeModal() {

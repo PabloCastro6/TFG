@@ -32,6 +32,11 @@ public class TipoTransaccionController {
         servicio.guardarDesdeDTO(tipo);
     }
 
+    @GetMapping("/{usuarioId}")
+    public List<TipoTransaccion> obtenerTiposPorUsuario(@PathVariable int usuarioId) {
+        return servicio.obtenerPorUsuario(usuarioId);
+    }
+
     @GetMapping("/{usuarioId}/{tipoCategoriaId}")
     public List<TipoTransaccion> obtenerTiposPorUsuario(
             @PathVariable Integer usuarioId,
@@ -39,6 +44,13 @@ public class TipoTransaccionController {
     ) {
         return servicio.obtenerPorUsuarioYTipo(usuarioId, tipoCategoriaId);
     }
+    
+    @GetMapping ("/usuario/{usuarioid}")
+    public List<TipoTransaccion> obtenerTodosLosTiposPorUsuario(@PathVariable int usuarioId) {
+    	return servicio.obtenerPorUsuario(usuarioId);
+    }
+    
+    
     @DeleteMapping("/{nombre}/{usuarioId}")
     public ResponseEntity<Void> eliminarTipo(
             @PathVariable String nombre,

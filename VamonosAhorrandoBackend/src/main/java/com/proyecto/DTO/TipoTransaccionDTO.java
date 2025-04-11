@@ -5,6 +5,8 @@ public class TipoTransaccionDTO {
 	private String nombre;
     private String tipo; // "gasto" o "ingreso"
     private Integer usuarioId;
+    
+    private String icono;
 
     // Getters y setters
     public String getNombre() { return nombre; }
@@ -15,5 +17,13 @@ public class TipoTransaccionDTO {
 
     public Integer getUsuarioId() { return usuarioId; }
     public void setUsuarioId(Integer usuarioId) { this.usuarioId = usuarioId; }
+	public String getIcono() {
+		return icono;
+	}
+	public void setIcono(String icono) {
+		this.icono = icono;
+	}
+    
+    
 }
 

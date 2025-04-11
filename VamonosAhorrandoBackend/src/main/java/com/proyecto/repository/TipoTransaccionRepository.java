@@ -13,6 +13,9 @@ import jakarta.transaction.Transactional;
 
 public interface TipoTransaccionRepository extends JpaRepository<TipoTransaccion, Integer> {
     List<TipoTransaccion> findByUsuarioIdAndTipoCategoriaId(Integer usuarioId, Integer tipoCategoriaId);
+    
+    List<TipoTransaccion> findByUsuarioId(Integer usuarioId);
+    
     @Modifying
     @Transactional
     @Query("DELETE FROM TipoTransaccion t WHERE t.nombre = :nombre AND t.usuarioId = :usuarioId")

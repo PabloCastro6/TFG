@@ -21,6 +21,10 @@ public class TipoTransaccion {
     
     @Transient // NO se guarda en la BBDD
     private String tipo; // "gasto" o "ingreso" que viene desde el frontend
+    
+    private String icono;
+    
+   
 
     // Getters y setters
     public Integer getIdTipo() { return idTipo; }
@@ -38,4 +42,15 @@ public class TipoTransaccion {
     
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
+	public String getIcono() {
+		return icono;
+	}
+	public void setIcono(String icono) {
+		this.icono = icono;
+	}
+    
+    
+	
+    
+    
 }

@@ -16,11 +16,14 @@ public class TipoTransaccionServiceImpl implements TipoTransaccionService {
 	@Autowired
 	private TipoTransaccionRepository repo;
 	
+	
+	
 	 @Override
 	 public void guardarDesdeDTO(TipoTransaccionDTO dto) {
 		    TipoTransaccion tipo = new TipoTransaccion();
 		    tipo.setNombre(dto.getNombre());
 		    tipo.setUsuarioId(dto.getUsuarioId());
+		    tipo.setIcono(dto.getIcono());
 
 		    if ("gasto".equalsIgnoreCase(dto.getTipo())) {
 		        tipo.setTipoCategoriaId(1);
@@ -42,5 +45,10 @@ public class TipoTransaccionServiceImpl implements TipoTransaccionService {
 	    public void eliminarPorNombreYUsuario(String nombre, int usuarioId) {
 	        repo.deleteByNombreAndUsuarioId(nombre, usuarioId);
 	    }
+
+	 @Override
+	 public List<TipoTransaccion> obtenerPorUsuario(Integer usuarioId) {
+	     return repo.findByUsuarioId(usuarioId);
+	 }
 
 }

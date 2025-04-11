@@ -6,6 +6,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 
+
+/**
+ * Entidad que representa una transacción financiera realizada por un usuario.
+ * 
+ * <p>Las transacciones pueden ser ingresos o gastos y están asociadas a una fecha, 
+ * una cantidad, una categoría y un usuario específico.</p>
+ * 
+ * <p>Esta clase se mapea a la tabla <b>transacciones</b> en la base de datos.</p>
+ * 
+ */
+
 @Entity
 @Table(name = "transacciones")
 public class Transaccion {

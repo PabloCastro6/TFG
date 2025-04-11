@@ -12,6 +12,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+/**
+ * Entidad que representa a un usuario dentro de la aplicación.
+ * 
+ * <p>Cada usuario tiene un nombre, correo electrónico, contraseña y un rol que define sus permisos
+ * dentro del sistema (por ejemplo, ADMINISTRADOR o USUARIO).</p>
+ * 
+ * <p>Está relacionada con múltiples transacciones financieras que haya realizado.</p>
+ * 
+ * <p>Se mapea a la tabla <strong>usuarios</strong> en la base de datos.</p>
+ * 
+ */
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {

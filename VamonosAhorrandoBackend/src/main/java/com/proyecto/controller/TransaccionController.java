@@ -11,7 +11,20 @@ import com.proyecto.negocio.impl.TransaccionService;
 import com.proyecto.repository.CategoriaRepository;
 import com.proyecto.repository.UsuarioRepository;
 
-/*@CrossOrigin(origins = "*")*/
+
+/**
+ * Controlador REST para gestionar las transacciones financieras
+ * (ingresos y gastos) de los usuarios.
+ * 
+ * <p>Ofrece endpoints para crear, listar, actualizar y eliminar transacciones.</p>
+ * 
+ * <p>Ruta base: <b>/transacciones</b></p>
+ * 
+ * <p>Antes de guardar una transacción, recupera la categoría y el usuario
+ * desde sus respectivos repositorios para asegurar la integridad referencial.</p>
+ * 
+ */
+
 @RestController
 @RequestMapping("/transacciones")
 public class TransaccionController {
@@ -26,16 +39,39 @@ public class TransaccionController {
 	@Autowired
 	UsuarioRepository usuarioRepository;
 
+	
+	  /**
+     * Obtiene todas las transacciones registradas en la base de datos.
+     * 
+     * @return lista completa de transacciones.
+     */
 	@GetMapping("")
 	public Iterable<Transaccion> listarTransacciones() {
 		return transaccionService.listarTransacciones();
 	}
 
+	
+	 /**
+     * Obtiene una transacción específica por su ID.
+     * 
+     * @param id ID de la transacción a buscar.
+     * @return Transacción encontrada o error si no existe.
+     */
+	
 	@GetMapping("/transaccion/{id}")
 	public Transaccion listarTransaccionesPorId(@PathVariable Integer id) {
 		return transaccionService.obtenerTransaccionPorId(id);
 	}
 
+	
+	/**
+     * Crea una nueva transacción.
+     * <p>Busca la categoría y el usuario en la base de datos antes de guardar la transacción
+     * para evitar relaciones huérfanas.</p>
+     * 
+     * @param transaccion Objeto transacción recibido desde el frontend.
+     * @return La transacción guardada.
+     */
 	@PostMapping("/transaccion")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaccion crearTransaccion(@RequestBody Transaccion transaccion) {
@@ -55,6 +91,16 @@ public class TransaccionController {
 		return transaccionService.crearTransaccion(transaccion);
 	}
 
+	
+	 /**
+     * Actualiza una transacción existente por ID.
+     * <p>Igual que en la creación, busca la categoría y el usuario antes de actualizar.</p>
+     * 
+     * @param id ID de la transacción a actualizar.
+     * @param transaccion Objeto con los datos actualizados.
+     * @return Transacción actualizada.
+     */
+	
 	@PutMapping("/transaccion/{id}")
 	public Transaccion modificarTransaccion(@PathVariable Integer id, @RequestBody Transaccion transaccion) {
 		transaccion.setIdTransaccion(id);
@@ -74,6 +120,13 @@ public class TransaccionController {
 		return transaccionService.actualizarTransaccion(transaccion);
 	}
 
+	
+	/**
+     * Elimina una transacción por su ID.
+     * 
+     * @param id ID de la transacción a eliminar.
+     */
+	
 	@DeleteMapping("/transaccion/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void borrarTransaccion(@PathVariable Integer id) {

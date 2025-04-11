@@ -7,6 +7,26 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+
+/**
+ * Entidad que representa un tipo personalizado de transacción creado por el usuario.
+ * 
+ * <p>Se utiliza para registrar diferentes tipos de gastos o ingresos, como "Restaurante",
+ * "Fiesta", "Salario", etc., y se asocia a un usuario específico.</p>
+ * 
+ * <p>Se guarda en la tabla <b>tipos_transaccion</b> en la base de datos.</p>
+ * 
+ * <p>Este tipo puede ser de dos categorías:
+ * <ul>
+ *   <li><b>tipoCategoriaId = 1</b>: Gasto</li>
+ *   <li><b>tipoCategoriaId = 2</b>: Ingreso</li>
+ * </ul></p>
+ * 
+ * <p>Además, incluye un campo de icono que se utiliza para representar visualmente 
+ * el tipo en el frontend.</p>
+ * 
+ */
+
 @Entity
 @Table(name = "tipos_transaccion")
 public class TipoTransaccion {

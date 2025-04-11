@@ -3,6 +3,16 @@ package com.proyecto.entity;
 import jakarta.persistence.*;
 import java.util.Date;
 
+
+/**
+ * Entidad que representa un recordatorio financiero creado por el usuario.
+ * 
+ * <p>Puede ser un gasto o un ingreso futuro que el usuario quiere recordar.
+ * Contiene información como concepto, cantidad, tipo, fecha y el usuario asociado.</p>
+ * 
+ * <p>Se almacena en la tabla <strong>recordatorios</strong>.</p>
+ * 
+ */
 @Entity
 @Table(name = "recordatorios")
 public class Recordatorio {

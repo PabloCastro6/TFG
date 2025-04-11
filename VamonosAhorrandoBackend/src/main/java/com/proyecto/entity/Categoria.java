@@ -4,6 +4,16 @@ import java.util.List;
 
 import jakarta.persistence.*;
 
+
+/**
+ * Entidad que representa una categoría de transacción, como "Gasto" o "Ingreso".
+ * 
+ * <p>Una categoría agrupa un conjunto de transacciones realizadas por los usuarios.
+ * Esta clase se corresponde con la tabla <b>categorias</b> en la base de datos.</p>
+ * 
+ * <p>Ejemplos de categorías podrían ser: "Gasto", "Ingreso", "Ahorro", etc.</p>
+ * 
+ */
 @Entity
 @Table(name = "categorias")
 public class Categoria {

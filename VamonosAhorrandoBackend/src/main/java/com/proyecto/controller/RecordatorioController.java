@@ -12,6 +12,17 @@ import com.proyecto.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * Controlador REST que gestiona los recordatorios de los usuarios.
+ * 
+ * <p>Permite obtener, crear, actualizar y eliminar recordatorios.
+ * Cada recordatorio está asociado a un usuario.</p>
+ * 
+ * <p>Ruta base: {@code /recordatorios}</p>
+ * 
+ */
+
 @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 @RestController
 @RequestMapping("/recordatorios")

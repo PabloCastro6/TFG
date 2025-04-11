@@ -1,5 +1,14 @@
 package com.proyecto.DTO;
 
+
+/**
+ * DTO que representa un tipo de transacción personalizada creada por el usuario.
+ * 
+ * Este objeto se utiliza para transferir datos entre el frontend y el backend
+ * cuando se crean nuevos tipos de gasto o ingreso (por ejemplo: "Restaurante", "Fiesta").
+ * También incluye el ícono asociado que se mostrará en la interfaz.
+ */
+
 public class TipoTransaccionDTO {
 	
 	private String nombre;

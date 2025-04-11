@@ -9,6 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * Servicio que gestiona la lógica de negocio relacionada con los recordatorios.
+ * 
+ * <p>Encapsula las operaciones básicas de CRUD utilizando el {@link RecordatorioRepository}.</p>
+ * 
+ */
+
 @Service
 public class RecordatorioService {
 

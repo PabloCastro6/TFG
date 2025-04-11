@@ -51,6 +51,8 @@ export default {
       hoy: new Date().toISOString().split("T")[0],
       opcionesIngreso: ["Trabajo", "Alquileres Casas", "Paga de la Abuela"],
       opcionesGasto: ["Comida", "Ropa", "Entretenimiento", "Coche", "Gasolina", "Regalos", "Salud", "Vacaciones", "Deportes"],
+      tiposGasto: [],
+      tiposIngreso: []
     };
   },
   computed: {
@@ -58,14 +60,45 @@ export default {
       return localStorage.getItem("registrado") === "true";
     },
     opcionesDisponibles() {
-      return this.recordatorio.tipo === "ingreso"
-        ? this.opcionesIngreso
+      const base = this.recordatorio.tipo === "ingreso"
+        ? [...this.opcionesIngreso]
         : this.recordatorio.tipo === "gasto"
-          ? this.opcionesGasto
+          ? [...this.opcionesGasto]
           : [];
+
+      const personalizados = this.recordatorio.tipo === "ingreso"
+        ? this.tiposIngreso
+        : this.recordatorio.tipo === "gasto"
+          ? this.tiposGasto
+          : [];
+
+      return [...base, ...personalizados.filter(n => !base.includes(n))];
     }
   },
+  mounted() {
+    this.cargarTiposDesdeBackend();
+  },
   methods: {
+    async cargarTiposDesdeBackend() {
+      try {
+        const userId = localStorage.getItem("userId");
+        const response = await fetch(`http://localhost:8080/api/tipos/${userId}`);
+        const data = await response.json();
+
+        const tiposGastoBD = data
+          .filter((t) => t.tipoCategoriaId === 1)
+          .map((t) => t.nombre);
+
+        const tiposIngresoBD = data
+          .filter((t) => t.tipoCategoriaId === 2)
+          .map((t) => t.nombre);
+
+        this.tiposGasto = tiposGastoBD;
+        this.tiposIngreso = tiposIngresoBD;
+      } catch (error) {
+        console.error("❌ Error al cargar tipos personalizados:", error);
+      }
+    },
     async guardarRecordatorio() {
       if (!this.recordatorio.fecha || !this.recordatorio.concepto || !this.recordatorio.cantidad) {
         Swal.fire({

@@ -1,8 +1,7 @@
 <template>
   <div>
-    <!-- Barra de navegación -->
+    <!-- Siempre se muestra la barra de navegación -->
     <BarraNavegacion />
-
     <!-- Contenido principal -->
     <div class="contenido">
       <router-view />

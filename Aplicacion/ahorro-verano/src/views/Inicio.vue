@@ -1,6 +1,6 @@
 <template>
   <div class="inicio">
-    <!-- Botón de cerrar sesión en la esquina superior derecha, se muestra si usuarioLogueado es true -->
+    <!-- Botón de cerrar sesión (aparece si el usuario está logueado) -->
     <button v-if="usuarioLogueado" class="logout-button" @click="cerrarSesion">
       Cerrar sesión
     </button>
@@ -13,20 +13,9 @@
           <div v-if="mostrarCalculadora" class="calculadora">
             <h3 class="gasto">Calculadora de Ahorro</h3>
             <label for="gasto" class="gasto">Gasto Diario (€):</label>
-            <input
-              type="number"
-              v-model.number="gastoDiario"
-              placeholder="Introduce tu gasto diario"
-            />
-            <label for="reduccion" class="reduccion"
-              >Reducción de Gasto (%)</label
-            >
-            <input
-              type="range"
-              v-model.number="porcentajeReduccion"
-              min="0"
-              max="50"
-            />
+            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
+            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
+            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
             <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
             <p class="resultado">
               Si reduces tus gastos un
@@ -41,8 +30,12 @@
 
         <!-- Bloque de texto (logo, h1 y p) -->
         <div class="text-section">
-          <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
-          <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
+          <h1 class="titulo">
+            Bienvenidos a mi aplicación de ahorros
+          </h1>
+          <p class="frase">
+            "Ahorrar no es solo guardar, sino saber gastar"
+          </p>
           <img src="../assets/ahorro.png" alt="Logo" class="logo" />
         </div>
       </div>
@@ -53,29 +46,15 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              required
-              placeholder="Introduce tu correo electrónico"
-              autocomplete="username"
-            />
+            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
+              autocomplete="username" />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input
-              type="password"
-              id="password"
-              v-model="password"
-              required
-              placeholder="Introduce tu contraseña"
-              autocomplete="current-password"
-            />
+            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
+              autocomplete="current-password" />
           </div>
-
-          <!--Tipo de usuario
-          <div class="form-group">
+          <<<<<<< HEAD <!--Tipo de usuario <div class="form-group">
             <label>Tipo de usuario:</label>
             <div class="rol-buttons">
               <button type="button" :class="{ activo: rol === 'USUARIO' }" @click="rol = 'USUARIO'">
@@ -85,29 +64,28 @@
                 🛠️ Administrador
               </button>
             </div>
-          </div>
-        -->
-          <button type="submit" class="btn-submit">Iniciar sesión</button>
-        </form>
-        <button
-          type="button"
-          class="btn-register"
-          @click="goToRegistroUsuarios"
-        >
-          Crear nuevo usuario
-        </button>
       </div>
+      -->
+      =======
+      >>>>>>> 3930c83 (implementacion de libreria Pinia y muchos detalles mas)
+      <button type="submit" class="btn-submit">Iniciar sesión</button>
+      </form>
+      <button type="button" class="btn-register" @click="goToRegistroUsuarios">
+        Crear nuevo usuario
+      </button>
     </div>
+  </div>
 
-    <!-- Botón para abrir la calculadora -->
-    <button class="boton-calculadora" @click="mostrarCalculadora = true">
-      📊 ¿Cuánto podrías ahorrar?
-    </button>
+  <!-- Botón para abrir la calculadora -->
+  <button class="boton-calculadora" @click="mostrarCalculadora = true">
+    📊 ¿Cuánto podrías ahorrar?
+  </button>
   </div>
 </template>
 
 <script>
 import Swal from "sweetalert2";
+import { useAuthStore } from "@/store/authStore";
 
 export default {
   name: "PaginaInicio",
@@ -116,14 +94,18 @@ export default {
       mostrarCalculadora: false,
       email: "",
       password: "",
-      rol: "",
+      //rol: "",
       gastoDiario: 10,
       porcentajeReduccion: 10,
-      usuarioLogueado: localStorage.getItem("registrado") === "true",
       mensajeExito: "",
     };
   },
   computed: {
+    usuarioLogueado() {
+      // Obtenemos desde el store si el usuario está registrado
+      const auth = useAuthStore();
+      return auth.registrado;
+    },
     ahorroEstimado() {
       return ((this.gastoDiario * this.porcentajeReduccion) / 100) * 30;
     },
@@ -135,9 +117,7 @@ export default {
           "http://localhost:8080/usuarios/iniciarSesion",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               correo: this.email,
               password: this.password,
@@ -151,29 +131,29 @@ export default {
         }
 
         const data = await response.json();
-        console.log("Respuesta del servidor:", data);
 
         if (data.success) {
+          // Guarda en localStorage
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
           localStorage.setItem("userId", data.userId);
           localStorage.setItem("nombreUsuario", data.nombre);
           localStorage.setItem("rol", respuesta.rol); // ✅ LÍNEA AÑADIDA
+          localStorage.setItem("rol", data.rol);
 
-          this.usuarioLogueado = true;
-          this.nombreUsuario = data.nombre;
-          this.mensajeExito = data.message;
+          // Actualiza el store de auth
+          const auth = useAuthStore();
+          auth.setUserData({ rol: data.rol, userId: data.userId });
 
           Swal.fire({
-            title: `¡Bienvenido!`,
+            title: "¡Bienvenido!",
             text: data.message,
             icon: "success",
             confirmButtonText: "¡Perfecto!",
-            customClass: {
-              confirmButton: "miBotonCancelar",
-            },
+            customClass: { confirmButton: "miBotonCancelar" },
           });
 
+          // Redirige después de 2 segundos
           setTimeout(() => {
             this.$router.push("/");
           }, 2000);
@@ -182,7 +162,6 @@ export default {
         }
       } catch (error) {
         console.error("Error en inicio de sesión:", error);
-
         if (error.message.includes("permisos")) {
           Swal.fire({
             icon: "error",
@@ -191,15 +170,27 @@ export default {
           });
         } else if (error.message.includes("Credenciales")) {
           Swal.fire({
-            icon: "error",
-            title: "❌ Credenciales inválidas",
-            text: "Correo o contraseña incorrectos.",
+            icon: 'error',
+            title: '❌ Credenciales inválidas',
+            text: 'Correo o contraseña incorrectos.',
+            showConfirmButton: true, // Muestra el botón de confirmación
+            confirmButtonText: 'Reintentar', // Texto personalizado en el botón
+            confirmButtonColor: '#d33', // Color del botón
+            timer: 5000, // Opcional: se cierra automáticamente después de 5 segundos
+            backdrop: true, // Fondo de la alerta oscuro
+            customClass: {
+              confirmButton: "miBotonCancelar",
+            }
           });
         } else {
           Swal.fire({
             icon: "error",
             title: "❌ Error",
             text: "Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
+            confirmButtonText: "Entendido",
+            customClass: {
+              confirmButton: "miBotonCancelar",
+            }
           });
         }
       }
@@ -207,11 +198,9 @@ export default {
     goToRegistroUsuarios() {
       this.$router.push("/RegistroUsuarios");
     },
-
     cerrarSesion() {
-      localStorage.clear();
-      this.usuarioLogueado = false;
-
+      const auth = useAuthStore();
+      auth.logout(); // Actualizamos el store
       Swal.fire({
         icon: "info",
         title: "👋 Sesión cerrada",
@@ -224,9 +213,6 @@ export default {
         this.$router.push("/");
       });
     },
-  },
-  mounted() {
-    this.usuarioLogueado = localStorage.getItem("registrado") === "true";
   },
 };
 </script>
@@ -417,7 +403,8 @@ export default {
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active para versiones anteriores de Vue */ {
+/* .fade-leave-active para versiones anteriores de Vue */
+  {
   opacity: 0;
   transform: translateY(-10px);
 }

@@ -1,30 +1,34 @@
-<!--Se muestra en la parte superior de cada vista para permitir la navegacion de las diferentes secciones-->
 <template>
   <ul class="menu-principal">
-    <li><router-link to="/">Inicio</router-link></li>
-    <li>
-      <router-link to="/configuracionAhorro"
-        >Configuración de Ahorro</router-link
-      >
+    <li><router-link to="/" exact-active-class="active">Inicio</router-link></li>
+    <li><router-link to="/configuracionAhorro" exact-active-class="active">Configuración de Ahorro</router-link></li>
+    <li><router-link to="/TiposGastos" exact-active-class="active">Tipos de Gastos/Ingresos</router-link></li>
+    <li><router-link to="/Estadisticas" exact-active-class="active">Estadísticas</router-link></li>
+    <li><router-link to="/Recordatorio" exact-active-class="active">Recordatorios</router-link></li>
+    <li v-if="!auth.registrado || auth.rol === 'ADMINISTRADOR'">
+      <router-link to="/RegistroUsuarios" exact-active-class="active">Usuarios</router-link>
     </li>
-    <li>
-      <router-link to="/TiposGastos">Tipos de Gastos/Ingresos</router-link>
-    </li>
-    <li><router-link to="/Estadisticas">Estadísticas</router-link></li>
-    <li><router-link to="/Recordatorio">Recordatorios</router-link></li>
-
-    <li><router-link to="/RegistroUsuarios">Usuarios</router-link></li>
   </ul>
 </template>
 
 <script>
+import { useAuthStore } from "@/store/authStore";
+import { computed } from "vue";
+
 export default {
   name: "BarraNavegacion",
+  setup() {
+    const auth = useAuthStore();
+    // Para depuración:
+    console.log('Estado de auth:', auth.registrado, auth.rol);
+
+    return { auth };
+  },
 };
 </script>
 
 <style>
-/* Menú de navegación centrado */
+/* Barra de navegación */
 .menu-principal {
   background-color: #2c3e50;
   padding: 15px 0;
@@ -34,19 +38,19 @@ export default {
   width: 100%;
   z-index: 1000;
   display: flex;
-  justify-content: center; /* Centra el contenido horizontalmente */
+  justify-content: center;
   list-style: none;
 }
 
 .menu-principal ul {
   display: flex;
-  justify-content: center; /* Centra los elementos */
+  justify-content: center;
   align-items: center;
   list-style-type: none;
   padding: 0;
   margin: 0;
   width: 100%;
-  max-width: 1200px; /* Ajusta el ancho máximo */
+  max-width: 1200px;
 }
 
 .menu-principal li {
@@ -63,24 +67,25 @@ export default {
   border-radius: 5px;
 }
 
-.menu-principal a:hover {
+/* Efecto hover */
+.menu-principal a:hover,
+.menu-principal a.active {
   color: #ff9800;
   transform: scale(1.1);
 }
 
-/* Estilo cuando el enlace está activo */
-.menu-principal .router-link-exact-active {
-  color: #ff9800; /* O el color que desees para el enlace activo */
-  transform: scale(1.1); /* Mantén el efecto de escala */
+/* Esto asegura que el enlace activo se mantenga con el color naranja */
+.router-link-exact-active {
+  color: #ff9800;
+  transform: scale(1.1);
 }
 
-/* Responsive para pantallas pequeñas */
+/* Responsive */
 @media (max-width: 768px) {
   .menu-principal ul {
     flex-direction: column;
     align-items: center;
   }
-
   .menu-principal li {
     margin: 8px 0;
   }

@@ -262,7 +262,6 @@ export default {
           },
         });
       }
-
       if (tipo === "ingreso" && this.nuevoIngreso.trim()) {
         const nuevo = {
           nombre: this.nuevoIngreso.trim(),
@@ -292,36 +291,6 @@ export default {
         );
       }
     },
-    /* async cargarTransacciones() {
-      try {
-        const userId = parseInt(localStorage.getItem("userId"));
-        const response = await fetch("http://localhost:8080/transacciones");
-        const data = await response.json();
-
-        if (Array.isArray(data)) {
-          this.transacciones = data
-            .filter((t) => t.usuario?.idUsuario === userId)
-            .map((t) => {
-              const fechaObj = new Date(t.fecha);
-              const dia = String(fechaObj.getDate()).padStart(2, "0");
-              const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-              const anio = fechaObj.getFullYear();
-              return {
-                ...t,
-                fecha: `${anio}-${mes}-${dia}`,
-              };
-            });
-
-          // Actualizar localStorage para mantenerlo sincronizado
-          localStorage.setItem(
-            "transacciones",
-            JSON.stringify(this.transacciones)
-          );
-        }
-      } catch (err) {
-        console.error("❌ Error al cargar transacciones en TiposGastos:", err);
-      }
-    },*/
     async cargarTiposDesdeBackend() {
       const userId = parseInt(localStorage.getItem("userId"));
       if (!userId) return;

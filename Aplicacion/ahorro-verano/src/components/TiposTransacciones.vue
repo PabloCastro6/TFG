@@ -104,22 +104,6 @@ export default {
     },
   },
   mounted() {
-    /* const ingresosGuardados = localStorage.getItem("categoriasIngresos");
-    const gastosGuardados = localStorage.getItem("categoriasGastos");
-
-    if (ingresosGuardados) {
-      const opciones = JSON.parse(ingresosGuardados).map((t) => t.nombre);
-      this.opcionesIngreso.push(
-        ...opciones.filter((n) => !this.opcionesIngreso.includes(n))
-      );
-    }
-
-    if (gastosGuardados) {
-      const opciones = JSON.parse(gastosGuardados).map((t) => t.nombre);
-      this.opcionesGasto.push(
-        ...opciones.filter((n) => !this.opcionesGasto.includes(n))
-      );
-    } */
     this.cargarTiposDesdeBackend();
   },
   methods: {

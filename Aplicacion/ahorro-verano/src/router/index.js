@@ -49,7 +49,6 @@ const routes = [
   },
 ];
 
-
 const router = createRouter({
   history: createWebHistory(),
   base: process.env.BASE_URL,
@@ -61,7 +60,7 @@ router.beforeEach((to, from, next) => {
   const usuarioRegistrado = localStorage.getItem("registrado") === "true";
 
   if (to.meta.requiereRegistro && !usuarioRegistrado) {
-    next('/AccesoDenegado'); // 🔒 Redirige si no está registrado
+    next("/AccesoDenegado"); // 🔒 Redirige si no está registrado
   } else {
     next(); // ✅ Permite el acceso
   }

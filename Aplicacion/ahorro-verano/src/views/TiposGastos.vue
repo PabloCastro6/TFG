@@ -4,8 +4,12 @@
     <div class="categorias">
       <h2>💸 Tipos de Gastos</h2>
       <div class="grid">
-        <div class="card gasto" v-for="(tipo, index) in categoriasGastos" :key="index"
-          @click="abrirModal(tipo, 'gasto')">
+        <div
+          class="card gasto"
+          v-for="(tipo, index) in categoriasGastos"
+          :key="index"
+          @click="abrirModal(tipo, 'gasto')"
+        >
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -22,8 +26,12 @@
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
       <div class="grid">
-        <div class="card ingreso" v-for="(tipo, index) in categoriasIngresos" :key="index"
-          @click="abrirModal(tipo, 'ingreso')">
+        <div
+          class="card ingreso"
+          v-for="(tipo, index) in categoriasIngresos"
+          :key="index"
+          @click="abrirModal(tipo, 'ingreso')"
+        >
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -46,9 +54,18 @@
           }}</span>
         </h3>
         <input type="date" v-model="fechaSeleccionada" />
-        <input type="number" v-model="cantidadSeleccionada" placeholder="Cantidad (€)" min="0" />
+        <input
+          type="number"
+          v-model="cantidadSeleccionada"
+          placeholder="Cantidad (€)"
+          min="0"
+        />
         <div class="botones">
-          <button class="boton-tipo" :disabled="!registrado" @click="guardarRegistro">
+          <button
+            class="boton-tipo"
+            :disabled="!registrado"
+            @click="guardarRegistro"
+          >
             Confirmar
           </button>
           <button class="eliminar-tipo" @click="eliminarTipoDesdeModal">
@@ -84,6 +101,7 @@
 
 <script>
 import Swal from "sweetalert2";
+import { eventBus } from "@/eventBus";
 
 export default {
   name: "TiposGastos",
@@ -94,23 +112,23 @@ export default {
       categoriasGastos: JSON.parse(
         localStorage.getItem("categoriasGastos")
       ) || [
-          { nombre: "Coche", icono: "fas fa-car" },
-          { nombre: "Ropa", icono: "fas fa-tshirt" },
-          { nombre: "Entretenimiento", icono: "fas fa-film" },
-          { nombre: "Comida", icono: "fas fa-utensils" },
-          { nombre: "Gasolina", icono: "fas fa-gas-pump" },
-          { nombre: "Regalos", icono: "fas fa-gift" },
-          { nombre: "Salud", icono: "fas fa-heartbeat" },
-          { nombre: "Vacaciones", icono: "fas fa-plane" },
-          { nombre: "Deportes", icono: "fas fa-football-ball" },
-        ],
+        { nombre: "Coche", icono: "fas fa-car" },
+        { nombre: "Ropa", icono: "fas fa-tshirt" },
+        { nombre: "Entretenimiento", icono: "fas fa-film" },
+        { nombre: "Comida", icono: "fas fa-utensils" },
+        { nombre: "Gasolina", icono: "fas fa-gas-pump" },
+        { nombre: "Regalos", icono: "fas fa-gift" },
+        { nombre: "Salud", icono: "fas fa-heartbeat" },
+        { nombre: "Vacaciones", icono: "fas fa-plane" },
+        { nombre: "Deportes", icono: "fas fa-football-ball" },
+      ],
       categoriasIngresos: JSON.parse(
         localStorage.getItem("categoriasIngresos")
       ) || [
-          { nombre: "Trabajo", icono: "fas fa-briefcase" },
-          { nombre: "Alquileres Casas", icono: "fas fa-home" },
-          { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
-        ],
+        { nombre: "Trabajo", icono: "fas fa-briefcase" },
+        { nombre: "Alquileres Casas", icono: "fas fa-home" },
+        { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
+      ],
       mostrarModal: false,
       tipoSeleccionado: {},
       fechaSeleccionada: "",
@@ -124,7 +142,12 @@ export default {
     },
   },
   mounted() {
-    /*this.cargarTransacciones();*/
+    eventBus.on("transaccion-eliminada", (id) => {
+      this.transacciones = this.transacciones.filter(
+        (t) => t.idTransaccion !== id
+      );
+      localStorage.setItem("transacciones", JSON.stringify(this.transacciones));
+    });
   },
   methods: {
     abrirModal(tipo, categoria) {
@@ -302,6 +325,13 @@ export default {
         console.error("❌ Error al cargar transacciones en TiposGastos:", err);
       }
     },*/
+    eliminarTransaccion(id) {
+      this.transacciones = this.transacciones.filter(
+        (t) => t.idTransaccion !== id
+      );
+      localStorage.setItem("transacciones", JSON.stringify(this.transacciones));
+      this.transacciones = [...this.transacciones];
+    },
 
     eliminarTipoDesdeModal() {
       const tipo = this.tipoSeleccionado.tipo;

@@ -136,15 +136,13 @@ export default {
         // Emitir el evento para que el calendario lo agregue
         eventBus.emit("nuevo-recordatorio", data);
 
-        // Mostrar el SweetAlert con el mensaje de éxito
         Swal.fire({
           icon: 'success',
           title: '¡Éxito!',
           text: 'Recordatorio agregado correctamente.',
           confirmButtonText: 'Aceptar',
           customClass: {
-            confirmButton: 'miBotonConfirmar',
-            cancelButton: 'miBotonCancelar'
+            confirmButton: 'miBotonCancelar',
           }
         });
 
@@ -152,7 +150,6 @@ export default {
         this.recordatorio = { fecha: "", tipo: "", cantidad: "", concepto: "" };
       } catch (error) {
         console.error("❌ Error al guardar recordatorio:", error);
-        // Mostrar el SweetAlert con el mensaje de error
         Swal.fire({
           icon: 'error',
           title: '¡Oops!',

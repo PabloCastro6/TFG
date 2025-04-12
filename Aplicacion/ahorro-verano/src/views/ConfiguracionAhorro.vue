@@ -218,8 +218,8 @@ export default {
         console.error("❌ Error al eliminar la transacción:", error);
       }
     },
-
-    async eliminarTransaccionDesdeLista(idTransaccion) {
+    
+    async eliminarTransaccionDesdeLista(idTransaccion) { 
       const { isConfirmed } = await Swal.fire({
         title: "¿Estás seguro?",
         text: "Esta transacción será eliminada permanentemente.",
@@ -250,7 +250,7 @@ export default {
         this.transacciones = this.transacciones.filter(
           (t) => t.idTransaccion !== idTransaccion
         );
-        this.$refs.tiposGastosRef?.eliminarTransaccion(idTransaccion); // ✅ Aquí actualiza TiposGastos.vue
+        this.$refs.tiposGastosRef?.eliminarTransaccion(idTransaccion); // Aquí actualiza TiposGastos.vue
         eventBus.emit("transaccion-eliminada", idTransaccion);
 
         Swal.fire({

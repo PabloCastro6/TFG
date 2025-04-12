@@ -225,8 +225,6 @@ export default {
         text: `¿Eliminar la transacción ${trans.tipo} de ${trans.cantidad}€?`,
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
         confirmButtonText: "Eliminar",
         cancelButtonText: "Cancelar",
         customClass: {

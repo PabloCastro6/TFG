@@ -4,12 +4,8 @@
     <div class="categorias">
       <h2>💸 Tipos de Gastos</h2>
       <div class="grid">
-        <div
-          class="card gasto"
-          v-for="(tipo, index) in categoriasGastos"
-          :key="index"
-          @click="abrirModal(tipo, 'gasto')"
-        >
+        <div class="card gasto" v-for="(tipo, index) in categoriasGastos" :key="index"
+          @click="abrirModal(tipo, 'gasto')">
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -26,12 +22,8 @@
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
       <div class="grid">
-        <div
-          class="card ingreso"
-          v-for="(tipo, index) in categoriasIngresos"
-          :key="index"
-          @click="abrirModal(tipo, 'ingreso')"
-        >
+        <div class="card ingreso" v-for="(tipo, index) in categoriasIngresos" :key="index"
+          @click="abrirModal(tipo, 'ingreso')">
           <i :class="tipo.icono"></i>
           <span>{{ tipo.nombre }}</span>
         </div>
@@ -54,18 +46,9 @@
           }}</span>
         </h3>
         <input type="date" v-model="fechaSeleccionada" />
-        <input
-          type="number"
-          v-model="cantidadSeleccionada"
-          placeholder="Cantidad (€)"
-          min="0"
-        />
+        <input type="number" v-model="cantidadSeleccionada" placeholder="Cantidad (€)" min="0" />
         <div class="botones">
-          <button
-            class="boton-tipo"
-            :disabled="!registrado"
-            @click="guardarRegistro"
-          >
+          <button class="boton-tipo" :disabled="!registrado" @click="guardarRegistro">
             Confirmar
           </button>
           <button class="eliminar-tipo" @click="eliminarTipoDesdeModal">
@@ -111,23 +94,23 @@ export default {
       categoriasGastos: JSON.parse(
         localStorage.getItem("categoriasGastos")
       ) || [
-        { nombre: "Coche", icono: "fas fa-car" },
-        { nombre: "Ropa", icono: "fas fa-tshirt" },
-        { nombre: "Entretenimiento", icono: "fas fa-film" },
-        { nombre: "Comida", icono: "fas fa-utensils" },
-        { nombre: "Gasolina", icono: "fas fa-gas-pump" },
-        { nombre: "Regalos", icono: "fas fa-gift" },
-        { nombre: "Salud", icono: "fas fa-heartbeat" },
-        { nombre: "Vacaciones", icono: "fas fa-plane" },
-        { nombre: "Deportes", icono: "fas fa-football-ball" },
-      ],
+          { nombre: "Coche", icono: "fas fa-car" },
+          { nombre: "Ropa", icono: "fas fa-tshirt" },
+          { nombre: "Entretenimiento", icono: "fas fa-film" },
+          { nombre: "Comida", icono: "fas fa-utensils" },
+          { nombre: "Gasolina", icono: "fas fa-gas-pump" },
+          { nombre: "Regalos", icono: "fas fa-gift" },
+          { nombre: "Salud", icono: "fas fa-heartbeat" },
+          { nombre: "Vacaciones", icono: "fas fa-plane" },
+          { nombre: "Deportes", icono: "fas fa-football-ball" },
+        ],
       categoriasIngresos: JSON.parse(
         localStorage.getItem("categoriasIngresos")
       ) || [
-        { nombre: "Trabajo", icono: "fas fa-briefcase" },
-        { nombre: "Alquileres Casas", icono: "fas fa-home" },
-        { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
-      ],
+          { nombre: "Trabajo", icono: "fas fa-briefcase" },
+          { nombre: "Alquileres Casas", icono: "fas fa-home" },
+          { nombre: "Paga de la Abuela", icono: "fas fa-user-nurse" },
+        ],
       mostrarModal: false,
       tipoSeleccionado: {},
       fechaSeleccionada: "",
@@ -284,11 +267,17 @@ export default {
         });
 
         this.nuevoIngreso = "";
-        Swal.fire(
-          "🎉 Ingreso añadido",
-          `"${nuevo.nombre}" ha sido creado`,
-          "success"
-        );
+        Swal.fire({
+          icon: 'success',
+          title: '🎉 Ingreso añadido',
+          text: `"${nuevo.nombre}" ha sido creado con éxito.`,
+          showConfirmButton: true,
+          confirmButtonText: 'Okey',
+          backdrop: true,
+          customClass: {
+            confirmButton: 'miBotonCancelar',
+          },
+        });
       }
     },
     async cargarTiposDesdeBackend() {
@@ -380,6 +369,10 @@ export default {
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
+        customClass: {
+          confirmButton: "miBotonEliminar",
+          cancelButton: "miBotonCancelar"
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           // Backend
@@ -408,11 +401,18 @@ export default {
                 );
               }
 
-              Swal.fire(
-                "✅ Eliminado",
-                `"${nombre}" ha sido eliminado.`,
-                "success"
-              );
+              Swal.fire({
+                icon: 'success',
+                title: '✅ Eliminado correctamente',
+                text: `"${nombre}" ha sido eliminado con éxito.`,
+                showConfirmButton: true,
+                confirmButtonText: 'Okey',
+                backdrop: true,
+                customClass: {
+                  confirmButton: 'miBotonCancelar',
+                },
+              });
+
               this.cerrarModal(); // Cierra el modal al eliminar
               this.transacciones = this.transacciones.filter(
                 (t) => t.tipo !== nombre

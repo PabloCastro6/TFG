@@ -98,18 +98,29 @@ export default {
   },
   methods: {
     async submitForm() {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/usuarios/iniciarSesion",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              correo: this.email,
-              password: this.password,
-            }),
+      // Validar campos vacíos antes de hacer la petición
+      if (!this.email || !this.password) {
+        Swal.fire({
+          icon: "warning",
+          title: "Campos incompletos",
+          text: "Por favor, completa ambos campos para iniciar sesión.",
+          confirmButtonText: "Entendido",
+          customClass: {
+            confirmButton: "miBotonCancelar",
           }
-        );
+        });
+        return; // Detenemos la función si falta algún campo
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/usuarios/iniciarSesion", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            correo: this.email,
+            password: this.password,
+          }),
+        });
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -119,14 +130,13 @@ export default {
         const data = await response.json();
 
         if (data.success) {
-          // Guarda en localStorage
+          // Guardamos datos en localStorage
           localStorage.setItem("registrado", "true");
           localStorage.setItem("correo", this.email);
           localStorage.setItem("userId", data.userId);
           localStorage.setItem("nombreUsuario", data.nombre);
-          localStorage.setItem("rol", data.rol); // Se utiliza 'data' en lugar de 'respuesta'
+          localStorage.setItem("rol", data.rol);
 
-          // Actualiza el store de auth
           const auth = useAuthStore();
           auth.setUserData({ rol: data.rol, userId: data.userId });
 
@@ -138,12 +148,23 @@ export default {
             customClass: { confirmButton: "miBotonCancelar" },
           });
 
-          // Redirige después de 2 segundos
           setTimeout(() => {
             this.$router.push("/");
           }, 2000);
         } else {
-          this.mensajeExito = "Credenciales incorrectas. Inténtalo de nuevo.";
+          // Si las credenciales son incorrectas
+          Swal.fire({
+            icon: 'error',
+            title: '❌ Credenciales inválidas',
+            text: 'Correo o contraseña incorrectos.',
+            showConfirmButton: true,
+            confirmButtonText: 'Reintentar',
+            timer: 5000,
+            backdrop: true,
+            customClass: {
+              confirmButton: "miBotonCancelar",
+            }
+          });
         }
       } catch (error) {
         console.error("Error en inicio de sesión:", error);
@@ -152,20 +173,6 @@ export default {
             icon: "error",
             title: "❌ Acceso denegado",
             text: error.message,
-          });
-        } else if (error.message.includes("Credenciales")) {
-          Swal.fire({
-            icon: 'error',
-            title: '❌ Credenciales inválidas',
-            text: 'Correo o contraseña incorrectos.',
-            showConfirmButton: true, // Muestra el botón de confirmación
-            confirmButtonText: 'Reintentar', // Texto personalizado en el botón
-            confirmButtonColor: '#d33', // Color del botón
-            timer: 5000, // Opcional: se cierra automáticamente después de 5 segundos
-            backdrop: true, // Fondo de la alerta oscuro
-            customClass: {
-              confirmButton: "miBotonCancelar",
-            }
           });
         } else {
           Swal.fire({

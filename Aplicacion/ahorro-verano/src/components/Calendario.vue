@@ -208,7 +208,10 @@ export default {
             icon: "warning",
             title: "Recordatorio de Gasto",
             text: `Hoy tienes un recordatorio de gasto: ${rec.concepto} - ${rec.cantidad}€`,
-            confirmButtonText: "Aceptar"
+            confirmButtonText: "Okey",
+            customClass: {
+              confirmButton: 'miBotonCancelar',
+            }
           });
         }
       });
@@ -442,6 +445,7 @@ body {
   opacity: 1;
   transition: opacity 0.2s;
 }
+
 .leyenda {
   display: flex;
   justify-content: center;
@@ -477,5 +481,4 @@ body {
   background-color: rgb(247, 247, 68);
   border: 1px solid #aaa;
 }
-
 </style>

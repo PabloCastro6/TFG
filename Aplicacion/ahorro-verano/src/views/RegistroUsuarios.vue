@@ -6,30 +6,15 @@
       <form class="formulario" @submit.prevent="registrarUsuario">
         <div class="campo">
           <label>Nombre Completo:</label>
-          <input
-            v-model="usuario.nombreCompleto"
-            type="text"
-            placeholder="Pepe Perez"
-            required
-          />
+          <input v-model="usuario.nombreCompleto" type="text" placeholder="Pepe Perez" required />
         </div>
         <div class="campo">
           <label>Correo:</label>
-          <input
-            v-model="usuario.correo"
-            type="email"
-            placeholder="correo@correo.com"
-            required
-          />
+          <input v-model="usuario.correo" type="email" placeholder="correo@correo.com" required />
         </div>
         <div class="campo">
           <label>Contraseña:</label>
-          <input
-            v-model="usuario.password"
-            type="password"
-            placeholder="********"
-            required
-          />
+          <input v-model="usuario.password" type="password" placeholder="********" required />
         </div>
 
         <button class="guardar-btn" type="submit">Registrar</button>
@@ -228,10 +213,8 @@ export default {
     },
 
     cerrarSesion() {
-      localStorage.clear();
-      this.esAdmin = false;
-      this.listaUsuarios = [];
-
+      const auth = useAuthStore();
+      auth.logout(); // Esto actualiza el store
       Swal.fire({
         icon: "info",
         title: "👋 Sesión cerrada",
@@ -240,6 +223,8 @@ export default {
         customClass: {
           confirmButton: "miBotonCancelar",
         },
+      }).then(() => {
+        this.$router.push("/");
       });
     },
     cancelarEdicion() {
@@ -437,6 +422,7 @@ export default {
   background-color: #2c3e50;
   color: white;
 }
+
 .tabla-usuarios select {
   font-family: "Glaure", sans-serif;
 }

@@ -13,20 +13,9 @@
           <div v-if="mostrarCalculadora" class="calculadora">
             <h3 class="gasto">Calculadora de Ahorro</h3>
             <label for="gasto" class="gasto">Gasto Diario (€):</label>
-            <input
-              type="number"
-              v-model.number="gastoDiario"
-              placeholder="Introduce tu gasto diario"
-            />
-            <label for="reduccion" class="reduccion"
-              >Reducción de Gasto (%)</label
-            >
-            <input
-              type="range"
-              v-model.number="porcentajeReduccion"
-              min="0"
-              max="50"
-            />
+            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
+            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
+            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
             <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
             <p class="resultado">
               Si reduces tus gastos un
@@ -53,35 +42,19 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              required
-              placeholder="Introduce tu correo electrónico"
-              autocomplete="username"
-            />
+            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
+              autocomplete="username" />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input
-              type="password"
-              id="password"
-              v-model="password"
-              required
-              placeholder="Introduce tu contraseña"
-              autocomplete="current-password"
-            />
+            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
+              autocomplete="current-password" />
           </div>
           <button type="submit" class="btn-submit" @click="submitForm">
             Iniciar sesión
           </button>
         </form>
-        <button
-          type="button"
-          class="btn-register"
-          @click="goToRegistroUsuarios"
-        >
+        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
           Crear nuevo usuario
         </button>
       </div>
@@ -97,9 +70,16 @@
 <script>
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/store/authStore";
+import { computed } from "vue";
+
 
 export default {
   name: "PaginaInicio",
+  setup() {
+    const auth = useAuthStore();
+    const usuarioLogueado = computed(() => auth.registrado);
+    return { usuarioLogueado };
+  },
   data() {
     return {
       mostrarCalculadora: false,
@@ -224,7 +204,7 @@ export default {
     },
     cerrarSesion() {
       const auth = useAuthStore();
-      auth.logout(); // Actualizamos el store
+      auth.logout(); // Esto actualiza el store
       Swal.fire({
         icon: "info",
         title: "👋 Sesión cerrada",
@@ -236,7 +216,7 @@ export default {
       }).then(() => {
         this.$router.push("/");
       });
-    },
+    }
   },
 };
 </script>
@@ -427,7 +407,8 @@ export default {
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active para versiones anteriores de Vue */ {
+/* .fade-leave-active para versiones anteriores de Vue */
+  {
   opacity: 0;
   transform: translateY(-10px);
 }

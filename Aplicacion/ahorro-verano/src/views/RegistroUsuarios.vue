@@ -32,26 +32,6 @@
           />
         </div>
 
-        <div class="form-group">
-          <label>Tipo de usuario:</label>
-          <div class="rol-buttons">
-            <button
-              type="button"
-              :class="{ activo: rol === 'USUARIO' }"
-              @click="rol = 'USUARIO'"
-            >
-              👤 Usuario
-            </button>
-            <button
-              type="button"
-              :class="{ activo: rol === 'ADMINISTRADOR' }"
-              @click="rol = 'ADMINISTRADOR'"
-            >
-              🛠️ Administrador
-            </button>
-          </div>
-        </div>
-
         <button class="guardar-btn" type="submit">Registrar</button>
 
         <button class="cerrar-sesion" v-if="esAdmin" @click="cerrarSesion">
@@ -122,7 +102,6 @@ export default {
         correo: "",
         password: "",
       },
-      rol: "",
       listaUsuarios: [],
       esAdmin: false,
       usuarioEditando: null,
@@ -137,7 +116,7 @@ export default {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...this.usuario, rol: this.rol }),
+          body: JSON.stringify(this.usuario),
         });
 
         if (!response.ok) throw new Error("Error al registrar usuario");

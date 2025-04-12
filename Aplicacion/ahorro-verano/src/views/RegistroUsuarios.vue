@@ -93,6 +93,7 @@
 
 <script>
 import Swal from "sweetalert2";
+import { useAuthStore } from "@/store/authStore";
 
 export default {
   data() {
@@ -124,10 +125,18 @@ export default {
         const data = await response.json();
         const usuarioRegistrado = data.usuarioRegistrado || data;
 
+        // Guardar en localStorage
         localStorage.setItem("userId", usuarioRegistrado.idUsuario);
         localStorage.setItem("correo", usuarioRegistrado.correo);
         localStorage.setItem("rol", usuarioRegistrado.rol);
         localStorage.setItem("registrado", "true");
+
+        // ✅ ACTUALIZAR EL STORE
+        const auth = useAuthStore();
+        auth.setUserData({
+          rol: usuarioRegistrado.rol,
+          userId: usuarioRegistrado.idUsuario,
+        });
 
         await Swal.fire({
           icon: "success",
@@ -140,7 +149,7 @@ export default {
 
         if (usuarioRegistrado.rol === "ADMINISTRADOR") {
           this.esAdmin = true;
-          await this.obtenerUsuarios(); // ⚠️ Importante el await
+          await this.obtenerUsuarios();
         } else {
           this.$router.push("/ConfiguracionAhorro");
         }
@@ -149,7 +158,7 @@ export default {
         Swal.fire({
           icon: "error",
           title: "❌ No se pudo registrar el usuario",
-          text: "Verifica los datos: el correo ya esta en uso",
+          text: "Verifica los datos: el correo ya está en uso",
           confirmButtonText: "Okey",
           customClass: {
             confirmButton: "miBotonCancelar",

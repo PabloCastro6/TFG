@@ -22,6 +22,7 @@ SELECT * FROM usuarios;
 SELECT * FROM transacciones;
 SELECT * FROM categorias;
 SELECT * FROM recordatorios;
+SELECT * FROM tipos_transaccion;
 
 SET SQL_SAFE_UPDATES = 0; 
 

@@ -13,9 +13,20 @@
           <div v-if="mostrarCalculadora" class="calculadora">
             <h3 class="gasto">Calculadora de Ahorro</h3>
             <label for="gasto" class="gasto">Gasto Diario (€):</label>
-            <input type="number" v-model.number="gastoDiario" placeholder="Introduce tu gasto diario" />
-            <label for="reduccion" class="reduccion">Reducción de Gasto (%)</label>
-            <input type="range" v-model.number="porcentajeReduccion" min="0" max="50" />
+            <input
+              type="number"
+              v-model.number="gastoDiario"
+              placeholder="Introduce tu gasto diario"
+            />
+            <label for="reduccion" class="reduccion"
+              >Reducción de Gasto (%)</label
+            >
+            <input
+              type="range"
+              v-model.number="porcentajeReduccion"
+              min="0"
+              max="50"
+            />
             <p class="valor-reduccion">{{ porcentajeReduccion }}%</p>
             <p class="resultado">
               Si reduces tus gastos un
@@ -30,12 +41,8 @@
 
         <!-- Bloque de texto (logo, h1 y p) -->
         <div class="text-section">
-          <h1 class="titulo">
-            Bienvenidos a mi aplicación de ahorros
-          </h1>
-          <p class="frase">
-            "Ahorrar no es solo guardar, sino saber gastar"
-          </p>
+          <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
+          <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
           <img src="../assets/ahorro.png" alt="Logo" class="logo" />
         </div>
       </div>
@@ -46,17 +53,35 @@
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" v-model="email" required placeholder="Introduce tu correo electrónico"
-              autocomplete="username" />
+            <input
+              type="email"
+              id="email"
+              v-model="email"
+              required
+              placeholder="Introduce tu correo electrónico"
+              autocomplete="username"
+            />
           </div>
           <div class="form-group">
             <label for="password">Contraseña:</label>
-            <input type="password" id="password" v-model="password" required placeholder="Introduce tu contraseña"
-              autocomplete="current-password" />
+            <input
+              type="password"
+              id="password"
+              v-model="password"
+              required
+              placeholder="Introduce tu contraseña"
+              autocomplete="current-password"
+            />
           </div>
-          <button type="submit" class="btn-submit" @click="submitForm">Iniciar sesión</button>
+          <button type="submit" class="btn-submit" @click="submitForm">
+            Iniciar sesión
+          </button>
         </form>
-        <button type="button" class="btn-register" @click="goToRegistroUsuarios">
+        <button
+          type="button"
+          class="btn-register"
+          @click="goToRegistroUsuarios"
+        >
           Crear nuevo usuario
         </button>
       </div>
@@ -107,20 +132,23 @@ export default {
           confirmButtonText: "Entendido",
           customClass: {
             confirmButton: "miBotonCancelar",
-          }
+          },
         });
         return; // Detenemos la función si falta algún campo
       }
 
       try {
-        const response = await fetch("http://localhost:8080/usuarios/iniciarSesion", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            correo: this.email,
-            password: this.password,
-          }),
-        });
+        const response = await fetch(
+          "http://localhost:8080/usuarios/iniciarSesion",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              correo: this.email,
+              password: this.password,
+            }),
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -148,22 +176,26 @@ export default {
             customClass: { confirmButton: "miBotonCancelar" },
           });
 
+          //Borrar al inicio de sesion
+          this.email = "";
+          this.password = "";
+
           setTimeout(() => {
             this.$router.push("/");
           }, 2000);
         } else {
           // Si las credenciales son incorrectas
           Swal.fire({
-            icon: 'error',
-            title: '❌ Credenciales inválidas',
-            text: 'Correo o contraseña incorrectos.',
+            icon: "error",
+            title: "❌ Credenciales inválidas",
+            text: "Correo o contraseña incorrectos.",
             showConfirmButton: true,
-            confirmButtonText: 'Reintentar',
+            confirmButtonText: "Reintentar",
             timer: 5000,
             backdrop: true,
             customClass: {
               confirmButton: "miBotonCancelar",
-            }
+            },
           });
         }
       } catch (error) {
@@ -182,7 +214,7 @@ export default {
             confirmButtonText: "Entendido",
             customClass: {
               confirmButton: "miBotonCancelar",
-            }
+            },
           });
         }
       }
@@ -395,8 +427,7 @@ export default {
 .fade-enter,
 .fade-leave-to
 
-/* .fade-leave-active para versiones anteriores de Vue */
-  {
+/* .fade-leave-active para versiones anteriores de Vue */ {
   opacity: 0;
   transform: translateY(-10px);
 }

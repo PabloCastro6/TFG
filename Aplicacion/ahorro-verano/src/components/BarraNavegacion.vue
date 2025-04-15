@@ -13,14 +13,11 @@
 
 <script>
 import { useAuthStore } from "@/store/authStore";
-import { computed } from "vue";
 
 export default {
   name: "BarraNavegacion",
   setup() {
     const auth = useAuthStore();
-    // Para depuración:
-    console.log('Estado de auth:', auth.registrado, auth.rol);
 
     return { auth };
   },
@@ -67,14 +64,12 @@ export default {
   border-radius: 5px;
 }
 
-/* Efecto hover */
 .menu-principal a:hover,
 .menu-principal a.active {
   color: #ff9800;
   transform: scale(1.1);
 }
 
-/* Esto asegura que el enlace activo se mantenga con el color naranja */
 .router-link-exact-active {
   color: #ff9800;
   transform: scale(1.1);

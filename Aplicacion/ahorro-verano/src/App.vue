@@ -50,31 +50,31 @@ button {
 }
 
 .miBotonConfirmar {
-  background-color: #4CAF50 !important; /* verde */
+  background-color: #4CAF50 !important;
   color: white !important;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  font-family: inherit; /* usa tu fuente si quieres */
+  font-family: inherit;
 }
 .miBotonEliminar {
-  background-color: #be0a0a !important; /* verde */
+  background-color: #be0a0a !important;
   color: white !important;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  font-family: inherit; /* usa tu fuente si quieres */
+  font-family: inherit;
 }
 .miBotonCancelar {
-  background-color: #2c3e50 !important; /* verde */
+  background-color: #2c3e50 !important;
   color: white !important;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
-  font-family: inherit; /* usa tu fuente si quieres */
+  font-family: inherit;
 }
 
 

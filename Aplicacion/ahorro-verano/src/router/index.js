@@ -17,25 +17,25 @@ const routes = [
     path: "/Recordatorio",
     name: "Recordatorio",
     component: Recordatorio,
-    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
+    meta: { requiereRegistro: true }, // protegido
   },
   {
     path: "/ConfiguracionAhorro",
     name: "ConfiguracionAhorro",
     component: ConfiguracionAhorro,
-    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
+    meta: { requiereRegistro: true }, // protegido
   },
   {
     path: "/TiposGastos",
     name: "TiposGastos",
     component: TiposGastos,
-    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
+    meta: { requiereRegistro: true }, // protegido
   },
   {
     path: "/Estadisticas",
     name: "Estadisticas",
     component: Estadisticas,
-    meta: { requiereRegistro: true }, // 🚀 Ahora está protegido
+    meta: { requiereRegistro: true }, // protegido
   },
   {
     path: "/RegistroUsuarios",
@@ -60,9 +60,9 @@ router.beforeEach((to, from, next) => {
   const usuarioRegistrado = localStorage.getItem("registrado") === "true";
 
   if (to.meta.requiereRegistro && !usuarioRegistrado) {
-    next("/AccesoDenegado"); // 🔒 Redirige si no está registrado
+    next("/AccesoDenegado"); // Redirige si no está registrado
   } else {
-    next(); // ✅ Permite el acceso
+    next(); // Permite el acceso
   }
 });
 

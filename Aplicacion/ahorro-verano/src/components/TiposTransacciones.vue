@@ -1,4 +1,3 @@
-<!-- TiposTransacciones.vue -->
 <template>
   <div class="registro-transacciones">
     <h2>Registrar Transacción</h2>
@@ -49,7 +48,7 @@ export default {
   data() {
     return {
       fechaSeleccionada: "",
-      categoriaSeleccionada: "ingreso",
+      categoriaSeleccionada: "",
       cantidadSeleccionada: "",
       conceptoSeleccionado: "",
       opcionesIngreso: ["Trabajo", "Alquileres Casas", "Paga de la Abuela"],
@@ -73,9 +72,12 @@ export default {
       return localStorage.getItem("registrado") === "true";
     },
     opcionesDisponibles() {
-      return this.categoriaSeleccionada === "ingreso"
-        ? this.opcionesIngreso
-        : this.opcionesGasto;
+
+      if (this.categoriaSeleccionada === "ingreso") {
+        return this.opcionesIngreso;
+      } else if (this.categoriaSeleccionada === "gasto") {
+        return this.opcionesGasto;
+      }
     },
   },
 
@@ -94,14 +96,14 @@ export default {
     },
     guardarRegistro() {
       if (!this.registrado) {
-        Swal.fire("⚠️ Atención", "Debes iniciar sesión", "warning");
+        Swal.fire(" Atención", "Debes iniciar sesión", "warning");
         return;
       }
 
       const userId = localStorage.getItem("userId");
 
       if (!userId) {
-        Swal.fire("⚠️ Error", "No se encontró el ID del usuario", "error");
+        Swal.fire(" Error", "No se encontró el ID del usuario", "error");
         return;
       }
 
@@ -112,7 +114,7 @@ export default {
       ) {
         Swal.fire({
           icon: 'warning',
-          title: '⚠️ Información incompleta',
+          title: ' Información incompleta',
           text: 'Por favor, completa todos los campos antes de continuar.',
           showConfirmButton: true,
           confirmButtonText: 'Okey',
@@ -134,8 +136,6 @@ export default {
         tipo: this.conceptoSeleccionado,
       };
 
-      console.log("📤 Enviando transacción:", transaccion);
-
       fetch("http://localhost:8080/transacciones/transaccion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -150,7 +150,7 @@ export default {
 
           Swal.fire({
             icon: "success",
-            title: "✅ Transacción registrada",
+            title: " Transacción registrada",
             html: `
           <b>📅 Fecha:</b> ${transCreada.fecha} <br>
           <b>🔄 Categoría:</b> ${transCreada.categoria.nombre} <br>
@@ -168,8 +168,8 @@ export default {
           this.cantidadSeleccionada = "";
         })
         .catch((err) => {
-          console.error("❌ Error:", err);
-          Swal.fire("❌ Error", "No se pudo guardar", "error");
+          console.error(" Error:", err);
+          Swal.fire(" Error", "No se pudo guardar", "error");
         });
     },
 
@@ -197,7 +197,7 @@ export default {
           ...tiposIngresoBD.filter((n) => !this.opcionesIngreso.includes(n))
         );
       } catch (error) {
-        console.error("❌ Error al cargar tipos personalizados:", error);
+        console.error(" Error al cargar tipos personalizados:", error);
       }
     },
   },
@@ -205,7 +205,7 @@ export default {
 </script>
 
 <style scoped>
-/* 📌 Estilos generales */
+/* Estilos generales */
 .registro-transacciones {
   flex: 3;
   max-width: 100%;
@@ -235,7 +235,6 @@ export default {
   transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-/* 📌 Título */
 h2 {
   font-size: 1.8rem;
   font-weight: bold;
@@ -243,7 +242,6 @@ h2 {
   margin-bottom: 15px;
 }
 
-/* 📌 Labels */
 label {
   display: block;
   font-size: 1.1rem;
@@ -252,7 +250,6 @@ label {
   color: #2c3e50;
 }
 
-/* 📌 Inputs */
 input {
   width: 100%;
   padding: 12px;
@@ -269,7 +266,6 @@ input:focus {
   box-shadow: 0 0 8px rgba(44, 62, 80, 0.2);
 }
 
-/* 📌 Botones de tipo */
 .tipo-opciones {
   display: flex;
   justify-content: space-between;
@@ -299,7 +295,6 @@ input:focus {
   border-color: #96281b;
 }
 
-/* 📌 Desplegable de subtipo */
 .subtipo-opciones {
   margin-top: 10px;
   font-size: 120%;
@@ -322,7 +317,6 @@ input:focus {
   box-shadow: 0 0 8px rgba(44, 62, 80, 0.2);
 }
 
-/* 📌 Botón de guardar */
 .guardar-btn {
   background: #2c3e50;
   color: white;
@@ -347,7 +341,7 @@ input:focus {
   margin-top: 10px;
 }
 
-/* 📌 Estilos responsivos */
+/* Estilos responsive */
 @media (max-width: 500px) {
   .registro-transacciones {
     width: 90%;

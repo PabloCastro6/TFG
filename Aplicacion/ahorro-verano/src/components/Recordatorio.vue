@@ -1,22 +1,22 @@
   <template>
     <div class="registro-transacciones center">
-      <h2>📅 Crear Recordatorio</h2>
+      <h2>Crear Recordatorio</h2>
 
-      <label for="fecha">📅 Fecha:</label>
+      <label for="fecha">Fecha:</label>
       <input type="date" class="label" v-model="recordatorio.fecha" :min="hoy" required />
 
-      <label for="tipo">🔄 Tipo:</label>
+      <label for="tipo">Tipo:</label>
       <div class="tipo-opciones">
         <button :class="{ activo: recordatorio.tipo === 'ingreso' }" @click="recordatorio.tipo = 'ingreso'">
-          💰 Ingreso
+          Ingreso
         </button>
         <button :class="{ activo: recordatorio.tipo === 'gasto' }" @click="recordatorio.tipo = 'gasto'">
-          💸 Gasto
+          Gasto
         </button>
       </div>
 
       <div class="subtipo-opciones" v-if="recordatorio.tipo">
-        <label for="subtipo">📋 Concepto:</label>
+        <label for="subtipo">Concepto:</label>
         <select v-model="recordatorio.concepto" class="label">
           <option value="" disabled>Selecciona un concepto</option>
           <option v-for="(opcion, index) in opcionesDisponibles" :key="index" :value="opcion">
@@ -25,7 +25,7 @@
         </select>
       </div>
 
-      <label for="cantidad">🔢 Cantidad:</label>
+      <label for="cantidad">Cantidad:</label>
       <input type="number" class="label" v-model="recordatorio.cantidad" placeholder="Introduce la cantidad" min="1"
         required />
 
@@ -96,7 +96,7 @@ export default {
         this.tiposGasto = tiposGastoBD;
         this.tiposIngreso = tiposIngresoBD;
       } catch (error) {
-        console.error("❌ Error al cargar tipos personalizados:", error);
+        console.error("Error al cargar tipos personalizados:", error);
       }
     },
     async guardarRecordatorio() {
@@ -104,7 +104,7 @@ export default {
         Swal.fire({
           icon: "warning",
           title: "Campos incompletos",
-          text: "⚠️ Completa todos los campos antes de guardar.",
+          text: " Completa todos los campos antes de guardar.",
           confirmButtonText: "Okey",
           customClass: {
             confirmButton: "miBotonCancelar"
@@ -112,7 +112,6 @@ export default {
         });
         return;
       }
-      // Se envía el objeto recordatorio con la propiedad usuario como objeto
       const nuevoRecordatorio = {
         fecha: this.recordatorio.fecha,
         tipo: this.recordatorio.tipo,
@@ -131,9 +130,6 @@ export default {
         if (!response.ok) throw new Error("Error al guardar recordatorio");
 
         const data = await response.json();
-        console.log("✅ Recordatorio guardado:", data);
-
-        // Emitir el evento para que el calendario lo agregue
         eventBus.emit("nuevo-recordatorio", data);
 
         Swal.fire({
@@ -145,11 +141,10 @@ export default {
             confirmButton: 'miBotonCancelar',
           }
         });
-
         // Limpiar el formulario
         this.recordatorio = { fecha: "", tipo: "", cantidad: "", concepto: "" };
       } catch (error) {
-        console.error("❌ Error al guardar recordatorio:", error);
+        console.error(" Error al guardar recordatorio:", error);
         Swal.fire({
           icon: 'error',
           title: '¡Oops!',
@@ -237,7 +232,7 @@ input:focus {
 
 .tipo-opciones button {
   flex: 1;
-  padding: 12px;
+  padding: 24px;
   font-size: 1rem;
   font-weight: bold;
   border: 2px solid #ccc;

@@ -28,7 +28,6 @@
           </div>
         </transition>
 
-        <!-- Bloque de texto (logo, h1 y p) -->
         <div class="text-section">
           <h1 class="titulo">Bienvenidos a mi aplicación de ahorros</h1>
           <p class="frase">"Ahorrar no es solo guardar, sino saber gastar"</p>
@@ -85,7 +84,6 @@ export default {
       mostrarCalculadora: false,
       email: "",
       password: "",
-      //rol: "",
       gastoDiario: 10,
       porcentajeReduccion: 10,
       mensajeExito: "",
@@ -103,7 +101,7 @@ export default {
   },
   methods: {
     async submitForm() {
-      // Validar campos vacíos antes de hacer la petición
+      // Validamos campos vacíos antes de hacer la petición
       if (!this.email || !this.password) {
         Swal.fire({
           icon: "warning",
@@ -156,7 +154,7 @@ export default {
             customClass: { confirmButton: "miBotonCancelar" },
           });
 
-          //Borrar al inicio de sesion
+          //Borrar el contenido del formulario al inicio de sesion
           this.email = "";
           this.password = "";
 
@@ -167,7 +165,7 @@ export default {
           // Si las credenciales son incorrectas
           Swal.fire({
             icon: "error",
-            title: "❌ Credenciales inválidas",
+            title: " Credenciales inválidas",
             text: "Correo o contraseña incorrectos.",
             showConfirmButton: true,
             confirmButtonText: "Reintentar",
@@ -183,13 +181,13 @@ export default {
         if (error.message.includes("permisos")) {
           Swal.fire({
             icon: "error",
-            title: "❌ Acceso denegado",
+            title: " Acceso denegado",
             text: error.message,
           });
         } else {
           Swal.fire({
             icon: "error",
-            title: "❌ Error",
+            title: " Error",
             text: "Hubo un problema al iniciar sesión. Inténtalo de nuevo.",
             confirmButtonText: "Entendido",
             customClass: {
@@ -222,7 +220,6 @@ export default {
 </script>
 
 <style scoped>
-/* Botón de cerrar sesión en la esquina superior derecha */
 .logout-button {
   position: absolute;
   top: 10px;
@@ -235,7 +232,6 @@ export default {
   cursor: pointer;
   font-weight: bold;
   z-index: 2000;
-  /* Asegura que esté encima de otros elementos */
 }
 
 .logout-button:hover {
@@ -248,10 +244,8 @@ export default {
   max-width: 1000px;
   margin: auto;
   position: relative;
-  /* Para que el botón posicionado sea relativo a este contenedor */
 }
 
-/* Contenedor superior que organiza todo */
 .top-container {
   display: flex;
   justify-content: space-between;
@@ -260,7 +254,6 @@ export default {
   position: relative;
 }
 
-/* Contenedor que agrupa la calculadora y el texto */
 .left-container {
   display: flex;
   align-items: center;
@@ -268,13 +261,11 @@ export default {
   position: relative;
 }
 
-/* Bloque de texto */
 .text-section {
   flex: 1;
   margin-left: 20%;
 }
 
-/* Ajustes en el texto */
 .logo {
   width: 420px;
   margin-bottom: 20px;
@@ -398,17 +389,14 @@ export default {
   animation: fadeIn 0.6s ease-in-out;
 }
 
-/* Clases de transición para Vue */
+/* Clases de transición */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
 }
 
 .fade-enter,
-.fade-leave-to
-
-/* .fade-leave-active para versiones anteriores de Vue */
-  {
+.fade-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }

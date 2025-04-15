@@ -11,13 +11,11 @@
         </div>
       </div>
     </div>
-
     <!-- FORMULARIO PARA AÑADIR NUEVO GASTO -->
     <div class="nuevo-tipo">
       <input v-model="nuevoGasto" placeholder="Nuevo tipo de gasto" />
       <button @click="agregarNuevoTipo('gasto')">Añadir</button>
     </div>
-
     <!-- SECCIÓN DE INGRESOS -->
     <div class="categorias">
       <h2>💰 Tipos de Ingresos</h2>
@@ -29,13 +27,11 @@
         </div>
       </div>
     </div>
-
     <!-- FORMULARIO PARA AÑADIR NUEVO INGRESO -->
     <div class="nuevo-tipo">
       <input v-model="nuevoIngreso" placeholder="Nuevo tipo de ingreso" />
       <button @click="agregarNuevoTipo('ingreso')">Añadir</button>
     </div>
-
     <!-- MODAL -->
     <div v-if="mostrarModal" class="modal">
       <div class="modal-contenido">
@@ -52,7 +48,7 @@
             Confirmar
           </button>
           <button class="eliminar-tipo" @click="eliminarTipoDesdeModal">
-            ❌ Eliminar tipo
+            Eliminar tipo
           </button>
           <button class="boton-tipo" @click="cerrarModal">Cancelar</button>
         </div>
@@ -61,7 +57,6 @@
         </p>
       </div>
     </div>
-
     <!-- LISTA DE TRANSACCIONES REGISTRADAS -->
     <div class="transacciones">
       <h2>📅 Nuevos Registros</h2>
@@ -71,8 +66,8 @@
           <span :class="transaccion.categoria.nombre.toLowerCase()">
             {{
               transaccion.categoria.nombre.toLowerCase() === "gasto"
-                ? "🛒 Gasto"
-                : "💰 Ingreso"
+                ? "Gasto"
+                : "Ingreso"
             }}
             - {{ transaccion.tipo }}: {{ transaccion.cantidad }}€
           </span>
@@ -141,18 +136,10 @@ export default {
       this.cantidadSeleccionada = "";
     },
     guardarRegistro() {
-      if (!this.registrado) {
-        Swal.fire(
-          "⚠️ Atención",
-          "Debes iniciar sesión para realizar esta acción.",
-          "warning"
-        );
-        return;
-      }
 
       if (!this.fechaSeleccionada || !this.cantidadSeleccionada) {
         Swal.fire({
-          title: "⚠️ Campos vacíos",
+          title: " Campos vacíos",
           text: "Selecciona una fecha y una cantidad",
           icon: "warning",
           confirmButtonText: "Okey",
@@ -173,8 +160,6 @@ export default {
         tipo: this.tipoSeleccionado.nombre,
       };
 
-      console.log("🧾 Enviando transacción:", transaccion);
-
       fetch("http://localhost:8080/transacciones/transaccion", {
         method: "POST",
         headers: {
@@ -194,7 +179,7 @@ export default {
           );
           this.$emit("nueva-transaccion", transCreada);
           Swal.fire({
-            title: "✅ Éxito",
+            title: " Éxito",
             text: "Transacción guardada correctamente",
             icon: "success",
             confirmButtonText: "Okey",
@@ -206,8 +191,8 @@ export default {
           this.cerrarModal();
         })
         .catch((err) => {
-          console.error("❌ Error al guardar:", err);
-          Swal.fire("❌ Error", "No se pudo guardar la transacción", "error");
+          console.error(" Error al guardar:", err);
+          Swal.fire(" Error", "No se pudo guardar la transacción", "error");
         });
     },
     agregarNuevoTipo(tipo) {
@@ -236,7 +221,7 @@ export default {
         this.nuevoGasto = "";
         this.$emit("tipo-actualizado");
         Swal.fire({
-          title: "🎉 Gasto añadido",
+          title: " Gasto añadido",
           text: `"${nuevo.nombre}" ha sido creado`,
           icon: "success",
           confirmButtonText: "Okey",
@@ -269,7 +254,7 @@ export default {
         this.nuevoIngreso = "";
         Swal.fire({
           icon: 'success',
-          title: '🎉 Ingreso añadido',
+          title: ' Ingreso añadido',
           text: `"${nuevo.nombre}" ha sido creado con éxito.`,
           showConfirmButton: true,
           confirmButtonText: 'Okey',
@@ -314,9 +299,7 @@ export default {
         );
 
         this.categoriasGastos = this.eliminarDuplicados(this.categoriasGastos);
-        this.categoriasIngresos = this.eliminarDuplicados(
-          this.categoriasIngresos
-        );
+        this.categoriasIngresos = this.eliminarDuplicados(this.categoriasIngresos);
 
         localStorage.setItem(
           "categoriasGastos",
@@ -327,7 +310,7 @@ export default {
           JSON.stringify(this.categoriasIngresos)
         );
       } catch (error) {
-        console.error("❌ Error al cargar tipos desde backend:", error);
+        console.error("Error al cargar tipos desde backend:", error);
       }
     },
 
@@ -375,14 +358,12 @@ export default {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          // Backend
           fetch(`http://localhost:8080/api/tipos/${nombre}/${usuarioId}`, {
             method: "DELETE",
           })
             .then((res) => {
               if (!res.ok) throw new Error("Error al eliminar en backend");
 
-              // Frontend
               if (tipo === "gasto") {
                 this.categoriasGastos = this.categoriasGastos.filter(
                   (t) => t.nombre !== nombre
@@ -403,7 +384,7 @@ export default {
 
               Swal.fire({
                 icon: 'success',
-                title: '✅ Eliminado correctamente',
+                title: ' Eliminado correctamente',
                 text: `"${nombre}" ha sido eliminado con éxito.`,
                 showConfirmButton: true,
                 confirmButtonText: 'Okey',
@@ -413,19 +394,14 @@ export default {
                 },
               });
 
-              this.cerrarModal(); // Cierra el modal al eliminar
-              this.transacciones = this.transacciones.filter(
-                (t) => t.tipo !== nombre
-              ); // Elimina la transacción del tipo eliminado
-              localStorage.setItem(
-                "transacciones",
-                JSON.stringify(this.transacciones)
-              );
+              this.cerrarModal();
+              this.transacciones = this.transacciones.filter((t) => t.tipo !== nombre);
+              localStorage.setItem("transacciones", JSON.stringify(this.transacciones));
               this.$emit("tipo-actualizado");
             })
             .catch((err) => {
-              console.error("❌ Error:", err);
-              Swal.fire("❌ Error", "No se pudo eliminar el tipo", "error");
+              console.error(" Error:", err);
+              Swal.fire(" Error", "No se pudo eliminar el tipo", "error");
             });
         }
       });
@@ -454,14 +430,12 @@ h2 {
   margin-bottom: 15px;
 }
 
-/* GRID DE CATEGORÍAS */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 15px;
 }
 
-/* TARJETAS */
 .card {
   display: flex;
   flex-direction: column;
@@ -496,7 +470,6 @@ h2 {
   color: #388e3c;
 }
 
-/* MODAL */
 .modal {
   position: fixed;
   top: 0;
@@ -504,9 +477,7 @@ h2 {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
-  /* Capa oscura */
   backdrop-filter: blur(5px);
-  /* Desenfoque de fondo */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -575,7 +546,6 @@ h2 {
   box-shadow: 0 0 6px rgba(25, 118, 210, 0.4);
 }
 
-/* Botones */
 .botones {
   display: flex;
   justify-content: space-between;
@@ -634,14 +604,12 @@ h2 {
   background-color: #e53935;
 }
 
-/* Alerta */
 .alerta {
   color: red;
   font-weight: bold;
   margin-top: 10px;
 }
 
-/* FORMULARIOS PARA AÑADIR NUEVOS TIPOS */
 .nuevo-tipo {
   margin-top: 10px;
   display: flex;
@@ -685,7 +653,6 @@ h2 {
   transform: scale(1.05);
 }
 
-/* LISTA DE TRANSACCIONES */
 .transacciones {
   text-align: center;
   list-style: none;

@@ -1,11 +1,8 @@
 <template>
   <div class="estadisticas">
-    <h1>📊 Estadísticas</h1>
-
-    <!-- Contenedor Flex para el balance y gráfico -->
+    <h1> Estadísticas</h1>
     <div class="contenedor-estadisticas">
-      <!-- Parte izquierda: Selector de mes y balance -->
-      <div class="izquierda">
+      <div class="izquierda"> 
         <!-- Selector de mes -->
         <input
           type="month"
@@ -13,33 +10,30 @@
           v-model="mesSeleccionado"
           @change="filtrarDatos"
         />
-
         <!-- Balance -->
         <div class="balance">
-          <p><strong>💰 Ingresos:</strong> {{ totalIngresos }}€</p>
-          <p><strong>🛒 Gastos:</strong> {{ totalGastos }}€</p>
+          <p><strong> Ingresos:</strong> {{ totalIngresos }}€</p>
+          <p><strong> Gastos:</strong> {{ totalGastos }}€</p>
           <p :style="{ color: balance >= 0 ? 'green' : 'red' }">
-            <strong>📈 Balance mensual:</strong> {{ balance }}€
+            <strong> Balance mensual:</strong> {{ balance }}€
           </p>
         </div>
-
         <!-- Media  -->
         <div class="balance">
           <p>
-            <strong>📆 Media anual de ingresos:</strong>
+            <strong> Media anual de ingresos:</strong>
             {{ mediaIngresosAnual.toFixed(2) }}€
           </p>
           <p>
-            <strong>📆 Media anual de gastos:</strong>
+            <strong> Media anual de gastos:</strong>
             {{ mediaGastosAnual.toFixed(2) }}€
           </p>
           <p :style="{ color: balanceAnual >= 0 ? 'green' : 'red' }">
-            <strong>📊 Balance anual:</strong> {{ balanceAnual.toFixed(2) }}€
+            <strong> Balance anual:</strong> {{ balanceAnual.toFixed(2) }}€
           </p>
         </div>
       </div>
-
-      <!-- Parte derecha: Gráfico -->
+      <!-- Gráfico -->
       <div class="derecha">
         <div class="grafico" style="height: 400px">
           <BarChart :data="chartData" :options="chartOptions" />
@@ -164,7 +158,7 @@ export default {
         const response = await fetch("http://localhost:8080/transacciones");
         this.transacciones = await response.json();
       } catch (error) {
-        console.error("❌ Error al cargar transacciones:", error);
+        console.error("Error al cargar transacciones:", error);
       }
     },
     filtrarDatos() {
@@ -175,11 +169,10 @@ export default {
         console.warn("⚠️ No se encontró el ID de usuario en localStorage");
         return;
       }
-
+      // Formato YYYY-MM
       const [anioStr, mesStr] = this.mesSeleccionado.split("-");
       const anio = parseInt(anioStr);
       const mes = parseInt(mesStr);
-
       // Transacciones del mes seleccionado
       const transaccionesMesUsuario = this.transacciones.filter((t) => {
         if (!t.fecha || !t.usuario || t.usuario.idUsuario != userId)
@@ -253,6 +246,9 @@ export default {
             maxBarThickness: 50,
             categoryPercentage: 0.6,
             barPercentage: 0.7,
+            font:{
+              family: "Glaure",
+            }
           },
         ],
       };
@@ -260,7 +256,7 @@ export default {
   },
   created() {
     const hoy = new Date();
-    const mesActual = hoy.toISOString().slice(0, 7); // formato YYYY-MM
+    const mesActual = hoy.toISOString().slice(0, 7);
     this.mesSeleccionado = mesActual;
   },
   mounted() {
@@ -272,6 +268,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos generales */
 h1 {
   margin-top: 10%;
   width: 30%;
@@ -279,22 +276,17 @@ h1 {
 
 .estadisticas {
   max-width: 1000px;
-  /* Ajuste para mejor visibilidad */
   margin: auto;
 }
 
-/* Contenedor para organizar las columnas */
 .contenedor-estadisticas {
   display: flex;
-  /* Hacer uso de Flexbox */
   justify-content: space-between;
-  /* Separar las dos columnas */
   margin-top: 1rem;
 }
 
 .izquierda {
   flex: 0 0 40%;
-  /* 40% de ancho */
   padding-right: 60px;
   margin-right: 5%;
   margin-top: 5%;
@@ -302,25 +294,20 @@ h1 {
 
 .derecha {
   flex: 0 0 60%;
-  /* 60% de ancho */
 }
 
-/* Ajustar estilo del input de mes */
 input[type="month"] {
   margin-bottom: 1rem;
   padding: 0.5rem;
   font-size: 1rem;
   width: 100%;
-  /* Aseguramos que el input de mes ocupe todo el espacio disponible */
 }
 
-/* Estilo de los bloques de balance */
 .balance {
   margin: 1rem 0;
   font-size: 1.1rem;
 }
 
-/* Estilo del gráfico */
 .grafico {
   background-color: #000000;
   border-radius: 12px;

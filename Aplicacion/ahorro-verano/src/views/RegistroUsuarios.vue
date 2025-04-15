@@ -1,6 +1,6 @@
 <template>
   <div class="registro-y-tabla">
-    <!-- 📋 FORMULARIO -->
+    <!-- FORMULARIO -->
     <div class="registro-container">
       <h2 class="titulo">👤 Registrar Usuario</h2>
       <form class="formulario" @submit.prevent="registrarUsuario">
@@ -24,8 +24,7 @@
         </button>
       </form>
     </div>
-
-    <!-- 📊 TABLA DE USUARIOS -->
+    <!-- TABLA DE USUARIOS -->
     <div v-if="esAdmin" class="tabla-usuarios">
       <h3>📋 Lista de Usuarios</h3>
       <table>
@@ -116,7 +115,7 @@ export default {
         localStorage.setItem("rol", usuarioRegistrado.rol);
         localStorage.setItem("registrado", "true");
 
-        // ✅ ACTUALIZAR EL STORE
+        // ACTUALIZAR EL STORE
         const auth = useAuthStore();
         auth.setUserData({
           rol: usuarioRegistrado.rol,
@@ -125,7 +124,7 @@ export default {
 
         await Swal.fire({
           icon: "success",
-          title: "✅ Usuario registrado correctamente",
+          title: " Usuario registrado correctamente",
           confirmButtonText: "Okey",
           customClass: {
             confirmButton: "miBotonCancelar",
@@ -139,10 +138,10 @@ export default {
           this.$router.push("/ConfiguracionAhorro");
         }
       } catch (error) {
-        console.error("❌ Error al registrar usuario:", error);
+        console.error(" Error al registrar usuario:", error);
         Swal.fire({
           icon: "error",
-          title: "❌ No se pudo registrar el usuario",
+          title: " No se pudo registrar el usuario",
           text: "Verifica los datos: el correo ya está en uso",
           confirmButtonText: "Okey",
           customClass: {
@@ -156,7 +155,7 @@ export default {
         const response = await fetch("http://localhost:8080/usuarios");
         this.listaUsuarios = await response.json();
       } catch (error) {
-        console.error("❌ Error al obtener usuarios:", error);
+        console.error("Error al obtener usuarios:", error);
       }
     },
 
@@ -194,10 +193,10 @@ export default {
           },
         });
       } catch (error) {
-        console.error("❌ Error al eliminar usuario:", error);
+        console.error(" Error al eliminar usuario:", error);
         Swal.fire({
           icon: "error",
-          title: "❌ Error",
+          title: " Error",
           text: "No se pudo eliminar el usuario",
           confirmButtonText: "Okey",
           customClass: {
@@ -214,7 +213,7 @@ export default {
 
     cerrarSesion() {
       const auth = useAuthStore();
-      auth.logout(); // Esto actualiza el store
+      auth.logout(); // Actualiza el store
       Swal.fire({
         icon: "info",
         title: "👋 Sesión cerrada",
@@ -259,7 +258,7 @@ export default {
 
         Swal.fire({
           icon: "success",
-          title: "✅ Cambios guardados",
+          title: " Cambios guardados",
           text: "La información del usuario se actualizó correctamente.",
           confirmButtonText: "Okey",
           customClass: {
@@ -267,11 +266,11 @@ export default {
           },
         });
       } catch (error) {
-        console.error("❌ Error al guardar edición:", error);
+        console.error(" Error al guardar edición:", error);
 
         Swal.fire({
           icon: "error",
-          title: "❌ Error",
+          title: " Error",
           text: "No se pudo guardar la edición.",
           confirmButtonText: "Entendido",
           customClass: {
@@ -287,7 +286,7 @@ export default {
 
       if (rolGuardado === "ADMINISTRADOR" && registrado === "true") {
         this.esAdmin = true;
-        this.obtenerUsuarios(); // 👈 carga la tabla
+        this.obtenerUsuarios();
       } else {
         this.esAdmin = false;
         this.listaUsuarios = [];

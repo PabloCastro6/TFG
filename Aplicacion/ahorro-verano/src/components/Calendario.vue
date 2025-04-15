@@ -25,7 +25,7 @@
                 @click.stop="eliminarTransaccion(trans)"></span>
             </div>
             <div class="puntos" v-if="dia">
-              <!-- Recordatorios: se muestran como círculos amarillos -->
+              <!-- Recordatorios -->
               <span v-for="rec in recordatoriosDelDia(dia)" :key="rec.idRecordatorio || rec.fecha + rec.concepto"
                 :data-tooltip="`Recordatorio: ${rec.concepto}, ${rec.cantidad}€`" class="punto recordatorio tooltip"
                 @click.stop="eliminarRecordatorio(rec)"></span>
@@ -92,7 +92,6 @@ export default {
     eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
     this.$emit("mes-cambiado", { mes: this.mes, anio: this.anio });
     eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
-    // Llamamos a la función para verificar si hay recordatorios para hoy
     this.verificarRecordatoriosHoy();
   },
   beforeUnmount() {
@@ -111,16 +110,11 @@ export default {
       immediate: true,
     },
     recordatoriosInternos: {
-      handler(newVal) {
-        // Cuando se actualicen los recordatorios, verificamos si hay alguno para hoy
+      handler() {
         this.verificarRecordatoriosHoy();
       },
       deep: true,
       immediate: true,
-    },
-    transacciones(newVal) {
-      console.log("📆 Transacciones en Calendario:", newVal);
-      console.log("👤 UsuarioId en Calendario:", this.usuarioIdNum);
     },
   },
   methods: {
@@ -134,7 +128,9 @@ export default {
           semana = [];
         }
       });
-      if (semana.length) calendario.push(semana);
+      if (semana.length) {
+        calendario.push(semana);
+      }
       return calendario;
     },
     cambiarMes(direccion) {
@@ -183,7 +179,7 @@ export default {
 
       // Filtrar los recordatorios para el día actual
       const recordatoriosHoy = this.recordatoriosInternos.filter(({ fecha }) => {
-        const fechaObj = new Date(fecha); // Se asume que el formato es "YYYY-MM-DD"
+        const fechaObj = new Date(fecha);
         return (
           fechaObj.getDate() === diaHoy &&
           fechaObj.getMonth() === mesHoy &&
@@ -191,7 +187,6 @@ export default {
         );
       });
 
-      // Mostrar un SweetAlert para cada recordatorio (o combinarlos si prefieres)
       recordatoriosHoy.forEach((rec) => {
         if (rec.tipo === "ingreso") {
           Swal.fire({
@@ -255,7 +250,7 @@ export default {
       if (recordatorio && recordatorio.fecha) {
         this.recordatoriosInternos.push(recordatorio);
       } else {
-        console.warn("⚠️ Recordatorio inválido recibido:", recordatorio);
+        console.warn(" Recordatorio inválido recibido:", recordatorio);
       }
     },
     eliminarRecordatorio(recordatorio) {
@@ -360,7 +355,6 @@ body {
   transform: scale(1.2);
 }
 
-/* Colores para transacciones */
 .ingreso {
   background-color: #27ae60;
 }
@@ -396,7 +390,6 @@ body {
   font-weight: bold;
 }
 
-/* Navegación */
 .navegacion {
   display: flex;
   align-items: center;
@@ -418,12 +411,10 @@ body {
   background-color: #e1992d;
 }
 
-/* Recordatorios: Círculo amarillo */
 .punto.recordatorio {
   background-color: rgb(247, 247, 68) !important;
 }
 
-/* Tooltip */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -468,7 +459,6 @@ body {
   margin-right: 5px;
 }
 
-/* Ya usas estas clases de color, así que se aplicarán automáticamente */
 .color-box.ingreso {
   background-color: #27ae60;
 }

@@ -36,8 +36,9 @@ public class UsuarioService {
      * @return Usuario guardado con ID generado si es nuevo.
      */
     public Usuario guardar(Usuario usuario) {
-    	 // Forzar rol USUARIO por defecto
-        usuario.setRol(Rol.USUARIO);
+        if (usuario.getRol() == null) {
+            usuario.setRol(Rol.USUARIO);
+        }
         return repository.save(usuario);
     }
 

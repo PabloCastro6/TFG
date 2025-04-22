@@ -137,9 +137,19 @@ public class UsuarioController {
         existente.setNombreCompleto(datos.getNombreCompleto());
         existente.setCorreo(datos.getCorreo());
         existente.setPassword(datos.getPassword());
-        existente.setRol(datos.getRol());
 
-        return ResponseEntity.ok(usuarioService.guardar(existente));
+        // Verifica si el rol es nulo o diferente antes de actualizar
+        if (datos.getRol() != null) {
+            existente.setRol(datos.getRol());
+            System.out.println("Rol actualizado a: " + existente.getRol());
+        } else {
+            System.out.println("⚠️ Rol recibido es null, no se actualiza.");
+        }
+
+        Usuario actualizado = usuarioService.guardar(existente);
+        System.out.println("Usuario después de guardar: " + actualizado);
+
+        return ResponseEntity.ok(actualizado);
     }
 
     

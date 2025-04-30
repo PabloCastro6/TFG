@@ -24,6 +24,7 @@
         </button>
       </form>
     </div>
+
     <!-- TABLA DE USUARIOS -->
     <div v-if="esAdmin" class="tabla-usuarios">
       <h3>📋 Lista de Usuarios</h3>
@@ -41,33 +42,37 @@
           <tr v-for="u in listaUsuarios" :key="u.idUsuario">
             <td>{{ u.idUsuario }}</td>
 
-            <template v-if="usuarioEditando === u.idUsuario">
-              <td><input v-model="usuarioEditado.nombreCompleto" /></td>
-              <td><input v-model="usuarioEditado.correo" /></td>
-              <td>
-                <select v-model="usuarioEditado.rol">
-                  <option value="USUARIO">Usuario</option>
-                  <option value="ADMINISTRADOR">Administrador</option>
-                </select>
-              </td>
-              <td>
+            <td v-if="usuarioEditando === u.idUsuario">
+              <input v-model="usuarioEditado.nombreCompleto" />
+            </td>
+            <td v-else>{{ u.nombreCompleto }}</td>
+
+            <td v-if="usuarioEditando === u.idUsuario">
+              <input v-model="usuarioEditado.correo" />
+            </td>
+            <td v-else>{{ u.correo }}</td>
+
+            <td v-if="usuarioEditando === u.idUsuario && u.rol !== 'ADMINISTRADOR'">
+              <select v-model="usuarioEditado.rol">
+                <option value="USUARIO">USUARIO</option>
+                <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+              </select>
+            </td>
+            <td v-else>{{ u.rol }}</td>
+
+            <td>
+              <template v-if="usuarioEditando === u.idUsuario">
                 <button @click="guardarEdicion">💾</button>
                 <button @click="cancelarEdicion">❌</button>
-              </td>
-            </template>
-
-            <template v-else>
-              <td>{{ u.nombreCompleto }}</td>
-              <td>{{ u.correo }}</td>
-              <td>{{ u.rol }}</td>
-              <td>
-                <template v-if="u.rol === 'USUARIO'">
-                  <button @click="editarUsuario(u)">✏️</button>
-                  <button @click="eliminarUsuario(u.idUsuario)">🗑️</button>
-                </template>
-                <span v-else>-</span>
-              </td>
-            </template>
+              </template>
+              <template v-else>
+                <button @click="editarUsuario(u)">✏️</button>
+                <button @click="eliminarUsuario(u.idUsuario)" :disabled="u.rol === 'ADMINISTRADOR'"
+                  title="No se puede eliminar un administrador">
+                  🗑️
+                </button>
+              </template>
+            </td>
           </tr>
         </tbody>
       </table>

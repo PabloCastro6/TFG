@@ -447,6 +447,7 @@ input[type="number"]:focus {
   background-color: #fff;
 }
 
+
 @media (max-width: 1024px) {
   .calculadora {
     position: static;

@@ -143,7 +143,7 @@ public class UsuarioController {
             existente.setRol(datos.getRol());
             System.out.println("Rol actualizado a: " + existente.getRol());
         } else {
-            System.out.println("⚠️ Rol recibido es null, no se actualiza.");
+            System.out.println(" Rol recibido es null, no se actualiza.");
         }
 
         Usuario actualizado = usuarioService.guardar(existente);

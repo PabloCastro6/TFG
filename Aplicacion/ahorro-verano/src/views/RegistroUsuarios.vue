@@ -67,12 +67,12 @@
               </template>
               <template v-else>
                 <button @click="editarUsuario(u)">✏️</button>
-                <button @click="eliminarUsuario(u.idUsuario)" :disabled="u.rol === 'ADMINISTRADOR'"
-                  title="No se puede eliminar un administrador">
+                <button v-if="u.rol !== 'ADMINISTRADOR'" @click="eliminarUsuario(u.idUsuario)">
                   🗑️
                 </button>
               </template>
             </td>
+
           </tr>
         </tbody>
       </table>

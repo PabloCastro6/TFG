@@ -1,12 +1,32 @@
 <template>
   <ul class="menu-principal">
-    <li><router-link to="/" exact-active-class="active">Inicio</router-link></li>
-    <li><router-link to="/configuracionAhorro" exact-active-class="active">Configuración de Ahorro</router-link></li>
-    <li><router-link to="/TiposGastos" exact-active-class="active">Tipos de Gastos/Ingresos</router-link></li>
-    <li><router-link to="/Estadisticas" exact-active-class="active">Estadísticas</router-link></li>
-    <li><router-link to="/Recordatorio" exact-active-class="active">Recordatorios</router-link></li>
+    <li>
+      <router-link to="/" exact-active-class="active">Inicio</router-link>
+    </li>
+    <li>
+      <router-link to="/configuracionAhorro" exact-active-class="active"
+        >Configuración de Ahorro</router-link
+      >
+    </li>
+    <li>
+      <router-link to="/TiposGastos" exact-active-class="active"
+        >Tipos de Gastos/Ingresos</router-link
+      >
+    </li>
+    <li>
+      <router-link to="/Estadisticas" exact-active-class="active"
+        >Estadísticas</router-link
+      >
+    </li>
+    <li>
+      <router-link to="/Recordatorio" exact-active-class="active"
+        >Recordatorios</router-link
+      >
+    </li>
     <li v-if="!auth.registrado || auth.rol === 'ADMINISTRADOR'">
-      <router-link to="/RegistroUsuarios" exact-active-class="active">Usuarios</router-link>
+      <router-link to="/RegistroUsuarios" exact-active-class="active"
+        >Usuarios</router-link
+      >
     </li>
   </ul>
 </template>

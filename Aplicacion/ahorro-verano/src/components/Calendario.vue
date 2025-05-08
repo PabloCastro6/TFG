@@ -75,9 +75,9 @@ export default {
       mes,
       anio,
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-      diasDelMes: Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1),
+      diasDelMes: Array.from({ length: ultimoDiaDelMes.getDate() }, (x, i) => i + 1),
       diasAntes: primerDiaDelMes.getDay() === 0 ? 6 : primerDiaDelMes.getDay() - 1,
-      recordatoriosInternos: [...this.recordatorios],
+      recordatoriosInternos: [],
     };
   },
   computed: {
@@ -91,7 +91,6 @@ export default {
   mounted() {
     eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
     this.$emit("mes-cambiado", { mes: this.mes, anio: this.anio });
-    eventBus.on("nuevo-recordatorio", this.agregarRecordatorio);
     this.verificarRecordatoriosHoy();
   },
   beforeUnmount() {
@@ -100,14 +99,15 @@ export default {
   watch: {
     recordatorios: {
       handler(newVal) {
-        if (newVal && Array.isArray(newVal)) {
-          this.recordatoriosInternos = [...newVal];
-        } else {
-          console.warn("Los recordatorios no son un arreglo válido:", newVal);
+        if (Array.isArray(newVal)) {
+          // filtramos por usuarioId
+          this.recordatoriosInternos = newVal.filter(r =>
+            r.usuario?.idUsuario === this.usuarioIdNum
+          );
         }
       },
-      deep: true,
       immediate: true,
+      deep: true,
     },
     recordatoriosInternos: {
       handler() {
@@ -177,7 +177,6 @@ export default {
       const mesHoy = hoy.getMonth();
       const anioHoy = hoy.getFullYear();
 
-      // Filtrar los recordatorios para el día actual
       const recordatoriosHoy = this.recordatoriosInternos.filter(({ fecha }) => {
         const fechaObj = new Date(fecha);
         return (
@@ -246,11 +245,16 @@ export default {
       });
     },
     agregarRecordatorio(recordatorio) {
-
-      if (recordatorio && recordatorio.fecha) {
-        this.recordatoriosInternos.push(recordatorio);
-      } else {
-        console.warn(" Recordatorio inválido recibido:", recordatorio);
+      // sólo si viene para este usuario
+      if (
+        recordatorio &&
+        recordatorio.usuario?.idUsuario === this.usuarioIdNum
+      ) {
+        // evitar duplicados
+        const existe = this.recordatoriosInternos.some(
+          r => r.idRecordatorio === recordatorio.idRecordatorio
+        );
+        if (!existe) this.recordatoriosInternos.push(recordatorio);
       }
     },
     eliminarRecordatorio(recordatorio) {
@@ -284,7 +288,7 @@ export default {
     actualizarDiasDelMes() {
       const primerDiaDelMes = new Date(this.anio, this.mes, 1);
       const ultimoDiaDelMes = new Date(this.anio, this.mes + 1, 0);
-      this.diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (_, i) => i + 1);
+      this.diasDelMes = Array.from({ length: ultimoDiaDelMes.getDate() }, (x, i) => i + 1);
       this.diasAntes = primerDiaDelMes.getDay() === 0 ? 6 : primerDiaDelMes.getDay() - 1;
     },
   },

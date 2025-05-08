@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS ahorro;
 CREATE DATABASE ahorro DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE ahorro;
 
-
+-- Tabla de usuarios
 CREATE TABLE usuarios (
   idUsuario INT AUTO_INCREMENT PRIMARY KEY,
   nombreCompleto VARCHAR(45),
@@ -11,14 +11,13 @@ CREATE TABLE usuarios (
   rol VARCHAR(45)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabla de categorías (sin usuarioId, categorías generales)
 CREATE TABLE categorias (
   idCategoria INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(45),
-  tipo VARCHAR(45),
-  usuarioId INT,
-  FOREIGN KEY (usuarioId) REFERENCES usuarios(idUsuario)
+  nombre VARCHAR(45)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabla de tipos de transacción
 CREATE TABLE tipos_transaccion (
   idTipo INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
@@ -29,17 +28,19 @@ CREATE TABLE tipos_transaccion (
   FOREIGN KEY (usuarioId) REFERENCES usuarios(idUsuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Tabla de transacciones
 CREATE TABLE transacciones (
   idTransaccion INT AUTO_INCREMENT PRIMARY KEY,
   fecha DATE,
   categoriaId INT,
   usuarioId INT,
   cantidad DECIMAL(10,2),
+  tipo VARCHAR(255),
   FOREIGN KEY (categoriaId) REFERENCES categorias(idCategoria) ON DELETE CASCADE,
   FOREIGN KEY (usuarioId) REFERENCES usuarios(idUsuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Tabla de recordatorios
 CREATE TABLE recordatorios (
   idRecordatorio INT NOT NULL AUTO_INCREMENT,
   cantidad DOUBLE DEFAULT NULL,
@@ -51,8 +52,6 @@ CREATE TABLE recordatorios (
   FOREIGN KEY (usuarioId) REFERENCES usuarios(idUsuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
-
 -- Insertar usuarios
 INSERT INTO usuarios (nombreCompleto, password, correo, rol) VALUES
 ('Gonzalo', '1234', 'Gonzlito@gmail.com', 'ADMINISTRADOR'),
@@ -62,21 +61,17 @@ INSERT INTO usuarios (nombreCompleto, password, correo, rol) VALUES
 ('Pablo Castro', '1357', 'pablete@example.com', 'ADMINISTRADOR');
 
 -- Insertar categorías
-INSERT INTO categorias (nombre, tipo, usuarioId) VALUES
-('Gasto', 'Hacienda', 2);
+INSERT INTO categorias (idCategoria, nombre) VALUES
+(1, 'Gasto'),
+(2, 'Ingreso');
 
--- Insertar transacciones
-INSERT INTO transacciones (fecha, categoriaId, usuarioId, cantidad) VALUES
-('2025-03-14', 1, 2, 20.00);
+-- Insertar transacciones (ejemplo con usuarios y categorías válidas)
+INSERT INTO transacciones (idTransaccion, fecha, categoriaId, usuarioId, cantidad, tipo) VALUES
+(1, '2025-04-10', 2, 2, 1200, 'Trabajo');
 
-
-
+-- Consultas para comprobar
 SELECT * FROM usuarios;
-SELECT * FROM transacciones;
 SELECT * FROM categorias;
-
-
-
-
-
-
+SELECT * FROM transacciones;
+SELECT * FROM tipos_transaccion;
+SELECT * FROM recordatorios;
